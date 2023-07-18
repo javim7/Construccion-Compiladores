@@ -1,0 +1,17 @@
+CLASS C {
+  g : Int;
+  bar: B;
+
+  init(): INT{
+    {
+      g <- 1;
+    }
+  };
+
+  createBar(): B {
+    {
+      g <- (new B).init(1,"Another Example");
+    }
+  };
+
+};
