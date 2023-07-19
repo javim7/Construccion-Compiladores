@@ -1,3 +1,4 @@
+import os
 from antlr4 import *
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
@@ -11,7 +12,7 @@ class YAPLListener(ParseTreeListener):
 
 def main():
     # Cargar el archivo de YAPL
-    input_file = "Lab0/ejemplo2.yapl"  # Reemplaza con tu propio archivo de YAPL
+    input_file = "ejemplo.yapl"  # Reemplaza con tu propio archivo de YAPL
     input_stream = FileStream(input_file)
 
     # Crear el lexer
