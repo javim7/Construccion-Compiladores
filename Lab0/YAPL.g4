@@ -1,81 +1,89 @@
 grammar YAPL;
 
-/*Lexer Rules*/
 
-// skip spaces, tabs, newlines.
-WS: [ \t\r\n\f]+ -> skip; 
+/*Reglas Lexicas*/
 
-// comments
-LINE_COMMENT:   '--' .*? '\n' -> channel(HIDDEN);
-BLOCK_COMMENT:   '(*' (BLOCK_COMMENT|.)*? '*)' -> channel(HIDDEN);
+// espacios en blanco
+WHITESPACE      :   [ \t\r\n\f]+ -> skip; 
 
-// key words
-CLASS : 'CLASS' | 'class';
-ELSE : 'ELSE' | 'else';
-FI : 'FI' | 'fi';
-IF : 'IF' | 'if';
-IN : 'IN' | 'in';
-INHERITS : 'INHERITS' | 'inherits';
-ISVOID : 'ISVOID' | 'isvoid';
-LOOP : 'LOOP' | 'loop';
-POOL : 'POOL' | 'pool';
-THEN : 'THEN' | 'then';
-WHILE : 'WHILE' | 'while';
-NEW : 'NEW' | 'new';
-NOT : 'NOT' | 'not';
-TRUE : 'TRUE' | 'true';
-FALSE : 'FALSE' | 'false';
+// comentarios
+BLOCK_COMMENT   :   '(*' (BLOCK_COMMENT|.)*? '*)'   -> channel(HIDDEN);
+LINE_COMMENT    :   '--' .*? '\n'                   -> channel(HIDDEN);
 
-// tokens
-LET : 'LET' | 'let';
-CASE : 'CASE' | 'case';
-ESAC : 'ESAC' | 'esac';
-OF : 'OF' | 'of';
+// palabras reservadas
+CLASS: 'class' | 'CLASS';
+ELSE: 'else' | 'ELSE';
+FALSE: 'false';
+FI: 'FI' | 'fi' ;
+IF: 'if' | 'IF';
+IN: 'in' | 'IN';
+INHERITS: 'INHERITS' | 'inherits';
+ISVOID: 'ISVOID' | 'isvoid';
+LET: 'LET' | 'let';
+LOOP: 'LOOP' | 'loop';
+POOL: 'POOL' | 'pool';
+THEN: 'THEN' | 'then';
+WHILE: 'WHILE' | 'while';
+CASE: 'CASE' | 'case';
+ESAC: 'ESAC' | 'esac';
+NEW: 'NEW' | 'new';
+OF: 'OF' | 'of';
+NOT: 'NOT' | 'not';
+TRUE: 'true';
 
-STRING: '"' (ESC | ~ ["\\])* '"';
-INT: [0-9]+;
-TYPE: [A-Z][_0-9A-Za-z]*;
-ID:[a-z][_0-9A-Za-z]*;
-ASSIGNMENT: '<-';
-IMPLY: '=>';
+// tipos de variables
+STRING              :           '"' (ESC | ~ ["\\])* '"';
+INT                 :           [0-9]+;
+TYPE                :           [A-Z][_0-9A-Za-z]*;
+ID                  :           [a-z][_0-9A-Za-z]*;
+ASSIGNMENT          :           '<-';
+IMPLY               :           '=>';
 
 fragment ESC: '\\' (["\\/bfnrt] | UNICODE);
 fragment UNICODE: 'u' HEX HEX HEX HEX;
 fragment HEX: [0-9a-fA-F];
 
-/*Parser Rules*/
+/*Reglas Sintacticas*/
 
-program: (classDefine ';')+ EOF;
+program			:       (classDefine ';')+ EOF
+				;
 
-classDefine: CLASS TYPE (INHERITS TYPE)? '{' (feature ';')* '}';
+classDefine     :       CLASS TYPE (INHERITS TYPE)? '{' (feature ';')* '}'
+                ;
 
-feature:method | property;
+feature         :       method
+                |       property
+                ;
 
-method: ID '(' (formal (',' formal)*)* ')' ':' TYPE '{' expr '}';
+method			:		ID '(' (formal (',' formal)*)* ')' ':' TYPE '{' expression '}'
+				;
 
-property:	formal (ASSIGNMENT expr)?;
+property		:		formal (ASSIGNMENT expression)?
+				;
 
-formal:ID ':' TYPE;  /* method argument */
+formal          :       ID ':' TYPE;  /* method argument */
 
-expr: expr ('@' TYPE)? '.' ID '(' (expr (',' expr)*)* ')'    #dispatchExplicit
-     | ID '(' (expr (',' expr)*)* ')'                        #dispatchImplicit
-     | IF expr THEN expr ELSE expr FI                        #if
-     | WHILE expr LOOP expr POOL                             #while
-     | '{' (expr ';')+ '}'                                   #block
-     | CASE expr OF (formal IMPLY expr ';')+ ESAC			 #case
-     | NEW TYPE                                              #new
-     | '~' expr                                              #negative
-     | ISVOID expr                                           #isvoid
-     | expr op=('*' | '/') expr                              #arithmetic
-     | expr op=('+' | '-') expr                              #arithmetic
-     | expr op=('<=' | '<' | '=') expr                       #comparisson
-     | NOT expr                                              #boolNot
-     | '(' expr ')'                                          #parentheses
-     | ID                                                    #id
-     | INT                                                   #int
-     | STRING                                                #string
-     | value=(TRUE | FALSE)                                  #boolean
-     | ID ASSIGNMENT expr							 #assignment
-     | LET property (',' property)* IN expr				 #letIn
-     ;
+expression      :       expression ('@' TYPE)? '.' ID '(' (expression (',' expression)*)* ')'                                       #dispatchExplicit
+                |       ID '(' (expression (',' expression)*)* ')'                                                                  #dispatchImplicit
+                |       IF expression THEN expression ELSE expression FI                                                            #if
+                |       WHILE expression LOOP expression POOL                                                                       #while
+                |       '{' (expression ';')+ '}'                                                                                   #block
+                |       CASE expression OF (formal IMPLY expression ';')+ ESAC														#case
+                |       NEW TYPE                                                                                                    #new
+                |       '~' expression                                                                                              #negative
+                |       ISVOID expression                                                                                           #isvoid
+                |       expression op=('*' | '/') expression                                                                        #arithmetic
+                |       expression op=('+' | '-') expression                                                                        #arithmetic
+                |       expression op=('<=' | '<' | '=') expression                                                                 #comparisson
+                |       NOT expression                                                                                              #boolNot
+                |       '(' expression ')'                                                                                          #parentheses
+                |       ID                                                                                                          #id
+                |       INT                                                                                                         #int
+                |       STRING                                                                                                      #string
+                |       value=(TRUE | FALSE)                                                                                        #boolean
+                |       ID ASSIGNMENT expression																					#assignment
+                |       LET property (',' property)* IN expression																	#letIn
+			;
 
+// errores
+ERROR: .;
