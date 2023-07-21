@@ -99,11 +99,11 @@ ERROR
 rule names:
 program
 classDefine
-feature
+feature_list
 method
 property
 formal
-expression
+expr
 
 
 atn:

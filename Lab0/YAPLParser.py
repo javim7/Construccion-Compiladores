@@ -116,14 +116,14 @@ class YAPLParser ( Parser ):
 
     RULE_program = 0
     RULE_classDefine = 1
-    RULE_feature = 2
+    RULE_feature_list = 2
     RULE_method = 3
     RULE_property = 4
     RULE_formal = 5
-    RULE_expression = 6
+    RULE_expr = 6
 
-    ruleNames =  [ "program", "classDefine", "feature", "method", "property", 
-                   "formal", "expression" ]
+    ruleNames =  [ "program", "classDefine", "feature_list", "method", "property", 
+                   "formal", "expr" ]
 
     EOF = Token.EOF
     T__0=1
@@ -264,11 +264,11 @@ class YAPLParser ( Parser ):
         def INHERITS(self):
             return self.getToken(YAPLParser.INHERITS, 0)
 
-        def feature(self, i:int=None):
+        def feature_list(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.FeatureContext)
+                return self.getTypedRuleContexts(YAPLParser.Feature_listContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.FeatureContext,i)
+                return self.getTypedRuleContext(YAPLParser.Feature_listContext,i)
 
 
         def getRuleIndex(self):
@@ -313,7 +313,7 @@ class YAPLParser ( Parser ):
             _la = self._input.LA(1)
             while _la==43:
                 self.state = 30
-                self.feature()
+                self.feature_list()
                 self.state = 31
                 self.match(YAPLParser.T__0)
                 self.state = 37
@@ -331,7 +331,7 @@ class YAPLParser ( Parser ):
         return localctx
 
 
-    class FeatureContext(ParserRuleContext):
+    class Feature_listContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -347,23 +347,23 @@ class YAPLParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return YAPLParser.RULE_feature
+            return YAPLParser.RULE_feature_list
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFeature" ):
-                listener.enterFeature(self)
+            if hasattr( listener, "enterFeature_list" ):
+                listener.enterFeature_list(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFeature" ):
-                listener.exitFeature(self)
+            if hasattr( listener, "exitFeature_list" ):
+                listener.exitFeature_list(self)
 
 
 
 
-    def feature(self):
+    def feature_list(self):
 
-        localctx = YAPLParser.FeatureContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_feature)
+        localctx = YAPLParser.Feature_listContext(self, self._ctx, self.state)
+        self.enterRule(localctx, 4, self.RULE_feature_list)
         try:
             self.state = 42
             self._errHandler.sync(self)
@@ -403,8 +403,8 @@ class YAPLParser ( Parser ):
         def TYPE(self):
             return self.getToken(YAPLParser.TYPE, 0)
 
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def formal(self, i:int=None):
@@ -470,7 +470,7 @@ class YAPLParser ( Parser ):
             self.state = 62
             self.match(YAPLParser.T__1)
             self.state = 63
-            self.expression(0)
+            self.expr(0)
             self.state = 64
             self.match(YAPLParser.T__2)
         except RecognitionException as re:
@@ -496,8 +496,8 @@ class YAPLParser ( Parser ):
         def ASSIGNMENT(self):
             return self.getToken(YAPLParser.ASSIGNMENT, 0)
 
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def getRuleIndex(self):
@@ -530,7 +530,7 @@ class YAPLParser ( Parser ):
                 self.state = 67
                 self.match(YAPLParser.ASSIGNMENT)
                 self.state = 68
-                self.expression(0)
+                self.expr(0)
 
 
         except RecognitionException as re:
@@ -590,7 +590,7 @@ class YAPLParser ( Parser ):
         return localctx
 
 
-    class ExpressionContext(ParserRuleContext):
+    class ExprContext(ParserRuleContext):
         __slots__ = 'parser'
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
@@ -599,16 +599,16 @@ class YAPLParser ( Parser ):
 
 
         def getRuleIndex(self):
-            return YAPLParser.RULE_expression
+            return YAPLParser.RULE_expr
 
      
         def copyFrom(self, ctx:ParserRuleContext):
             super().copyFrom(ctx)
 
 
-    class NewContext(ExpressionContext):
+    class NewContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -626,14 +626,14 @@ class YAPLParser ( Parser ):
                 listener.exitNew(self)
 
 
-    class ParenthesesContext(ExpressionContext):
+    class ParenthesesContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -645,9 +645,9 @@ class YAPLParser ( Parser ):
                 listener.exitParentheses(self)
 
 
-    class LetInContext(ExpressionContext):
+    class LetInContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -661,8 +661,8 @@ class YAPLParser ( Parser ):
 
         def IN(self):
             return self.getToken(YAPLParser.IN, 0)
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -674,9 +674,9 @@ class YAPLParser ( Parser ):
                 listener.exitLetIn(self)
 
 
-    class StringContext(ExpressionContext):
+    class StringContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -692,16 +692,16 @@ class YAPLParser ( Parser ):
                 listener.exitString(self)
 
 
-    class IsvoidContext(ExpressionContext):
+    class IsvoidContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def ISVOID(self):
             return self.getToken(YAPLParser.ISVOID, 0)
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -713,9 +713,9 @@ class YAPLParser ( Parser ):
                 listener.exitIsvoid(self)
 
 
-    class AssignmentContext(ExpressionContext):
+    class AssignmentContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -723,8 +723,8 @@ class YAPLParser ( Parser ):
             return self.getToken(YAPLParser.ID, 0)
         def ASSIGNMENT(self):
             return self.getToken(YAPLParser.ASSIGNMENT, 0)
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -736,18 +736,18 @@ class YAPLParser ( Parser ):
                 listener.exitAssignment(self)
 
 
-    class ArithmeticContext(ExpressionContext):
+    class ArithmeticContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.op = None # Token
             self.copyFrom(ctx)
 
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -759,19 +759,19 @@ class YAPLParser ( Parser ):
                 listener.exitArithmetic(self)
 
 
-    class WhileContext(ExpressionContext):
+    class WhileContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def WHILE(self):
             return self.getToken(YAPLParser.WHILE, 0)
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
         def LOOP(self):
             return self.getToken(YAPLParser.LOOP, 0)
@@ -787,19 +787,19 @@ class YAPLParser ( Parser ):
                 listener.exitWhile(self)
 
 
-    class DispatchImplicitContext(ExpressionContext):
+    class DispatchImplicitContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def ID(self):
             return self.getToken(YAPLParser.ID, 0)
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -811,9 +811,9 @@ class YAPLParser ( Parser ):
                 listener.exitDispatchImplicit(self)
 
 
-    class IntContext(ExpressionContext):
+    class IntContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -829,14 +829,14 @@ class YAPLParser ( Parser ):
                 listener.exitInt(self)
 
 
-    class NegativeContext(ExpressionContext):
+    class NegativeContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -848,16 +848,16 @@ class YAPLParser ( Parser ):
                 listener.exitNegative(self)
 
 
-    class BoolNotContext(ExpressionContext):
+    class BoolNotContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def NOT(self):
             return self.getToken(YAPLParser.NOT, 0)
-        def expression(self):
-            return self.getTypedRuleContext(YAPLParser.ExpressionContext,0)
+        def expr(self):
+            return self.getTypedRuleContext(YAPLParser.ExprContext,0)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -869,9 +869,9 @@ class YAPLParser ( Parser ):
                 listener.exitBoolNot(self)
 
 
-    class BooleanContext(ExpressionContext):
+    class BooleanContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.value = None # Token
             self.copyFrom(ctx)
@@ -890,17 +890,17 @@ class YAPLParser ( Parser ):
                 listener.exitBoolean(self)
 
 
-    class BlockContext(ExpressionContext):
+    class BlockContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -912,18 +912,18 @@ class YAPLParser ( Parser ):
                 listener.exitBlock(self)
 
 
-    class ComparissonContext(ExpressionContext):
+    class ComparissonContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.op = None # Token
             self.copyFrom(ctx)
 
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
 
         def enterRule(self, listener:ParseTreeListener):
@@ -935,9 +935,9 @@ class YAPLParser ( Parser ):
                 listener.exitComparisson(self)
 
 
-    class IdContext(ExpressionContext):
+    class IdContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
@@ -953,19 +953,19 @@ class YAPLParser ( Parser ):
                 listener.exitId(self)
 
 
-    class IfContext(ExpressionContext):
+    class IfContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def IF(self):
             return self.getToken(YAPLParser.IF, 0)
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
         def THEN(self):
             return self.getToken(YAPLParser.THEN, 0)
@@ -983,19 +983,19 @@ class YAPLParser ( Parser ):
                 listener.exitIf(self)
 
 
-    class CaseContext(ExpressionContext):
+    class CaseContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
         def CASE(self):
             return self.getToken(YAPLParser.CASE, 0)
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
         def OF(self):
             return self.getToken(YAPLParser.OF, 0)
@@ -1022,17 +1022,17 @@ class YAPLParser ( Parser ):
                 listener.exitCase(self)
 
 
-    class DispatchExplicitContext(ExpressionContext):
+    class DispatchExplicitContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExpressionContext
+        def __init__(self, parser, ctx:ParserRuleContext): # actually a YAPLParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def expression(self, i:int=None):
+        def expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(YAPLParser.ExpressionContext)
+                return self.getTypedRuleContexts(YAPLParser.ExprContext)
             else:
-                return self.getTypedRuleContext(YAPLParser.ExpressionContext,i)
+                return self.getTypedRuleContext(YAPLParser.ExprContext,i)
 
         def ID(self):
             return self.getToken(YAPLParser.ID, 0)
@@ -1049,13 +1049,13 @@ class YAPLParser ( Parser ):
 
 
 
-    def expression(self, _p:int=0):
+    def expr(self, _p:int=0):
         _parentctx = self._ctx
         _parentState = self.state
-        localctx = YAPLParser.ExpressionContext(self, self._ctx, _parentState)
+        localctx = YAPLParser.ExprContext(self, self._ctx, _parentState)
         _prevctx = localctx
         _startState = 12
-        self.enterRecursionRule(localctx, 12, self.RULE_expression, _p)
+        self.enterRecursionRule(localctx, 12, self.RULE_expr, _p)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
@@ -1076,7 +1076,7 @@ class YAPLParser ( Parser ):
                 _la = self._input.LA(1)
                 while (((_la) & ~0x3f) == 0 and ((1 << _la) & 13014598157332) != 0):
                     self.state = 78
-                    self.expression(0)
+                    self.expr(0)
                     self.state = 83
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
@@ -1084,7 +1084,7 @@ class YAPLParser ( Parser ):
                         self.state = 79
                         self.match(YAPLParser.T__4)
                         self.state = 80
-                        self.expression(0)
+                        self.expr(0)
                         self.state = 85
                         self._errHandler.sync(self)
                         _la = self._input.LA(1)
@@ -1104,15 +1104,15 @@ class YAPLParser ( Parser ):
                 self.state = 92
                 self.match(YAPLParser.IF)
                 self.state = 93
-                self.expression(0)
+                self.expr(0)
                 self.state = 94
                 self.match(YAPLParser.THEN)
                 self.state = 95
-                self.expression(0)
+                self.expr(0)
                 self.state = 96
                 self.match(YAPLParser.ELSE)
                 self.state = 97
-                self.expression(0)
+                self.expr(0)
                 self.state = 98
                 self.match(YAPLParser.FI)
                 pass
@@ -1124,11 +1124,11 @@ class YAPLParser ( Parser ):
                 self.state = 100
                 self.match(YAPLParser.WHILE)
                 self.state = 101
-                self.expression(0)
+                self.expr(0)
                 self.state = 102
                 self.match(YAPLParser.LOOP)
                 self.state = 103
-                self.expression(0)
+                self.expr(0)
                 self.state = 104
                 self.match(YAPLParser.POOL)
                 pass
@@ -1144,7 +1144,7 @@ class YAPLParser ( Parser ):
                 _la = self._input.LA(1)
                 while True:
                     self.state = 107
-                    self.expression(0)
+                    self.expr(0)
                     self.state = 108
                     self.match(YAPLParser.T__0)
                     self.state = 112 
@@ -1164,7 +1164,7 @@ class YAPLParser ( Parser ):
                 self.state = 116
                 self.match(YAPLParser.CASE)
                 self.state = 117
-                self.expression(0)
+                self.expr(0)
                 self.state = 118
                 self.match(YAPLParser.OF)
                 self.state = 124 
@@ -1176,7 +1176,7 @@ class YAPLParser ( Parser ):
                     self.state = 120
                     self.match(YAPLParser.IMPLY)
                     self.state = 121
-                    self.expression(0)
+                    self.expr(0)
                     self.state = 122
                     self.match(YAPLParser.T__0)
                     self.state = 126 
@@ -1206,7 +1206,7 @@ class YAPLParser ( Parser ):
                 self.state = 132
                 self.match(YAPLParser.T__9)
                 self.state = 133
-                self.expression(13)
+                self.expr(13)
                 pass
 
             elif la_ == 8:
@@ -1216,7 +1216,7 @@ class YAPLParser ( Parser ):
                 self.state = 134
                 self.match(YAPLParser.ISVOID)
                 self.state = 135
-                self.expression(12)
+                self.expr(12)
                 pass
 
             elif la_ == 9:
@@ -1226,7 +1226,7 @@ class YAPLParser ( Parser ):
                 self.state = 136
                 self.match(YAPLParser.NOT)
                 self.state = 137
-                self.expression(8)
+                self.expr(8)
                 pass
 
             elif la_ == 10:
@@ -1236,7 +1236,7 @@ class YAPLParser ( Parser ):
                 self.state = 138
                 self.match(YAPLParser.T__3)
                 self.state = 139
-                self.expression(0)
+                self.expr(0)
                 self.state = 140
                 self.match(YAPLParser.T__5)
                 pass
@@ -1288,7 +1288,7 @@ class YAPLParser ( Parser ):
                 self.state = 147
                 self.match(YAPLParser.ASSIGNMENT)
                 self.state = 148
-                self.expression(2)
+                self.expr(2)
                 pass
 
             elif la_ == 16:
@@ -1314,7 +1314,7 @@ class YAPLParser ( Parser ):
                 self.state = 158
                 self.match(YAPLParser.IN)
                 self.state = 159
-                self.expression(1)
+                self.expr(1)
                 pass
 
 
@@ -1331,8 +1331,8 @@ class YAPLParser ( Parser ):
                     self._errHandler.sync(self)
                     la_ = self._interp.adaptivePredict(self._input,16,self._ctx)
                     if la_ == 1:
-                        localctx = YAPLParser.ArithmeticContext(self, YAPLParser.ExpressionContext(self, _parentctx, _parentState))
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
+                        localctx = YAPLParser.ArithmeticContext(self, YAPLParser.ExprContext(self, _parentctx, _parentState))
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 163
                         if not self.precpred(self._ctx, 11):
                             from antlr4.error.Errors import FailedPredicateException
@@ -1346,12 +1346,12 @@ class YAPLParser ( Parser ):
                             self._errHandler.reportMatch(self)
                             self.consume()
                         self.state = 165
-                        self.expression(12)
+                        self.expr(12)
                         pass
 
                     elif la_ == 2:
-                        localctx = YAPLParser.ArithmeticContext(self, YAPLParser.ExpressionContext(self, _parentctx, _parentState))
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
+                        localctx = YAPLParser.ArithmeticContext(self, YAPLParser.ExprContext(self, _parentctx, _parentState))
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 166
                         if not self.precpred(self._ctx, 10):
                             from antlr4.error.Errors import FailedPredicateException
@@ -1365,12 +1365,12 @@ class YAPLParser ( Parser ):
                             self._errHandler.reportMatch(self)
                             self.consume()
                         self.state = 168
-                        self.expression(11)
+                        self.expr(11)
                         pass
 
                     elif la_ == 3:
-                        localctx = YAPLParser.ComparissonContext(self, YAPLParser.ExpressionContext(self, _parentctx, _parentState))
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
+                        localctx = YAPLParser.ComparissonContext(self, YAPLParser.ExprContext(self, _parentctx, _parentState))
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 169
                         if not self.precpred(self._ctx, 9):
                             from antlr4.error.Errors import FailedPredicateException
@@ -1384,12 +1384,12 @@ class YAPLParser ( Parser ):
                             self._errHandler.reportMatch(self)
                             self.consume()
                         self.state = 171
-                        self.expression(10)
+                        self.expr(10)
                         pass
 
                     elif la_ == 4:
-                        localctx = YAPLParser.DispatchExplicitContext(self, YAPLParser.ExpressionContext(self, _parentctx, _parentState))
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expression)
+                        localctx = YAPLParser.DispatchExplicitContext(self, YAPLParser.ExprContext(self, _parentctx, _parentState))
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_expr)
                         self.state = 172
                         if not self.precpred(self._ctx, 20):
                             from antlr4.error.Errors import FailedPredicateException
@@ -1415,7 +1415,7 @@ class YAPLParser ( Parser ):
                         _la = self._input.LA(1)
                         while (((_la) & ~0x3f) == 0 and ((1 << _la) & 13014598157332) != 0):
                             self.state = 180
-                            self.expression(0)
+                            self.expr(0)
                             self.state = 185
                             self._errHandler.sync(self)
                             _la = self._input.LA(1)
@@ -1423,7 +1423,7 @@ class YAPLParser ( Parser ):
                                 self.state = 181
                                 self.match(YAPLParser.T__4)
                                 self.state = 182
-                                self.expression(0)
+                                self.expr(0)
                                 self.state = 187
                                 self._errHandler.sync(self)
                                 _la = self._input.LA(1)
@@ -1454,14 +1454,14 @@ class YAPLParser ( Parser ):
     def sempred(self, localctx:RuleContext, ruleIndex:int, predIndex:int):
         if self._predicates == None:
             self._predicates = dict()
-        self._predicates[6] = self.expression_sempred
+        self._predicates[6] = self.expr_sempred
         pred = self._predicates.get(ruleIndex, None)
         if pred is None:
             raise Exception("No predicate with index:" + str(ruleIndex))
         else:
             return pred(localctx, predIndex)
 
-    def expression_sempred(self, localctx:ExpressionContext, predIndex:int):
+    def expr_sempred(self, localctx:ExprContext, predIndex:int):
             if predIndex == 0:
                 return self.precpred(self._ctx, 11)
          
