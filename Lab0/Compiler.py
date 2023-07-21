@@ -185,9 +185,9 @@ class Compiler():
             if token_name == "ERROR":
                 self.lexicalErrors.append(f"{token_name} LEXICO: Caracter '{lexeme}' no identificado en linea {line}, columna {column}")
             else:
-                good_tokens.append(f"Token Type: {token_name:{max_name_length}} | "
-                  f"Lexeme: {lexeme:{max_lexeme_length}} | "
-                  f"Line: {line:>{max_line_length}} | "
-                  f"Column: {column:>{max_column_length}}")
+                good_tokens.append(f"Token: {token_name:{max_name_length}} | "
+                  f"Lexema: {lexeme:{max_lexeme_length}} | "
+                  f"Linea: {line:>{max_line_length}} | "
+                  f"Columna: {column:>{max_column_length}}")
 
         return good_tokens, self.lexicalErrors
