@@ -22,8 +22,8 @@ def main():
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
 
-    arbol = compilador.treeStruct
-    postorder(arbol.root)
+    # arbol = compilador.treeStruct
+    # postorder(arbol.root)
 
 
 if __name__ == '__main__':

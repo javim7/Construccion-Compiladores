@@ -6,6 +6,7 @@ from ParseTree import *
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
 from antlr4.tree.Tree import TerminalNodeImpl
+from SymbolTable import *
 
 class Compiler():
     def __init__(self, input_file):
@@ -20,6 +21,7 @@ class Compiler():
         self.tree = self.parser.program()
         self.treeStruct = None
         self.lexicalErrors = []
+        self.symbolTable = SymbolTable()
 
     def lexicalAnalysis(self):
         nonErrors, lexicalErrors = self.get_tokens()
@@ -79,6 +81,7 @@ class Compiler():
             if isinstance(node, RuleContext):
                 rule_index = node.getRuleIndex()
                 rule_name = self.parser.ruleNames[rule_index]
+                print("RuleName:",rule_name)
                 tree_node = ParseTreeNode(rule_name)
             else:
                 tree_node = ParseTreeNode(str(node))

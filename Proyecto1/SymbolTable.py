@@ -1,10 +1,11 @@
 from prettytable import PrettyTable
 
 class Symbol:
-    def __init__(self, name, data_type, value):
+    def __init__(self, name, data_type, value, scope):
         self.name = name
         self.data_type = data_type
         self.value = value
+        self.scope = scope
     
     def update_value(self, new_value):
         # Verificar si el nuevo valor tiene el mismo tipo que el tipo original del símbolo
@@ -37,8 +38,8 @@ class SymbolTable:
             raise ValueError(f"Symbol '{symbol.name}' already exists in the table.")
         
         # Verificar tipo válido (opcional)
-        valid_data_types = ['int', 'float', 'string', 'bool']  # Lista de tipos válidos
-        if symbol.data_type not in valid_data_types:
+        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type"]  # Lista de tipos válidos
+        if symbol.data_type.lower() not in valid_data_types:
             raise ValueError(f"Invalid data type for symbol '{symbol.name}': {symbol.data_type}")
         
         self.symbols[symbol.name] = symbol
