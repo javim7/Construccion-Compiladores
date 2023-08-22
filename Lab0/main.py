@@ -10,10 +10,10 @@ from Compiler import *
     
 def main():
     
-    compilador = Compiler('Ejemplos/ejemplo2.yapl')
+    compilador = Compiler('Lab0/Ejemplos/ejemplo.yapl')
 
     compilador.lexicalAnalysis()
-    compilador.syntacticAnalysis2()
+    compilador.syntacticAnalysis()
 
 if __name__ == '__main__':
     main()

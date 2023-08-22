@@ -65,7 +65,7 @@ class Compiler():
                 print(error)
         else:
             print("\nARBOL SINTACTICO GENERADO:")
-            command = f"antlr4-parse YAPL.g4 program  -gui {self.input}"
+            command = f"antlr4-parse Lab0/YAPL.g4 program  -gui {self.input}"
             os.system(command)
 
     def getTreeString(self):
