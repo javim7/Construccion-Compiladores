@@ -45,10 +45,42 @@ digraph {
 	node8 -> node21
 	node22 [label=";"]
 	node1 -> node22
-	node23 [label="}"]
+	node23 [label=feature_list]
 	node1 -> node23
-	node24 [label=";"]
-	node0 -> node24
-	node25 [label=<EOF>]
-	node0 -> node25
+	node24 [label=method]
+	node23 -> node24
+	node25 [label=test]
+	node24 -> node25
+	node26 [label="("]
+	node24 -> node26
+	node27 [label=")"]
+	node24 -> node27
+	node28 [label=":"]
+	node24 -> node28
+	node29 [label=Object]
+	node24 -> node29
+	node30 [label="{"]
+	node24 -> node30
+	node31 [label=expr]
+	node24 -> node31
+	node32 [label=out_string]
+	node31 -> node32
+	node33 [label="("]
+	node31 -> node33
+	node34 [label=expr]
+	node31 -> node34
+	node35 [label="\"Hello, world.\n\""]
+	node34 -> node35
+	node36 [label=")"]
+	node31 -> node36
+	node37 [label="}"]
+	node24 -> node37
+	node38 [label=";"]
+	node1 -> node38
+	node39 [label="}"]
+	node1 -> node39
+	node40 [label=";"]
+	node0 -> node40
+	node41 [label=<EOF>]
+	node0 -> node41
 }
