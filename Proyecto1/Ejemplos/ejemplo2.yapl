@@ -1,11 +1,12 @@
 class ClassA {
     x : Int;
     y : Int <- 2;
+
     methodA(): Int {
         x <- 1
     };
     
-    methodC(): Int {
+    methodB(): Int {
         "Hello, World!"
     };
 };

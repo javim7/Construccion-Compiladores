@@ -17,7 +17,7 @@ def postorder(node):
 
 def main():
     
-    compilador = Compiler('Proyecto1/Ejemplos/ejemplo.yapl')
+    compilador = Compiler('Proyecto1/Ejemplos/ejemplo4.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()

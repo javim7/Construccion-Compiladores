@@ -1,6 +1,7 @@
 (* hello-world.cl *) 
 class Main inherits IO { 
   x : Int;
+  y Int <- 3;
   main(y : Int):  Object { 
     x <- 1
   } ; 

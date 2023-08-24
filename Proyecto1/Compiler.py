@@ -1,8 +1,8 @@
 import os
-from antlr4 import *
 from Drawer import *
-from MyErrorListener import *
+from antlr4 import *
 from ParseTree import *
+from MyErrorListener import *
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
 from antlr4.tree.Tree import TerminalNodeImpl
@@ -60,7 +60,27 @@ class Compiler():
             drawTree.draw(self.treeStruct.root)
             drawTree.save("parse_tree")
 
-            print("\nTABLA DE SIMBOLOS:")
+            classProperties = {}
+            className = ""
+            # llenar diccionario de clases y sus propiedades
+            for node in self.treeStruct.nodes:
+                if isinstance(node, ParseTreeNode):
+                    rule_name = node.val
+
+                    if rule_name == "classDefine":
+                        className = node.children[1].val
+                        classProperties[className] = []
+
+                    if rule_name == "property":
+                        classProperties[className].append(node.children[0].children[0].val)
+                    
+                    if rule_name == "method":
+                        classProperties[className].append(node.children[0].val)
+
+            # print("\nTABLA DE CLASES:")
+            # print(classProperties)
+
+            # print("\nTABLA DE SIMBOLOS:")
             
             global_scope = "global"
             class_scope = ""
@@ -77,14 +97,19 @@ class Compiler():
                         current_scope = global_scope
                         # print(node)
                         class_name = node.children[1].val
-                        self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, current_scope))
+                        if node.children[2].val == "inherits":
+                            inherits_name = node.children[3].val
+                            self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, inherits_name, current_scope))
+                        else:
+                            self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, None, current_scope))
                         class_scope = class_name
                         current_scope = class_name
+                        method_scope = ""
                     elif rule_name == "method":
                         current_scope = class_scope
                         method_name = node.children[0].val
                         method_type = self.extract_method_return_type(node)
-                        self.symbolTable.insert(Symbol(method_name, "Method", method_type, None, current_scope))
+                        self.symbolTable.insert(Symbol(method_name, "Method", method_type, None, None, current_scope))
                         method_scope = method_name
                         current_scope = method_name
                     elif rule_name == "property":
@@ -99,7 +124,7 @@ class Compiler():
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
                             var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, class_scope +"."+ current_scope))
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, None, current_scope))
                         else:
                             # print(node)
                             # print("entro aca tambien")
@@ -107,7 +132,7 @@ class Compiler():
                             childFormal = node.children[0]
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, None, current_scope))
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, None, None, current_scope))
                     elif rule_name == "varDeclaration":
                         # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope
@@ -120,9 +145,23 @@ class Compiler():
                         current_scope = method_scope if method_scope != "" else class_scope
                         var_name = node.children[0].val
                         var_type = node.children[2].val
-                        self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, class_scope +"."+ current_scope))
+                        self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, None, class_scope +"."+ current_scope))
 
 
+            # self.symbolTable.display()
+
+            # recorrer la tabla de simbolos y verficar que los metodos y atributos son heredados
+            claseActual = ""
+            for symbol in self.symbolTable.symbols:
+                if symbol.inheritsFrom:
+                    claseActual = symbol.inheritsFrom
+                    claseHeredando = symbol.name
+                    for symbol2 in self.symbolTable.symbols:
+                        if claseHeredando in symbol2.scope:
+                            if symbol2.name in classProperties[claseActual]:
+                                symbol2.inheritsFrom = claseActual
+
+            print("\nTABLA DE SIMBOLOS:")
             self.symbolTable.display()
     
     def extract_method_return_type(self, method_node):
