@@ -60,6 +60,8 @@ method: ID '(' (formal (',' formal)*)* ')' ':' TYPE '{' expr '}';
 
 property:	formal (ASSIGNMENT expr)?;
 
+varDeclaration: ID ASSIGNMENT expr; 
+
 formal: ID ':' TYPE;  /* method argument */
 
 expr: expr ('@' TYPE)? '.' ID '(' (expr (',' expr)*)* ')' #dispatchExplicit
@@ -80,6 +82,6 @@ expr: expr ('@' TYPE)? '.' ID '(' (expr (',' expr)*)* ')' #dispatchExplicit
           | INT                                           #int
           | STRING                                        #string
           | value=(TRUE | FALSE)                          #boolean
-          | ID ASSIGNMENT expr					   #assignment
+          | varDeclaration					        #assignment
           | LET property (',' property)* IN expr		   #letIn
 		;

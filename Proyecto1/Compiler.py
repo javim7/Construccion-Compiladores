@@ -59,7 +59,79 @@ class Compiler():
             drawTree = Drawer(self.treeStruct)
             drawTree.draw(self.treeStruct.root)
             drawTree.save("parse_tree")
+
+            print("\nTABLA DE SIMBOLOS:")
+            
+            global_scope = "global"
+            class_scope = ""
+            method_scope = ""
+            current_scope = global_scope
+
+            #iteramos los nodos del arbol y llenamos la tabla de simbolos
+            for node in self.treeStruct.nodes:
+                # print("node", node)
+                if isinstance(node, ParseTreeNode):
+                    rule_name = node.val
+                    
+                    if rule_name == "classDefine":
+                        current_scope = global_scope
+                        # print(node)
+                        class_name = node.children[1].val
+                        self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, current_scope))
+                        class_scope = class_name
+                        current_scope = class_name
+                    elif rule_name == "method":
+                        current_scope = class_scope
+                        method_name = node.children[0].val
+                        method_type = self.extract_method_return_type(node)
+                        self.symbolTable.insert(Symbol(method_name, "Method", method_type, None, current_scope))
+                        method_scope = method_name
+                        current_scope = method_name
+                    elif rule_name == "property":
+                        # print("node", node)
+                        if len(node.children) > 1:
+                            # print("Si entro aca---")
+                            # print(node)
+                            current_scope = method_scope if method_scope != "" else class_scope
+                            childFormal = node.children[0]
+                            childExpr = node.children[2]
+                            # print(child)
+                            var_name = childFormal.children[0].val
+                            var_type = childFormal.children[2].val
+                            var_value = childExpr.children[0].val
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, current_scope))
+                        else:
+                            # print(node)
+                            # print("entro aca tambien")
+                            current_scope = method_scope if method_scope != "" else class_scope
+                            childFormal = node.children[0]
+                            var_name = childFormal.children[0].val
+                            var_type = childFormal.children[2].val
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, None, current_scope))
+                    elif rule_name == "varDeclaration":
+                        # print("node", node)
+                        current_scope = method_scope if method_scope != "" else class_scope
+                        childExpr = node.children[2]
+                        var_name = node.children[0].val
+                        var_value = childExpr.children[0].val
+                        self.symbolTable.update_symbol_value(var_name, var_value)
+
+            self.symbolTable.display()
     
+    def extract_method_return_type(self, method_node):
+        colon_found = False
+        method_type = ""
+
+        for child in method_node.children:
+            if colon_found:
+                if child.val == "{":
+                    break
+                method_type += child.val
+            elif child.val == ":":
+                colon_found = True
+
+        return method_type.strip()
+
     def syntacticAnalysis2(self):
         if self.error_listener.errors:
             print("\nERRORES SINTACTICOS IDENTIFICADOS:")
@@ -81,7 +153,7 @@ class Compiler():
             if isinstance(node, RuleContext):
                 rule_index = node.getRuleIndex()
                 rule_name = self.parser.ruleNames[rule_index]
-                print("RuleName:",rule_name)
+                # print("RuleName:",rule_name)
                 tree_node = ParseTreeNode(rule_name)
             else:
                 tree_node = ParseTreeNode(str(node))

@@ -1,16 +1,19 @@
 from prettytable import PrettyTable
 
 class Symbol:
-    def __init__(self, name, data_type, value, scope):
+    def __init__(self, name, var_type, data_type, value, scope):
         self.name = name
+        self.var_type = var_type
         self.data_type = data_type
         self.value = value
         self.scope = scope
     
     def update_value(self, new_value):
         # Verificar si el nuevo valor tiene el mismo tipo que el tipo original del símbolo
-        if type(new_value) != type(self.value):
-            raise ValueError(f"Invalid type for new value of symbol '{self.name}': {type(new_value)}")
+        # print("new_value: ", new_value)
+        # print("old value: ", self.value)
+        # if type(new_value) != type(self.value):
+        #     raise ValueError(f"Invalid type for new value of symbol '{self.name}': {type(new_value)}")
         
         self.value = new_value
 
@@ -26,7 +29,7 @@ class Symbol:
             self.data_type = new_data_type
 
     def __str__(self):
-        return f"{self.name}: {self.data_type} = {self.value} , {self.scope}"
+        return f"Name: {self.name}\nVar Type: {self.var_type}\nData Type: {self.data_type}\nValue: {self.value}\nScope: {self.scope}"
 
 
 class SymbolTable:
@@ -34,11 +37,11 @@ class SymbolTable:
         self.symbols = {}
 
     def insert(self, symbol):
-        if symbol.name in self.symbols:
-            raise ValueError(f"Symbol '{symbol.name}' already exists in the table.")
-        
+        if symbol.name in self.symbols and symbol.scope == self.symbols[symbol.name].scope:
+            raise ValueError(f"Symbol '{symbol.name}' already exists in the same scope.")
+        # print(symbol)
         # Verificar tipo válido (opcional)
-        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type"]  # Lista de tipos válidos
+        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type"]  # Lista de tipos válidos
         if symbol.data_type.lower() not in valid_data_types:
             raise ValueError(f"Invalid data type for symbol '{symbol.name}': {symbol.data_type}")
         
@@ -57,6 +60,7 @@ class SymbolTable:
     
     def update_symbol_value(self, symbol_name, new_value):
         symbol = self.lookup(symbol_name)
+        # print("symbol: ", symbol)
         symbol.update_value(new_value)
 
     def update_symbol_data_type(self, symbol_name, new_data_type):
@@ -68,10 +72,10 @@ class SymbolTable:
     #         print(symbol)
     def display(self):
         table = PrettyTable()
-        table.field_names = ["Name", "Data Type", "Value", "Scope"]
+        table.field_names = ["Name", "Var Type", "Data Type", "Value", "Scope"]
 
         for symbol in self.symbols.values():
-            table.add_row([symbol.name, symbol.data_type, symbol.value, symbol.scope])
+            table.add_row([symbol.name, symbol.var_type, symbol.data_type, symbol.value, symbol.scope])
 
         print(table)
 

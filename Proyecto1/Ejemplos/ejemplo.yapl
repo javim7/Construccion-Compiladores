@@ -1,14 +1,9 @@
 (* hello-world.cl *) 
 class Main inherits IO { 
+  hello : String;
+  hello2 : String <- "hello2";
   main():  Object { 
-    out_string("Hello, world.\n") 
+    hello <- "Hello World"
   } ; 
-  test(): Object { 
-    {
-    out_string("Hello, world.\n");
-    variable <- 4;
-    variable2 <- "hola";
-    variable3 <- variable + variable2;
-    }
-  } ; 
+
 } ;

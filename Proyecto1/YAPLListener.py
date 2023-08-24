@@ -53,6 +53,15 @@ class YAPLListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by YAPLParser#varDeclaration.
+    def enterVarDeclaration(self, ctx:YAPLParser.VarDeclarationContext):
+        pass
+
+    # Exit a parse tree produced by YAPLParser#varDeclaration.
+    def exitVarDeclaration(self, ctx:YAPLParser.VarDeclarationContext):
+        pass
+
+
     # Enter a parse tree produced by YAPLParser#formal.
     def enterFormal(self, ctx:YAPLParser.FormalContext):
         pass
