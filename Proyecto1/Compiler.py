@@ -99,7 +99,7 @@ class Compiler():
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
                             var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, current_scope))
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, class_scope +"."+ current_scope))
                         else:
                             # print(node)
                             # print("entro aca tambien")
@@ -115,6 +115,13 @@ class Compiler():
                         var_name = node.children[0].val
                         var_value = childExpr.children[0].val
                         self.symbolTable.update_symbol_value(var_name, var_value)
+                    elif rule_name == "formal" and node.parent.val != "property":
+                        # print("node", node)
+                        current_scope = method_scope if method_scope != "" else class_scope
+                        var_name = node.children[0].val
+                        var_type = node.children[2].val
+                        self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, class_scope +"."+ current_scope))
+
 
             self.symbolTable.display()
     
@@ -147,7 +154,7 @@ class Compiler():
         # print(tree_str)
         return tree_str
 
-    def build_tree(self, node):
+    def build_tree(self, node, parent=None):
         if node is not None:
             # Get the rule name for rule context objects
             if isinstance(node, RuleContext):
@@ -161,11 +168,14 @@ class Compiler():
             # Set the errorNode attribute to True if the node represents an error
             if isinstance(node, ErrorNode):
                 tree_node.errorNode = True
+
+            if parent is not None:
+                tree_node.parent = parent
             
             # Recursively build the tree for each child node
             if not isinstance(node, TerminalNodeImpl):
                 for child in node.children:
-                    child_tree_node = self.build_tree(child)
+                    child_tree_node = self.build_tree(child, tree_node)
                     tree_node.add_child(child_tree_node)
             
             return tree_node

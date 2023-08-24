@@ -1,9 +1,7 @@
 (* hello-world.cl *) 
 class Main inherits IO { 
-  hello : String;
-  hello2 : String <- "hello2";
-  main():  Object { 
-    hello <- "Hello World"
+  x : Int;
+  main(y : Int):  Object { 
+    x <- 1
   } ; 
-
 } ;

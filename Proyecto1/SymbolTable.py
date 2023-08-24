@@ -1,9 +1,9 @@
 from prettytable import PrettyTable
 
 class Symbol:
-    def __init__(self, name, var_type, data_type, value, scope):
+    def __init__(self, name, id_type, data_type, value, scope):
         self.name = name
-        self.var_type = var_type
+        self.id_type = id_type
         self.data_type = data_type
         self.value = value
         self.scope = scope
@@ -29,7 +29,7 @@ class Symbol:
             self.data_type = new_data_type
 
     def __str__(self):
-        return f"Name: {self.name}\nVar Type: {self.var_type}\nData Type: {self.data_type}\nValue: {self.value}\nScope: {self.scope}"
+        return f"Name: {self.name}\nVar Type: {self.id_type}\nData Type: {self.data_type}\nValue: {self.value}\nScope: {self.scope}"
 
 
 class SymbolTable:
@@ -38,7 +38,7 @@ class SymbolTable:
 
     def insert(self, symbol):
         if symbol.name in self.symbols and symbol.scope == self.symbols[symbol.name].scope:
-            raise ValueError(f"Symbol '{symbol.name}' already exists in the same scope.")
+            raise ValueError(f"Symbol '{symbol.name}' already exists in the same scope: {symbol.scope}.")
         # print(symbol)
         # Verificar tipo válido (opcional)
         valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type"]  # Lista de tipos válidos
@@ -72,43 +72,9 @@ class SymbolTable:
     #         print(symbol)
     def display(self):
         table = PrettyTable()
-        table.field_names = ["Name", "Var Type", "Data Type", "Value", "Scope"]
+        table.field_names = ["Name", "ID Type", "Data Type", "Value", "Scope"]
 
         for symbol in self.symbols.values():
-            table.add_row([symbol.name, symbol.var_type, symbol.data_type, symbol.value, symbol.scope])
+            table.add_row([symbol.name, symbol.id_type, symbol.data_type, symbol.value, symbol.scope])
 
         print(table)
-
-
-# Ejemplo de uso
-if __name__ == "__main__":
-    table = SymbolTable()
-
-    symbol1 = Symbol("x", "int", 42)
-    symbol2 = Symbol("y", "float", 3.14)
-
-    try:
-        table.insert(symbol1)
-        table.insert(symbol2)
-        table.insert(symbol1)  # Esto generará un error, ya que 'x' ya existe en la tabla.
-    except ValueError as e:
-        print(f"Error: {e}")
-
-    try:
-        table.lookup("z")  # Esto generará un error, ya que 'z' no existe en la tabla.
-    except ValueError as e:
-        print(f"Error: {e}")
-
-    table.display()
-
-    '''
-    el output de este programa es:
-    Error: Symbol 'x' already exists in the table.
-    Error: Symbol 'z' not found in the table.
-    +------+-----------+-------+
-    | Name | Data Type | Value |
-    +------+-----------+-------+
-    |  x   |    int    |   42  |
-    |  y   |   float   |  3.14 |
-    +------+-----------+-------+
-    '''
