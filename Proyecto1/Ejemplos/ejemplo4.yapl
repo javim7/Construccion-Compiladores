@@ -31,13 +31,4 @@ class Cat inherits Animal {
     speak(): String {
         out_string("Meow, I'm a cat named " + name)
     };
-
-    method2(num1 : Int, num2 : Int) : String {  -- plus
-      (let x : Int in
-	 {
-            x <- num1 + num2;
-	    (new String).set_var(x);
-	 }
-      )
-   };
 };

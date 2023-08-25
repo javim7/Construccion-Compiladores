@@ -139,13 +139,32 @@ class Compiler():
                         childExpr = node.children[2]
                         var_name = node.children[0].val
                         var_value = childExpr.children[0].val
-                        self.symbolTable.update_symbol_value(var_name, var_value)
+
+                        matching_formal_symbol = None
+                        for symbol in self.symbolTable.symbols:
+                            if symbol.name == var_name and symbol.id_type == "Attribute" and symbol.scope.split(".")[0] == class_scope:
+                                matching_formal_symbol = symbol
+                                break 
+                        # print("matching_formal_symbol", matching_formal_symbol, "var_name", var_name, "var_value", var_value)
+                        if matching_formal_symbol is None:
+                            for symbol in self.symbolTable.symbols:
+                                if symbol.name == var_name and symbol.id_type == "Attribute":
+                                    matching_formal_symbol = symbol
+                                    break 
+                            self.symbolTable.insert(Symbol(var_name, "Attribute", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope))
+
+                        else:
+                            self.symbolTable.update_symbol_value(var_name, var_value)
+                        
                     elif rule_name == "formal" and node.parent.val != "property":
                         # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope
                         var_name = node.children[0].val
                         var_type = node.children[2].val
                         self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, None, class_scope +"."+ current_scope))
+                    elif rule_name == "expr" and len(node.children) == 4:
+                        procedure_name = node.children[0].val
+                        self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", None, None, global_scope))
 
 
             # self.symbolTable.display()
@@ -157,7 +176,7 @@ class Compiler():
                     claseActual = symbol.inheritsFrom
                     claseHeredando = symbol.name
                     for symbol2 in self.symbolTable.symbols:
-                        if claseHeredando in symbol2.scope:
+                        if claseHeredando in symbol2.scope and symbol2.name != "constructor":
                             if symbol2.name in classProperties[claseActual]:
                                 symbol2.inheritsFrom = claseActual
 
