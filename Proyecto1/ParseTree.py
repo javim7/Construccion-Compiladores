@@ -4,9 +4,11 @@ class ParseTreeNode():
         self.errorNode = False
         self.children = []
         self.parent = None
+        self.line = None
     
     def add_child(self, child):
         self.children.append(child)
+        child.parent = self
 
     def __str__(self):
         s = f"TreeNode: {self.val}"
@@ -15,6 +17,7 @@ class ParseTreeNode():
             s += f"\n\tChildren: {[child.val for child in self.children]}"
         if self.parent:
             s += f"\n\tParent: {self.parent.val}"
+        s += f"\n\tLine: {self.line}"
         return s
     
 class ParseTree():

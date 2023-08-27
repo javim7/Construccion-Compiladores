@@ -1,13 +1,14 @@
 from prettytable import PrettyTable
 
 class Symbol:
-    def __init__(self, name, id_type, data_type, value, inheritsFrom, scope):
+    def __init__(self, name, id_type, data_type, value, inheritsFrom, scope, line):
         self.name = name
         self.id_type = id_type
         self.data_type = data_type
         self.value = value
         self.inheritsFrom = inheritsFrom
         self.scope = scope
+        self.line = line
     
     def update_value(self, new_value):
         # Verificar si el nuevo valor tiene el mismo tipo que el tipo original del símbolo
@@ -30,7 +31,7 @@ class Symbol:
             self.data_type = new_data_type
 
     def __str__(self):
-        return f"Name: {self.name}\nVar Type: {self.id_type}\nData Type: {self.data_type}\nValue: {self.value}\nInherits From: {self.inheritsFrom}\nScope: {self.scope}"
+        return f"Name: {self.name}\nVar Type: {self.id_type}\nData Type: {self.data_type}\nValue: {self.value}\nInherits From: {self.inheritsFrom}\nScope: {self.scope}\nLine: {self.line}\n"
 
 
 class SymbolTable:
@@ -42,7 +43,7 @@ class SymbolTable:
             if symbolEntry.name == symbol.name and symbolEntry.scope == symbol.scope and symbol.id_type != "Procedure":
                 raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
             
-        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void"]  # Lista de tipos válidos
+        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void", "list"]  # Lista de tipos válidos
         if symbolEntry.data_type.lower() not in valid_data_types:
             raise ValueError(f"Invalid data type for symbol '{symbolEntry.name}': {symbolEntry.data_type}")
         
@@ -80,14 +81,18 @@ class SymbolTable:
         symbol = self.lookup(symbol_name)
         symbol.update_data_type(new_data_type)
 
+    def update_symbol_line(self, symbol_name, new_line):
+        symbol = self.lookup(symbol_name)
+        symbol.line = new_line
+
     # def display(self):
     #     for symbol in self.symbols.values():
     #         print(symbol)
     def display(self):
         table = PrettyTable()
-        table.field_names = ["Name", "ID Type", "Data Type", "Value","Inherits","Scope"]
+        table.field_names = ["Name", "ID Type", "Data Type", "Value","Inherits","Scope", "Line"]
 
         for symbol in self.symbols:
-            table.add_row([symbol.name, symbol.id_type, symbol.data_type, symbol.value,symbol.inheritsFrom, symbol.scope])
+            table.add_row([symbol.name, symbol.id_type, symbol.data_type, symbol.value,symbol.inheritsFrom, symbol.scope, symbol.line])
 
         print(table)

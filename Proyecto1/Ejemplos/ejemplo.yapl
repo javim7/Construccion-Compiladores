@@ -1,11 +1,16 @@
-(* hello-world.cl *) 
-class Main { 
-  x : Int;
-  y : Int <- 3;
-  main(y : Int):  Object { 
-    {
-      x <- 1;
-      out_string("resultado");
-    }
-  } ; 
-} ;
+class Main inherits IO {
+    a : Int <- 2;
+    b : Int <- 5;
+    c : Int <- 8;
+    l : String;
+    f : Int;
+    
+    main() : SELF_TYPE {
+      {   
+          l <- "Hola";
+          f <- a + b * c;
+          out_int(a);
+          self;
+	    }
+    };
+};
