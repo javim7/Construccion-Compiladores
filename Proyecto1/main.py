@@ -21,6 +21,7 @@ def main():
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
+    compilador.semanticAnalysis()
 
     # arbol = compilador.treeStruct
     # postorder(arbol.root)

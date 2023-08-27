@@ -59,6 +59,32 @@ class SymbolTable:
             raise ValueError(f"Symbol '{name}' not found in the table.")
         
         return symbol
+    
+    def lookup_all(self, name):
+        for s in self.symbols:
+            if s.name == name:
+                return s
+        return None
+    
+    def allInfo(self):
+        names = []
+        ids = []
+        dataTypes = []
+        values = []
+        inheritsFroms = []
+        scopes = []
+        lines = []
+
+        for s in self.symbols:
+            names.append(s.name)
+            ids.append(s.id_type)
+            dataTypes.append(s.data_type)
+            values.append(s.value)
+            inheritsFroms.append(s.inheritsFrom)
+            scopes.append(s.scope)
+            lines.append(s.line)
+
+        return names, ids, dataTypes, values, inheritsFroms, scopes, lines
 
     def remove(self, name):
         symbol = None

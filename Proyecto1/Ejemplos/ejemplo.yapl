@@ -7,7 +7,7 @@ class Main inherits IO {
     
     main() : SELF_TYPE {
       {   
-          l <- "Hola";
+          l <- "hola";
           f <- a + b * c;
           out_int(a);
           self;

@@ -2,11 +2,12 @@ import os
 from Drawer import *
 from antlr4 import *
 from ParseTree import *
+from SymbolTable import *
+from YAPSemantic import *
 from MyErrorListener import *
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
 from antlr4.tree.Tree import TerminalNodeImpl
-from SymbolTable import *
 
 class Compiler():
     def __init__(self, input_file):
@@ -22,8 +23,11 @@ class Compiler():
         self.treeStruct = None
         self.lexicalErrors = []
         self.symbolTable = SymbolTable()
+        self.semanticAnalyzer = None
+        self.tokens = {}
 
     def lexicalAnalysis(self):
+        print("\n------ANALISIS LEXICO------")
         nonErrors, lexicalErrors = self.get_tokens()
 
         if lexicalErrors:
@@ -41,12 +45,13 @@ class Compiler():
             print()
 
     def syntacticAnalysis(self):
+        print("\n------ANALISIS SINTACTICO------")
         if self.error_listener.errors:
             print("\nERRORES SINTACTICOS IDENTIFICADOS:")
             for error in self.error_listener.errors:
                 print(error)
         else:
-            print("\nARBOL SINTACTICO GENERADO:")
+            print("\nARBOL SINTACTICO GENERADO CORRECTAMENTE")
             tree = self.getTreeString()
             root = self.build_tree(self.tree)
             self.treeStruct = ParseTree()
@@ -128,7 +133,7 @@ class Compiler():
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
                             var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, var_value, None, current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, current_scope, node.line))
                         else:
                             # print(node)
                             # print("entro aca tambien")
@@ -136,7 +141,7 @@ class Compiler():
                             childFormal = node.children[0]
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", var_type, None, None, current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, current_scope, node.line))
                     elif rule_name == "varDeclaration":
                         # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope
@@ -149,16 +154,19 @@ class Compiler():
 
                         matching_formal_symbol = None
                         for symbol in self.symbolTable.symbols:
-                            if symbol.name == var_name and symbol.id_type == "Attribute" and (symbol.scope.split(".")[0] == class_scope or symbol.scope.split(".")[0] == method_scope):
+                            if symbol.name == var_name and symbol.id_type == "Variable" and (symbol.scope.split(".")[0] == class_scope or symbol.scope.split(".")[0] == method_scope):
                                 matching_formal_symbol = symbol
                                 break 
                         # print("matching_formal_symbol", matching_formal_symbol, "var_name", var_name, "var_value", var_value)
                         if matching_formal_symbol is None:
                             for symbol in self.symbolTable.symbols:
-                                if symbol.name == var_name and symbol.id_type == "Attribute":
+                                if symbol.name == var_name and symbol.id_type == "Variable":
                                     matching_formal_symbol = symbol
                                     break 
-                            self.symbolTable.insert(Symbol(var_name, "Attribute", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope, node.line))
+                            if matching_formal_symbol is None:
+                                self.symbolTable.insert(Symbol(var_name, "Variable", "Void", var_value, None, current_scope, node.line))
+                            else:
+                                self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope, node.line))
 
                         else:
                             self.symbolTable.update_symbol_value(var_name, var_value)
@@ -199,12 +207,21 @@ class Compiler():
                     for symbol2 in self.symbolTable.symbols:
                         if claseHeredando in symbol2.scope and symbol2.name != "constructor":
                             # print("claseHeredando", claseHeredando, "claseActual", claseActual, "symbol2", symbol2.name)
-                            if symbol2.name in classProperties[claseActual]:
-                                symbol2.inheritsFrom = claseActual
+                            try:
+                                if symbol2.name in classProperties[claseActual]:
+                                    symbol2.inheritsFrom = claseActual
+                            except:
+                                pass
 
             print("\nTABLA DE SIMBOLOS:")
             self.symbolTable.display()
 
+    def semanticAnalysis(self):
+        if not self.error_listener.errors:
+            print("\n------ANALISIS SEMANTICO------")
+            self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
+            self.semanticAnalyzer.analyze()
+    
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
             child_values = []  # Initialize the list only in the initial call
@@ -258,7 +275,7 @@ class Compiler():
             else:
                 tree_node = ParseTreeNode(str(node))
             
-            # Set the errorNode attribute to True if the node represents an error
+            # Set the errorNode Variable to True if the node represents an error
             if isinstance(node, ErrorNode):
                 tree_node.errorNode = True
 
@@ -354,6 +371,7 @@ class Compiler():
             token_type = token.type
             token_name = token_type_names.get(token_type, f"Unknown token ({token_type})")
             lexeme = token.text
+            self.tokens[lexeme] = token_name
 
             # Calculate line and column information
             if last_line != token.line:
