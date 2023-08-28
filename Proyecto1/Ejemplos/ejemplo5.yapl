@@ -31,6 +31,9 @@ isNil() : Bool { true };
 -- Since abort() has return type Object and head() has return type
 -- Int, we need to have an Int as the result of the method body,
 -- even though abort() never returns.
+abort() : Object {
+    out_string("abort")
+};
 
 head()  : Int { { abort(); 0; } };
 
@@ -123,7 +126,7 @@ print_list(l : List) : Object {
 
 main() : Object {
     {
-    mylist <- new List.cons(1).cons(2).cons(3).cons(4).cons(5);
+    mylist <- List;
     while (not mylist.isNil()) loop
         {
         print_list(mylist);
