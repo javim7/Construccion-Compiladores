@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import Text, Scrollbar
+from tkinter import Text, ttk
+import platform 
 
 def compile_code():
     content = code_area.get(1.0, "end-1c")
@@ -21,7 +22,7 @@ def redraw():
     line_numbers_canvas.after(1, redraw)
 
 root = tk.Tk()
-root.title("IDE")
+root.title("IDE Compiladores")
 root.geometry("800x600")
 
 # Hacer la ventana no redimensionable
@@ -35,8 +36,18 @@ line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 code_area = Text(root, wrap="none", undo=True, spacing1=5)
 code_area.pack(pady=20, padx=20, expand=True, fill="both")
 
-# Botón de compilar
-compile_button = tk.Button(root, text="Compilar", command=compile_code)
+# Detectar el sistema operativo
+os_name = platform.system()
+
+# Si es Windows, usar un botón verde. Si es macOS, usar el estilo predeterminado.
+if os_name == "Windows":
+    compile_button = tk.Button(root, text="▶ Compilar", bg="green", fg="white", command=compile_code)
+else:
+    # Estilo para el botón
+    style = ttk.Style()
+    style.configure('TButton', foreground='white')
+    compile_button = ttk.Button(root, text="▶ Compilar", style='TButton', command=compile_code)
+
 compile_button.pack(pady=20)
 
 # Llamada inicial para mostrar números de línea
