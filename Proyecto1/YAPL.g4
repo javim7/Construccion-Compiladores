@@ -33,7 +33,6 @@ TRUE: 'true';
 // tipos de variables
 STRING: '"' (ESC | ~ ["\\])* '"';
 INT: [0-9]+;
-BOOL: TRUE | FALSE;
 TYPE: [A-Z][_0-9A-Za-z]*;
 ID: [a-z][_0-9A-Za-z]*;
 ASSIGNMENT: '<-';

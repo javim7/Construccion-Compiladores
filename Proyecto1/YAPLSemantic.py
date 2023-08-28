@@ -291,12 +291,12 @@ class SemanticAnalyzer:
 
     def report_error(self, message, line_number):
         error = f"{message}: Linea {line_number}"
-        self.errors.append("Error Semantico: " +  error)
+        self.errors.append("ERROR SEMANTICO: " +  error)
 
     def display_errors(self):
         if self.errors:
             print("\nERRORES SEMANTICOS DETECTADOS:")
             for error in self.errors:
-                print("ERROR: " + error)
+                print(error)
         else:
             print("No se encontraron errores semanticos.")
