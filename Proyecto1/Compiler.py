@@ -133,7 +133,7 @@ class Compiler():
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
                             var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope + "." + current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope, node.line))
                         else:
                             # print(node)
                             # print("entro aca tambien")
@@ -141,7 +141,7 @@ class Compiler():
                             childFormal = node.children[0]
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, class_scope + "." + current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, class_scope, node.line))
                     elif rule_name == "varDeclaration":
                         # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope

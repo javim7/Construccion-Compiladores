@@ -7,13 +7,19 @@ class ClassA {
     };
     
     methodB(): Int {
-        "Hello, World!"
+        methodA()
     };
 };
 
 
 class ClassB {
     methodB(): String {
-        "Hello, World!"
+        methodB()
+    };
+};
+
+class Main inherits IO {
+    main() : SELF_TYPE {
+        self
     };
 };

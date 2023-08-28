@@ -75,6 +75,12 @@ class SymbolTable:
                 return s
         return None
     
+    def lookup_by_scope(self, name, scope):
+        for s in self.symbols:
+            if s.name == name and s.scope == scope:
+                return s
+        return None
+
     def allInfo(self):
         names = []
         ids = []

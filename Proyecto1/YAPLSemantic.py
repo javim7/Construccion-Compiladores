@@ -30,8 +30,21 @@ class SemanticVisitor:
 
 
     def visit_method_node(self, node):
-        if node.children[0].val == "main" and node.children[2].val == "formal":
+        methodName = node.children[0].val
+        nodeScope = node.parent.parent.children[1].val
+        
+        if methodName == "main" and node.children[2].val == "formal":
             return f"El metodo 'main' no puede tener parametros formales"
+        #ver que los metodos heredadeos sigan la firma del original
+        symbolToUse = self.symbol_table.lookup_by_scope(methodName, nodeScope)
+        # print(symbolToUse)
+        if symbolToUse.inheritsFrom:
+            # print(symbolToUse)
+            inheritedFrom = symbolToUse.inheritsFrom
+            symbolToMatch = self.symbol_table.lookup_by_scope(methodName, inheritedFrom)
+            # print(symbolToMatch)
+            if symbolToMatch.data_type != symbolToUse.data_type:
+                return f"El metodo '{methodName}' en el scope '{nodeScope}' debe tener el mismo tipo de retorno que el metodo original en el scope '{inheritedFrom}'"
 
     def visit_vardeclaration_node(self, node):
         #revisar si la variable ya fue definida
@@ -133,14 +146,15 @@ class SemanticVisitor:
         return None
 
     def visit_expr_node(self, node):
-        # print(node)
+        
         if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
             methodName = node.children[0].val
+            nodeScope = self.getClassDefineParent(node)
             for symbol in self.symbol_table.symbols:
-                if symbol.name == methodName and symbol.id_type == "Method":
+                if symbol.name == methodName and symbol.id_type == "Method" and symbol.scope.startswith(nodeScope):
                     return None
             
-            return f"El metodo '{methodName}' no ha sido definido"
+            return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
         
         elif len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
             methodName = node.children[0].val
@@ -152,6 +166,15 @@ class SemanticVisitor:
                
                 if methodName not in IOmethods:
                     if symbol.name == methodName and symbol.id_type == "Method":
+                        #revisar que el metodo esta en el mismo scope
+                        methodName = node.children[0].val
+                        nodeScope = self.getClassDefineParent(node)
+                        for symbol in self.symbol_table.symbols:
+                            if symbol.name == methodName and symbol.id_type == "Method" and symbol.scope.startswith(nodeScope):
+                                return None
+                            else:
+                                return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
+                            
                         #revisar que los parametros si sean los correctos
                         parameters = []
                         for symbol in self.symbol_table.symbols:
@@ -249,9 +272,11 @@ class SemanticVisitor:
                     else:
                         return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
 
-    def perform_semantic_analysis(self):
-        # Implement your semantic analysis rules here
-        pass
+    def getClassDefineParent(self, node):
+        if node.val == "classDefine":
+            return node.children[1].val
+        
+        return self.getClassDefineParent(node.parent)
 
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
