@@ -173,94 +173,124 @@ digraph {
 	node83 -> node85
 	node86 [label=expr]
 	node83 -> node86
-	node87 [label=flag]
+	node87 [label=expr]
 	node86 -> node87
-	node88 [label=";"]
-	node69 -> node88
-	node89 [label=expr]
-	node69 -> node89
-	node90 [label=out_int]
-	node89 -> node90
-	node91 [label="("]
-	node89 -> node91
-	node92 [label=expr]
-	node89 -> node92
-	node93 [label=a]
-	node92 -> node93
-	node94 [label=")"]
-	node89 -> node94
-	node95 [label=";"]
-	node69 -> node95
-	node96 [label=expr]
+	node88 [label=a]
+	node87 -> node88
+	node89 [label="+"]
+	node86 -> node89
+	node90 [label=expr]
+	node86 -> node90
+	node91 [label=expr]
+	node90 -> node91
+	node92 [label=b]
+	node91 -> node92
+	node93 [label="*"]
+	node90 -> node93
+	node94 [label=expr]
+	node90 -> node94
+	node95 [label=c]
+	node94 -> node95
+	node96 [label=";"]
 	node69 -> node96
-	node97 [label=test]
-	node96 -> node97
-	node98 [label="("]
-	node96 -> node98
-	node99 [label=expr]
-	node96 -> node99
-	node100 [label="\"hola\""]
-	node99 -> node100
-	node101 [label=")"]
-	node96 -> node101
-	node102 [label=";"]
-	node69 -> node102
-	node103 [label=expr]
+	node97 [label=expr]
+	node69 -> node97
+	node98 [label=out_int]
+	node97 -> node98
+	node99 [label="("]
+	node97 -> node99
+	node100 [label=expr]
+	node97 -> node100
+	node101 [label=a]
+	node100 -> node101
+	node102 [label=")"]
+	node97 -> node102
+	node103 [label=";"]
 	node69 -> node103
-	node104 [label=self]
-	node103 -> node104
-	node105 [label=";"]
-	node69 -> node105
-	node106 [label="}"]
-	node69 -> node106
-	node107 [label="}"]
-	node62 -> node107
-	node108 [label=";"]
-	node1 -> node108
-	node109 [label=feature_list]
-	node1 -> node109
-	node110 [label=method]
-	node109 -> node110
-	node111 [label=test]
-	node110 -> node111
-	node112 [label="("]
-	node110 -> node112
-	node113 [label=formal]
-	node110 -> node113
-	node114 [label=a]
-	node113 -> node114
-	node115 [label=":"]
-	node113 -> node115
-	node116 [label=Int]
-	node113 -> node116
-	node117 [label=")"]
-	node110 -> node117
-	node118 [label=":"]
-	node110 -> node118
-	node119 [label=Int]
-	node110 -> node119
-	node120 [label="{"]
-	node110 -> node120
-	node121 [label=expr]
-	node110 -> node121
-	node122 [label=out_int]
-	node121 -> node122
-	node123 [label="("]
-	node121 -> node123
-	node124 [label=expr]
-	node121 -> node124
-	node125 [label=2]
+	node104 [label=expr]
+	node69 -> node104
+	node105 [label=test]
+	node104 -> node105
+	node106 [label="("]
+	node104 -> node106
+	node107 [label=expr]
+	node104 -> node107
+	node108 [label="\"1\""]
+	node107 -> node108
+	node109 [label=")"]
+	node104 -> node109
+	node110 [label=";"]
+	node69 -> node110
+	node111 [label=expr]
+	node69 -> node111
+	node112 [label=test]
+	node111 -> node112
+	node113 [label="("]
+	node111 -> node113
+	node114 [label=expr]
+	node111 -> node114
+	node115 [label=a]
+	node114 -> node115
+	node116 [label=")"]
+	node111 -> node116
+	node117 [label=";"]
+	node69 -> node117
+	node118 [label=expr]
+	node69 -> node118
+	node119 [label=self]
+	node118 -> node119
+	node120 [label=";"]
+	node69 -> node120
+	node121 [label="}"]
+	node69 -> node121
+	node122 [label="}"]
+	node62 -> node122
+	node123 [label=";"]
+	node1 -> node123
+	node124 [label=feature_list]
+	node1 -> node124
+	node125 [label=method]
 	node124 -> node125
-	node126 [label=")"]
-	node121 -> node126
-	node127 [label="}"]
-	node110 -> node127
-	node128 [label=";"]
-	node1 -> node128
-	node129 [label="}"]
-	node1 -> node129
-	node130 [label=";"]
-	node0 -> node130
-	node131 [label=<EOF>]
-	node0 -> node131
+	node126 [label=test]
+	node125 -> node126
+	node127 [label="("]
+	node125 -> node127
+	node128 [label=formal]
+	node125 -> node128
+	node129 [label=x]
+	node128 -> node129
+	node130 [label=":"]
+	node128 -> node130
+	node131 [label=Int]
+	node128 -> node131
+	node132 [label=")"]
+	node125 -> node132
+	node133 [label=":"]
+	node125 -> node133
+	node134 [label=Int]
+	node125 -> node134
+	node135 [label="{"]
+	node125 -> node135
+	node136 [label=expr]
+	node125 -> node136
+	node137 [label=out_int]
+	node136 -> node137
+	node138 [label="("]
+	node136 -> node138
+	node139 [label=expr]
+	node136 -> node139
+	node140 [label=2]
+	node139 -> node140
+	node141 [label=")"]
+	node136 -> node141
+	node142 [label="}"]
+	node125 -> node142
+	node143 [label=";"]
+	node1 -> node143
+	node144 [label="}"]
+	node1 -> node144
+	node145 [label=";"]
+	node0 -> node145
+	node146 [label=<EOF>]
+	node0 -> node146
 }

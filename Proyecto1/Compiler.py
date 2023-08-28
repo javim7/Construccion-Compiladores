@@ -181,7 +181,7 @@ class Compiler():
 
                     elif rule_name == "expr" and len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
                         method_call_name = node.children[0].val
-                        self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", None, None, class_scope + "." + method_scope, node.line))
+                        self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
 
                     elif rule_name == "expr" and len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
                         procedure_name = node.children[0].val
@@ -191,11 +191,23 @@ class Compiler():
                                 matching_method_symbol = symbol
                                 break
                         if matching_method_symbol:
-                            self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", None, None, class_scope + "." + method_scope, node.line))
+                            self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
                         else:
                             
                             self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
 
+                    elif rule_name == "expr" and len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
+                        methodName = node.children[0].val
+                        children = node.children[2:-1]
+                        childrenStrings = []
+                        for child in children:
+                            if child.val == "expr":
+                                childrenStrings.append(self.getExprChildren(child))
+                            else:
+                                childrenStrings.append(child.val)
+                        
+                        childrenStr = "".join(childrenStrings)
+                        self.symbolTable.insert(Symbol(methodName, "MethodCall", "Void", childrenStr, None, class_scope + "." + method_scope, node.line))
 
             # self.symbolTable.display()
 

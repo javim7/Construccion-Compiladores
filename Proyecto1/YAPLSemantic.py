@@ -18,9 +18,16 @@ class SemanticVisitor:
     def visit_classdefine_node(self, node):
         class_name = node.children[1].val
         method_names = [symbol.name for symbol in self.symbol_table.symbols if symbol.id_type == "Method" and symbol.scope.startswith(class_name)]
+        
+        #ver si hace falta la clase main
         if class_name == "Main" and "main" not in method_names:
             return f"La clase 'Main' debe tener un metodo 'main'"
+        #ver si alguna clase hereda a Main
+        if node.children[2].val == "inherits" and node.children[3].val == "Main":
+            return f"La clase 'Main' no puede heredar de ninguna otra clase"
+        
         return None
+
 
     def visit_method_node(self, node):
         if node.children[0].val == "main" and node.children[2].val == "formal":
@@ -48,16 +55,37 @@ class SemanticVisitor:
         if len(expr_node.children) == 1:
             value_node = expr_node.children[0]
             
+
             if value_node.val in self.names:
                 symbol = self.symbol_table.lookup(value_node.val)
                 if symbol.data_type != var_type:
-                    return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
+                    if var_type.lower() == "int" and symbol.data_type.lower() == "bool":
+                        if symbol.value:
+                            self.symbol_table.update_symbol_value(var_name, 1)
+                        else:
+                            self.symbol_table.update_symbol_value(var_name, 0)
+                        self.symbol_table.display()
+                    elif var_type.lower() == "bool" and symbol.data_type.lower() == "int":
+                        if int(symbol.value) == 0:
+                            print("false")
+                            self.symbol_table.update_symbol_value(var_name, False)
+                        else:
+                            print("true")
+                            self.symbol_table.update_symbol_value(var_name, True)
+                        self.symbol_table.display()
+                    else:
+                        return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
             
             elif value_node.val in self.tokenDict:
                 valueType = self.tokenDict[value_node.val]
                 
                 if valueType.lower() != var_type.lower():
-                    return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{valueType}'"
+                    if var_type.lower() == "int" and valueType.lower() == "bool":
+                        print(var_name)
+                    elif var_type.lower() == "bool" and valueType.lower() == "int":
+                        pass
+                    else:
+                        return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{valueType}'"
 
         else:
             child_values = self.getExprChildren(expr_node)
@@ -118,20 +146,108 @@ class SemanticVisitor:
             methodName = node.children[0].val
             # print("mehtodName: ", methodName)
             IOmethods = ["out_int", "out_string", "in_int", "in_string"]
+
+            # ver que el metodo este definido
             for symbol in self.symbol_table.symbols:
                
                 if methodName not in IOmethods:
                     if symbol.name == methodName and symbol.id_type == "Method":
+                        #revisar que los parametros si sean los correctos
+                        parameters = []
+                        for symbol in self.symbol_table.symbols:
+                            if methodName in symbol.scope and symbol.id_type == "Parameter":
+                                parameters.append(symbol.data_type)
+
+                        # print(parameters)
+                        for symbol in self.symbol_table.symbols:
+                            if symbol.name == methodName and symbol.id_type == "MethodCall":
+                                if symbol.value in self.names:
+                                    symbol = self.symbol_table.lookup(symbol.value)
+                                    symbolType = symbol.data_type
+                                else:
+                                    # print(symbol)
+                                    symbolType = self.tokenDict[symbol.value]
+                                if symbol.name in IOmethods:
+                                    pass
+                                else:
+                                    # print(len(parameters)) 
+                                    if len(parameters) == 1 and parameters[0].lower() == symbolType.lower():
+                                        return None
+                                    else:
+                                        return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
+                                
+                            elif symbol.name == methodName and symbol.id_type == "Procedure":
+                               
+                                if symbol.value in self.names:
+                                    symbol = self.symbol_table.lookup(symbol.value)
+                                    symbolType = symbol.data_type
+                                else:
+                                    symbolType = self.tokenDict[symbol.value]
+                                if symbol.name in IOmethods:
+                                    pass
+                                else:
+                                    # print(len(parameters)) 
+                                    if len(parameters) == 1 and parameters[0].lower() == symbolType.lower():
+                                        return None
+                                    else:
+                                        return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
+                                
                         return None
                 else:
-                    symbol = self.symbol_table.lookup_all("Main")
+                    for symbol3 in self.symbol_table.symbols:
+                        if symbol3.name == methodName:
+
+                            if symbol3.value in self.names:
+                                symbolIo2 = self.symbol_table.lookup(symbol3.value)
+                                symbolType = symbolIo2.data_type
+                            else:
+                                # print(symbol)
+                                symbolType = self.tokenDict[symbol3.value]
+                            
+                            if symbol3.name == IOmethods[0] or symbol3.name == IOmethods[2]:
+                                if symbolType.lower() != "int":
+                                    return f"El metodo '{methodName}' debe recibir un parametro de tipo 'int'"
+
+                            elif symbol3.name == IOmethods[1] or symbol3.name == IOmethods[3]:
+                                if symbolType.lower() != "string":
+                                    return f"El metodo '{methodName}' debe recibir un parametro de tipo 'string'"
+                      
+                    symbol2 = self.symbol_table.lookup_all("Main")
                     try:
-                        if symbol.inheritsFrom == "IO":
+                        if symbol2.inheritsFrom == "IO":
                             return None
                     except:
                         pass
                     
             return f"El metodo '{methodName}' no ha sido definido"
+        
+        elif len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
+            methodName = node.children[0].val
+            #revisar que los parametros si sean los correctos
+            parameters = []
+            for symbol in self.symbol_table.symbols:
+                if methodName in symbol.scope and symbol.id_type == "Parameter":
+                    parameters.append(symbol.data_type)
+
+            for symbol in self.symbol_table.symbols:
+                if symbol.name == methodName and symbol.id_type == "MethodCall":
+                    separate_parameters = symbol.value.split(",")
+                    typeParameters = []
+                    if len(parameters) == len(separate_parameters):
+                        # print(separate_parameters)
+
+                        for param in separate_parameters:
+                            if param in self.names:
+                                symbol = self.symbol_table.lookup(param)
+                                typeParameters.append(symbol.data_type)
+                            else:
+                                typeParameters.append(self.tokenDict[param])
+                        
+                        for i in range(len(parameters)):
+                            if parameters[i].lower() != typeParameters[i].lower():
+                                return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
+                    else:
+                        return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
 
     def perform_semantic_analysis(self):
         # Implement your semantic analysis rules here

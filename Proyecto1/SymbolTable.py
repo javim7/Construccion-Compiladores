@@ -40,8 +40,11 @@ class SymbolTable:
 
     def insert(self, symbolEntry):
         for symbol in self.symbols:
-            if symbolEntry.name == symbol.name and symbolEntry.scope == symbol.scope and symbol.id_type != "Procedure":
-                raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
+            if symbolEntry.name == symbol.name and symbolEntry.scope == symbol.scope:
+                if symbol.id_type != "Procedure" or symbol.id_type != "MethodCall":
+                    pass
+                else:
+                    raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
             
         valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void", "list"]  # Lista de tipos válidos
         if symbolEntry.data_type.lower() not in valid_data_types:
@@ -66,9 +69,9 @@ class SymbolTable:
                 return s
         return None
     
-    def detailed_lookup(self, name, id_type):
+    def detailed_lookup(self, name, value):
         for s in self.symbols:
-            if s.name == name and s.id_type == id_type:
+            if s.name == name and s.value == value:
                 return s
         return None
     
