@@ -1,68 +1,49 @@
 import tkinter as tk
+from tkinter import Text, Scrollbar
 
-def compilar(editor):
-    codigo = editor.get("1.0", tk.END)
-    print(codigo)
+def compile_code():
+    content = code_area.get(1.0, "end-1c")
+    print(content)
 
-def configurar_ventana(ventana):
-    ventana.title("Mini IDE con Tkinter")
-    ventana.geometry("700x500")
+def redraw():
+    line_numbers_canvas.delete("all")
+    i = code_area.index("@0,0")
+    while True:
+        dline = code_area.dlineinfo(i)
+        if dline is None:  # Salir del loop si ya no hay más líneas.
+            break
+        y = dline[1]
+        linenum = str(i).split(".")[0]
+        line_numbers_canvas.create_text(25, y+18, anchor="nw", text=linenum)
+        i = code_area.index(f"{i}+1line")
 
-def crear_editor(ventana):
-    frame = tk.Frame(ventana)
-    frame.pack(pady=20, fill=tk.BOTH, expand=True)
-    
-    # Barra de desplazamiento
-    scrollbar = tk.Scrollbar(frame, orient="vertical")
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-    
-    # Área de números de línea
-    line_num_area = tk.Text(frame, width=4, padx=5, takefocus=0, border=0, background='lightgray', state=tk.DISABLED, yscrollcommand=scrollbar.set)
-    line_num_area.pack(side=tk.LEFT, fill=tk.Y)
+    # Actualizar nuevamente después de 100 ms
+    line_numbers_canvas.after(100, redraw)
 
-    # Editor de texto
-    editor = tk.Text(frame, wrap=tk.NONE, yscrollcommand=scrollbar.set)
-    editor.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    
-    # Función para sincronizar el desplazamiento
-    def both_scroll(*args):
-        line_num_area.yview(*args)
-        editor.yview(*args)
+root = tk.Tk()
+root.title("IDE Básico")
+root.geometry("800x600")
 
-    scrollbar.config(command=both_scroll)
-    
-    # Función para actualizar los números de línea
-    def update_line_numbers(event=None):
-        lines = editor.get("1.0", "end-1c").split("\n")
-        line_count = len(lines)
-        
-        line_num_area.config(state=tk.NORMAL)
-        line_num_area.delete('1.0', tk.END)
-        
-        for i in range(1, line_count + 1):
-            line_num_area.insert(tk.END, str(i) + '\n')
-        
-        line_num_area.config(state=tk.DISABLED)
+# Scrollbar
+scrollbar = Scrollbar(root)
+scrollbar.pack(side="right", fill="y")
 
-    # Actualizar los números de línea cuando el texto cambie
-    editor.bind('<KeyPress>', update_line_numbers)
-    editor.bind('<KeyRelease>', update_line_numbers)
-    
-    return editor
+# Canvas para números de línea
+line_numbers_canvas = tk.Canvas(root, width=30)
+line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 
-def crear_boton(ventana, editor):
-    boton = tk.Button(ventana, text="Compilar", command=lambda: compilar(editor))
-    boton.pack()
+# Área de código
+code_area = Text(root, wrap="none", undo=True, yscrollcommand=scrollbar.set)
+code_area.pack(pady=20, padx=20, expand=True, fill="both")
 
-def main():
-    ventana = tk.Tk()
-    
-    configurar_ventana(ventana)
-    
-    editor = crear_editor(ventana)
-    crear_boton(ventana, editor)
-    
-    ventana.mainloop()
+# Conectar scrollbar
+scrollbar.config(command=code_area.yview)
 
-if __name__ == "__main__":
-    main()
+# Botón de compilar
+compile_button = tk.Button(root, text="Compilar", command=compile_code)
+compile_button.pack(pady=20)
+
+# Llamada inicial para mostrar números de línea
+redraw()
+
+root.mainloop()
