@@ -34,7 +34,7 @@ def compile_code():
     
     # Obtener la fecha y hora actual y formatearla para el nombre del archivo
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f"compiled/{current_time}.yapl"
+    file_name = f"compiled/compiled_code.yapl"
     
     # Guardar el contenido en el archivo
     with open(file_name, 'w') as file:
@@ -47,13 +47,25 @@ def compile_code():
     compilador.semanticAnalysis()
 
 
+    terminal_messages = [
+            "Errores léxicos:\n" + "\n".join(compilador.lexicalErrors) if len(compilador.lexicalErrors) > 0 else "No hay errores léxicos",
+            "Errores sintácticos:\n" + "\n".join(compilador.error_listener.errors) if len(compilador.error_listener.errors) > 0 else "No hay errores sintácticos",
+    ]
 
     try:
-        print(compilador.lexicalErrors)
-        print(compilador.error_listener.errors)
-        print(compilador.semanticAnalyzer.errors)
+        terminal_messages.append(
+            "Errores semánticos:\n" + "\n".join(compilador.semanticAnalyzer.errors) if len(compilador.semanticAnalyzer.errors) > 0 else "No hay errores semánticos"
+        )
     except:
         pass
+
+    terminal_content = "\n".join(terminal_messages)
+    
+    terminal_area.config(state=tk.NORMAL)
+    terminal_area.delete(1.0, tk.END)
+    terminal_area.insert(tk.END, terminal_content)
+    terminal_area.config(state=tk.DISABLED)
+    
 
 def redraw():
     line_numbers_canvas.delete("all")
@@ -110,7 +122,7 @@ def configure_tags():
 
 root = tk.Tk()
 root.title("IDE Compiladores")
-root.geometry("800x600")
+root.geometry("1000x1000")
 
 # Hacer la ventana no redimensionable
 root.resizable(False, False)
@@ -122,6 +134,10 @@ line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 # Área de código con espacio entre líneas
 code_area = Text(root, wrap="none", undo=True, spacing1=5)
 code_area.pack(pady=20, padx=20, expand=True, fill="both")
+
+# Área de la "terminal"
+terminal_area = Text(root, height=6, wrap="none", state=tk.DISABLED)
+terminal_area.pack(pady=(0, 20), padx=20, fill="x")
 
 # Detectar el sistema operativo
 os_name = platform.system()
