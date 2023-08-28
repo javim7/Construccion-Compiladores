@@ -50,7 +50,7 @@ class SemanticVisitor:
             
             if value_node.val in self.names:
                 symbol = self.symbol_table.lookup(value_node.val)
-                if symbol.data_type != node.children[1].val:
+                if symbol.data_type != var_type:
                     return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
             
             elif value_node.val in self.tokenDict:
@@ -104,9 +104,34 @@ class SemanticVisitor:
 
         return None
 
-    def visit_expression_node(self, node):
-        # Implement expression node rule checks here
-        pass
+    def visit_expr_node(self, node):
+        # print(node)
+        if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
+            methodName = node.children[0].val
+            for symbol in self.symbol_table.symbols:
+                if symbol.name == methodName and symbol.id_type == "Method":
+                    return None
+            
+            return f"El metodo '{methodName}' no ha sido definido"
+        
+        elif len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
+            methodName = node.children[0].val
+            # print("mehtodName: ", methodName)
+            IOmethods = ["out_int", "out_string", "in_int", "in_string"]
+            for symbol in self.symbol_table.symbols:
+               
+                if methodName not in IOmethods:
+                    if symbol.name == methodName and symbol.id_type == "Method":
+                        return None
+                else:
+                    symbol = self.symbol_table.lookup_all("Main")
+                    try:
+                        if symbol.inheritsFrom == "IO":
+                            return None
+                    except:
+                        pass
+                    
+            return f"El metodo '{methodName}' no ha sido definido"
 
     def perform_semantic_analysis(self):
         # Implement your semantic analysis rules here

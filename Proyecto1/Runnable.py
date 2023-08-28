@@ -12,7 +12,7 @@ def extract_keywords_from_g4(file_path):
         reserved_words.extend([word.lower() for word in reserved_words])
         
         # Extraer tipos de variables
-        variable_types = re.findall(r'(TYPE|STRING|INT|ID): [^;]+;', content)
+        variable_types = re.findall(r'(TYPE|STRING|INT|BOOL|ID): [^;]+;', content)
         variable_types.extend([var_type.lower() for var_type in variable_types])
         variable_types.extend([var_type.lower().capitalize() for var_type in variable_types])
         

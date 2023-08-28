@@ -15,6 +15,7 @@ class Dog inherits Animal {
         {
             name <- newName;
             breed <- newBreed;
+            speak();
         }
     };
     
@@ -25,10 +26,22 @@ class Dog inherits Animal {
 
 class Cat inherits Animal {
     constructor(newName: String) : Object {
-        name <- newName
+        {
+            name <- newName;
+            speak();
+        }
     };
     
     speak(): String {
-        out_string("Meow, I'm a cat named " + name)
+        {
+            out_string("Meow, I'm a cat named " + name);
+            out_string("hola");
+        }
+    };
+};
+
+class Main inherits IO {
+    main() : SELF_TYPE  {
+        out_string("main")
     };
 };

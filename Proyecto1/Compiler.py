@@ -3,7 +3,7 @@ from Drawer import *
 from antlr4 import *
 from ParseTree import *
 from SymbolTable import *
-from YAPSemantic import *
+from YAPLSemantic import *
 from MyErrorListener import *
 from YAPLLexer import YAPLLexer
 from YAPLParser import YAPLParser
@@ -133,7 +133,7 @@ class Compiler():
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
                             var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope + "." + current_scope, node.line))
                         else:
                             # print(node)
                             # print("entro aca tambien")
@@ -141,7 +141,7 @@ class Compiler():
                             childFormal = node.children[0]
                             var_name = childFormal.children[0].val
                             var_type = childFormal.children[2].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, current_scope, node.line))
+                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, class_scope + "." + current_scope, node.line))
                     elif rule_name == "varDeclaration":
                         # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope
@@ -164,9 +164,9 @@ class Compiler():
                                     matching_formal_symbol = symbol
                                     break 
                             if matching_formal_symbol is None:
-                                self.symbolTable.insert(Symbol(var_name, "Variable", "Void", var_value, None, current_scope, node.line))
+                                self.symbolTable.insert(Symbol(var_name, "Variable", "Void", var_value, None, class_scope + "." + current_scope, node.line))
                             else:
-                                self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope, node.line))
+                                self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope + "." + current_scope, node.line))
 
                         else:
                             self.symbolTable.update_symbol_value(var_name, var_value)
@@ -181,7 +181,7 @@ class Compiler():
 
                     elif rule_name == "expr" and len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
                         method_call_name = node.children[0].val
-                        self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", None, None, method_scope, node.line))
+                        self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", None, None, class_scope + "." + method_scope, node.line))
 
                     elif rule_name == "expr" and len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
                         procedure_name = node.children[0].val
@@ -191,9 +191,10 @@ class Compiler():
                                 matching_method_symbol = symbol
                                 break
                         if matching_method_symbol:
-                            self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", None, None, method_scope, node.line))
+                            self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", None, None, class_scope + "." + method_scope, node.line))
                         else:
-                            self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", None, None, class_scope, node.line))
+                            
+                            self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
 
 
             # self.symbolTable.display()
@@ -212,7 +213,15 @@ class Compiler():
                                     symbol2.inheritsFrom = claseActual
                             except:
                                 pass
-
+            
+                if symbol.value is None and symbol.id_type == "Variable":
+                    if symbol.data_type == "String":
+                        symbol.update_value("")
+                    elif symbol.data_type == "Int":
+                        symbol.update_value(0)
+                    elif symbol.data_type == "Bool":
+                        symbol.update_value(False)
+                    
             print("\nTABLA DE SIMBOLOS:")
             self.symbolTable.display()
 

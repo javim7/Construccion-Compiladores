@@ -66,6 +66,12 @@ class SymbolTable:
                 return s
         return None
     
+    def detailed_lookup(self, name, id_type):
+        for s in self.symbols:
+            if s.name == name and s.id_type == id_type:
+                return s
+        return None
+    
     def allInfo(self):
         names = []
         ids = []
