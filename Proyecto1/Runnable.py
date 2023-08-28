@@ -34,7 +34,7 @@ def compile_code():
     
     # Obtener la fecha y hora actual y formatearla para el nombre del archivo
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    file_name = f"compiled/{current_time}.yapl"
+    file_name = f"compiled/compiled_code.yapl"
     
     # Guardar el contenido en el archivo
     with open(file_name, 'w') as file:
