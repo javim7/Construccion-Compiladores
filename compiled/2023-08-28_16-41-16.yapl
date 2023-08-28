@@ -1,3 +1,5 @@
+#
+
 class Main inherits IO {
     a : Int <- 2;
     b : Int <- 5;
@@ -6,11 +8,12 @@ class Main inherits IO {
     f : Int;
     flag : Bool <- true;
 
+    
+
     main() : SELF_TYPE {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
-          flag <- l;
           out_int(a);
           test(a);
           test("1");

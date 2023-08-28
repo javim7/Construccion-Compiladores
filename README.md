@@ -5,6 +5,7 @@ Instalar la libreria ANTLR:
 ```bash
 pip install antlr4-tools
 pip install antlr4-python3-runtime
+pip install prettytable
 ```
 
 Compilar las reglas lexicas y sintacticas:

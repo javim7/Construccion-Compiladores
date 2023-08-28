@@ -1,7 +1,12 @@
-import tkinter as tk
+from datetime import datetime
 from tkinter import Text, ttk
+import tkinter as tk
 import platform 
 import re
+import os
+
+from Compiler import *
+
 
 def extract_keywords_from_g4(file_path):
     with open(file_path, 'r') as file:
@@ -20,12 +25,35 @@ def extract_keywords_from_g4(file_path):
 
 reserved_words, variable_types = extract_keywords_from_g4('Proyecto1/YAPL.g4')
 
-print(reserved_words)
-print(variable_types)
-
 def compile_code():
     content = code_area.get(1.0, "end-1c")
-    print(content)
+    
+    # Crear el directorio 'compiled/' si no existe
+    if not os.path.exists("compiled"):
+        os.mkdir("compiled")
+    
+    # Obtener la fecha y hora actual y formatearla para el nombre del archivo
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    file_name = f"compiled/{current_time}.yapl"
+    
+    # Guardar el contenido en el archivo
+    with open(file_name, 'w') as file:
+        file.write(content)
+
+    compilador = Compiler(file_name)
+
+    compilador.lexicalAnalysis()
+    compilador.syntacticAnalysis()
+    compilador.semanticAnalysis()
+
+
+
+    try:
+        print(compilador.lexicalErrors)
+        print(compilador.error_listener.errors)
+        print(compilador.semanticAnalyzer.errors)
+    except:
+        pass
 
 def redraw():
     line_numbers_canvas.delete("all")

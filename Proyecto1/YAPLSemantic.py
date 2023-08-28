@@ -291,7 +291,7 @@ class SemanticAnalyzer:
 
     def report_error(self, message, line_number):
         error = f"{message}: Linea {line_number}"
-        self.errors.append(error)
+        self.errors.append("Error Semantico: " +  error)
 
     def display_errors(self):
         if self.errors:

@@ -10,7 +10,6 @@ class Main inherits IO {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
-          flag <- l;
           out_int(a);
           test(a);
           test("1");

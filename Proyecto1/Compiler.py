@@ -16,14 +16,14 @@ class Compiler():
         self.lexer = YAPLLexer(self.input_stream)
         self.token_stream = CommonTokenStream(self.lexer)
         self.parser = YAPLParser(self.token_stream)
-        self.error_listener = MyErrorListener()
+        self.error_listener = MyErrorListener() # Sintaxis .errors
         self.parser.removeErrorListeners()
         self.parser.addErrorListener(self.error_listener)
         self.tree = self.parser.program()
         self.treeStruct = None
-        self.lexicalErrors = []
+        self.lexicalErrors = [] # Lexico
         self.symbolTable = SymbolTable()
-        self.semanticAnalyzer = None
+        self.semanticAnalyzer = None # Semantico .errors
         self.tokens = {}
 
     def lexicalAnalysis(self):
