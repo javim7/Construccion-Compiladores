@@ -1,0 +1,24 @@
+class Main inherits IO {
+    a : Int <- 2;
+    b : Int <- 5;
+    c : Int <- 8;
+    l : String;
+    f : Int;
+    flag : Bool <- true;
+
+    main() : {
+      {   
+          l <- "hola" + "adios";
+          f <- a + b * c;
+          flag <- l;
+          out_int(a);
+          test(a);
+          test("1");
+          self;
+	    }
+    };
+
+     test(x : Int) : Int {
+        out_int(2)
+    };
+};
