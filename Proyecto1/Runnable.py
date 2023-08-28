@@ -14,15 +14,15 @@ def redraw():
             break
         y = dline[1]
         linenum = str(i).split(".")[0]
-        line_numbers_canvas.create_text(25, y+18, anchor="nw", text=linenum)
+        line_numbers_canvas.create_text(10, y+22, anchor="nw", text=linenum)
         i = code_area.index(f"{i}+1line")
 
     # Actualizar nuevamente después de 100 ms
-    line_numbers_canvas.after(100, redraw)
+    line_numbers_canvas.after(1, redraw)
 
 root = tk.Tk()
-root.title("IDE Básico")
-root.geometry("800x600")
+root.title("IDE")
+root.geometry("800x800")
 
 # Scrollbar
 scrollbar = Scrollbar(root)
@@ -32,12 +32,12 @@ scrollbar.pack(side="right", fill="y")
 line_numbers_canvas = tk.Canvas(root, width=30)
 line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 
-# Área de código
-code_area = Text(root, wrap="none", undo=True, yscrollcommand=scrollbar.set)
+# Área de código con espacio entre líneas
+code_area = Text(root, wrap="none", undo=True, yscrollcommand=scrollbar.set, spacing1=5)
 code_area.pack(pady=20, padx=20, expand=True, fill="both")
 
 # Conectar scrollbar
-scrollbar.config(command=code_area.yview)
+# scrollbar.config(command=code_area.yview)
 
 # Botón de compilar
 compile_button = tk.Button(root, text="Compilar", command=compile_code)
@@ -46,4 +46,5 @@ compile_button.pack(pady=20)
 # Llamada inicial para mostrar números de línea
 redraw()
 
+root.resizable(False, False)
 root.mainloop()
