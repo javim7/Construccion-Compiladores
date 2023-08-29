@@ -9,6 +9,10 @@ from Compiler import *
 
 # Paso 1: Función para poblar el árbol de directorios
 def populate_tree(tree, node):
+    # Eliminar todos los nodos hijos existentes
+    for child in tree.get_children(node):
+        tree.delete(child)
+    
     # Lista el contenido del directorio
     path = tree.set(node, "fullpath")
     for p in os.listdir(path):
@@ -146,7 +150,7 @@ def configure_tags():
 
 root = tk.Tk()
 root.title("IDE Compiladores")
-root.geometry("1200x1000")
+root.geometry("1400x1000")
 
 # Hacer la ventana no redimensionable
 root.resizable(False, False)
@@ -175,18 +179,23 @@ code_area.pack(pady=20, padx=20, expand=True, fill="both")
 current_directory = os.getcwd()
 
 # Ruta a la carpeta 'Ejemplos/' en el directorio de trabajo actual
-ejemplos_path = os.path.join(current_directory, "Proyecto1/Ejemplos")
+ejemplos_path = os.path.join(current_directory, "Proyecto1")
+# ejemplos_path = os.path.join(current_directory, "Proyecto1/Ejemplos")
+
 
 # Verificar si el directorio 'Ejemplos/' existe
 if not os.path.exists(ejemplos_path):
-    print(f"El directorio 'Proyecto1/Ejemplos/' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
+    print(f"El directorio 'Proyecto1' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
+    # print(f"El directorio 'Proyecto1/Ejemplos/' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
+
 else:
     # Crear el Treeview para los archivos
     file_tree = ttk.Treeview(upper_frame, columns=("fullpath",), displaycolumns=(), height=25)
-    file_tree.pack(side="right", fill="both")
+    file_tree.pack(pady=20, padx=20, side="right", expand=True, fill="both")
+
 
     # Agregar el directorio base al Treeview
-    root_node = file_tree.insert("", "end", text="Ejemplos", values=(ejemplos_path,))
+    root_node = file_tree.insert("", "end", text=ejemplos_path, values=(ejemplos_path,))
     populate_tree(file_tree, root_node)
 
 # Agregar un "+" para indicar que se puede expandir
