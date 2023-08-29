@@ -1,0 +1,47 @@
+if symbol.name == methodName and symbol.id_type == "Method":
+                        #revisar que el metodo esta en el mismo scope
+                        methodName = node.children[0].val
+                        nodeScope = self.getClassDefineParent(node)
+                        for symbol in self.symbol_table.symbols:
+                            if symbol.name == methodName and symbol.id_type == "Method" and symbol.scope.startswith(nodeScope):
+                                return None
+                            
+                        #revisar que los parametros si sean los correctos
+                        parameters = []
+                        for symbol in self.symbol_table.symbols:
+                            if methodName in symbol.scope and symbol.id_type == "Parameter":
+                                parameters.append(symbol.data_type)
+
+                        # print(parameters)
+                        for symbol in self.symbol_table.symbols:
+                            if symbol.name == methodName and symbol.id_type == "MethodCall":
+                                if symbol.value in self.names:
+                                    symbol = self.symbol_table.lookup(symbol.value)
+                                    symbolType = symbol.data_type
+                                else:
+                                    # print(symbol)
+                                    symbolType = self.tokenDict[symbol.value]
+                                if symbol.name in IOmethods:
+                                    pass
+                                else:
+                                    # print(len(parameters)) 
+                                    if len(parameters) == 1 and parameters[0].lower() == symbolType.lower():
+                                        return None
+                                    else:
+                                        return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
+                                
+                            elif symbol.name == methodName and symbol.id_type == "Procedure":
+                               
+                                if symbol.value in self.names:
+                                    symbol = self.symbol_table.lookup(symbol.value)
+                                    symbolType = symbol.data_type
+                                else:
+                                    symbolType = self.tokenDict[symbol.value]
+                                if symbol.name in IOmethods:
+                                    pass
+                                else:
+                                    # print(len(parameters)) 
+                                    if len(parameters) == 1 and parameters[0].lower() == symbolType.lower():
+                                        return None
+                                    else:
+                                        return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"

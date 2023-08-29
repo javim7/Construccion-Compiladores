@@ -158,31 +158,47 @@ class SemanticVisitor:
         
         elif len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
             methodName = node.children[0].val
+            nodeScope = self.getClassDefineParent(node)
             # print("mehtodName: ", methodName)
             IOmethods = ["out_int", "out_string", "in_int", "in_string"]
 
             # ver que el metodo este definido
             for symbol in self.symbol_table.symbols:
                
+                # Verifica que el metodo este definido en el scope actual
+
                 if methodName not in IOmethods:
-                    if symbol.name == methodName and symbol.id_type == "Method":
-                        #revisar que el metodo esta en el mismo scope
-                        methodName = node.children[0].val
-                        nodeScope = self.getClassDefineParent(node)
-                        for symbol in self.symbol_table.symbols:
-                            if symbol.name == methodName and symbol.id_type == "Method" and symbol.scope.startswith(nodeScope):
-                                return None
-                            else:
-                                return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
-                            
-                        #revisar que los parametros si sean los correctos
+                    
+                    if symbol.name == methodName and symbol.id_type == "Method" and symbol.scope.startswith(nodeScope):
+
+                        # Queremos revisar que los parametros definidos sean los correctos
+
+                        # Para este metodo
+
+                        # test(x : Int) : Int {
+                        #     out_int(2)
+                        # };
+
+                        # Estamos revisando que la llamada "test("1");" sea correcta
+                        # 
+
+                        # Guardamos los parametros del metodo en una lista
+
+                        print(">methodName: ", methodName)
+
                         parameters = []
                         for symbol in self.symbol_table.symbols:
-                            if methodName in symbol.scope and symbol.id_type == "Parameter":
-                                parameters.append(symbol.data_type)
+                            if methodName in symbol.scope and symbol.id_type == "Parameter" and symbol.scope.startswith(nodeScope):
+                                parameters.append(symbol.data_type)    
 
-                        # print(parameters)
+                        print(">parameters: ", parameters)  
+
+                        # Verifica que los parametros de la llamada sean los correctos
+
                         for symbol in self.symbol_table.symbols:
+
+                            # Se verifica para un method call
+
                             if symbol.name == methodName and symbol.id_type == "MethodCall":
                                 if symbol.value in self.names:
                                     symbol = self.symbol_table.lookup(symbol.value)
@@ -198,7 +214,9 @@ class SemanticVisitor:
                                         return None
                                     else:
                                         return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
-                                
+
+                            # Se verifica para un Procedure call
+
                             elif symbol.name == methodName and symbol.id_type == "Procedure":
                                
                                 if symbol.value in self.names:
@@ -214,8 +232,16 @@ class SemanticVisitor:
                                         return None
                                     else:
                                         return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
-                                
+
+
                         return None
+ 
+
+
+
+
+                # Si son parte del IO revisa que el parametro sea el correcto
+                
                 else:
                     for symbol3 in self.symbol_table.symbols:
                         if symbol3.name == methodName:
@@ -241,15 +267,20 @@ class SemanticVisitor:
                             return None
                     except:
                         pass
-                    
-            return f"El metodo '{methodName}' no ha sido definido"
+
+            # Si termina el for sin retornar es porque no encontro el metodo (No esta definido en el scope)        
+
+            return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
         
         elif len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
             methodName = node.children[0].val
+
+            nodeScope = self.getClassDefineParent(node)
+
             #revisar que los parametros si sean los correctos
             parameters = []
             for symbol in self.symbol_table.symbols:
-                if methodName in symbol.scope and symbol.id_type == "Parameter":
+                if methodName in symbol.scope and symbol.id_type == "Parameter" and symbol.scope.startswith(nodeScope):
                     parameters.append(symbol.data_type)
 
             for symbol in self.symbol_table.symbols:
