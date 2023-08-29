@@ -7,6 +7,26 @@ import os
 
 from Compiler import *
 
+# Paso 1: Función para poblar el árbol de directorios
+def populate_tree(tree, node):
+    # Lista el contenido del directorio
+    path = tree.set(node, "fullpath")
+    for p in os.listdir(path):
+        full_path = os.path.join(path, p)
+        isdir = os.path.isdir(full_path)
+        id = tree.insert(node, "end", text=p, values=[full_path])
+        if isdir:
+            tree.insert(id, "end")
+
+# Paso 3: Función para cargar archivos en el editor
+def load_file_into_editor(event):
+    selected_item = file_tree.selection()[0]
+    filepath = file_tree.item(selected_item, "values")[0]
+    if os.path.isfile(filepath):
+        with open(filepath, 'r') as file:
+            content = file.read()
+            code_area.delete(1.0, tk.END)
+            code_area.insert(tk.END, content)
 
 def extract_keywords_from_g4(file_path):
     with open(file_path, 'r') as file:
@@ -122,18 +142,49 @@ def configure_tags():
 
 root = tk.Tk()
 root.title("IDE Compiladores")
-root.geometry("1000x1000")
+root.geometry("1200x1000")
 
 # Hacer la ventana no redimensionable
 root.resizable(False, False)
 
+# Paso 4: Ajustar la UI para incluir el Treeview
+frame = tk.Frame(root)
+frame.pack(side="left", fill="both", expand=True)
+
 # Canvas para números de línea
-line_numbers_canvas = tk.Canvas(root, width=30)
+line_numbers_canvas = tk.Canvas(frame, width=30)
 line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 
 # Área de código con espacio entre líneas
-code_area = Text(root, wrap="none", undo=True, spacing1=5)
+code_area = Text(frame, wrap="none", undo=True, spacing1=5)
 code_area.pack(pady=20, padx=20, expand=True, fill="both")
+
+# Obtener el directorio de trabajo actual
+current_directory = os.getcwd()
+
+# Ruta a la carpeta 'Ejemplos/' en el directorio de trabajo actual
+ejemplos_path = os.path.join(current_directory, "Proyecto1/Ejemplos")
+
+# Verificar si el directorio 'Ejemplos/' existe
+if not os.path.exists(ejemplos_path):
+    print(f"El directorio 'Proyecto1/Ejemplos/' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
+else:
+    # Crear el Treeview para los archivos
+    file_tree = ttk.Treeview(root, columns=("fullpath",), displaycolumns=(), height=25)
+    file_tree.pack(side="right", fill="both")
+
+    # Agregar el directorio base al Treeview
+    root_node = file_tree.insert("", "end", text="Ejemplos", values=(ejemplos_path,))
+    populate_tree(file_tree, root_node)
+
+# Agregar un "+" para indicar que se puede expandir
+file_tree.insert(root_node, "end")
+
+# Configurar el evento para expandir el directorio
+file_tree.bind("<<TreeviewOpen>>", lambda event: populate_tree(file_tree, file_tree.focus()))
+
+# Configurar el evento para cargar archivos al hacer doble clic
+file_tree.bind("<Double-1>", load_file_into_editor)
 
 # Área de la "terminal"
 terminal_area = Text(root, height=6, wrap="none", state=tk.DISABLED)
