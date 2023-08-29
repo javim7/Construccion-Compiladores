@@ -403,7 +403,7 @@ class Compiler():
                 column += len(lexeme)
 
             if token_name == "ERROR":
-                self.lexicalErrors.append(f"{token_name} LEXICO: Caracter '{lexeme}' no identificado en linea {line}, columna {column}")
+                self.lexicalErrors.append(f"{token_name} LEXICO: Caracter '{lexeme}' no identificado : Linea {line}")
             else:
                 good_tokens.append(f"Token: {token_name:{max_name_length}} | "
                   f"Lexema: {lexeme:{max_lexeme_length}} | "
