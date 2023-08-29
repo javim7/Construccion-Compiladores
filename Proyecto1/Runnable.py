@@ -70,18 +70,37 @@ def compile_code():
     compilador.syntacticAnalysis()
     compilador.semanticAnalysis()
 
+    # Quitar el tag de todas las líneas para eliminar resaltados anteriores
+    code_area.tag_remove("error", "1.0", tk.END)
+    
+    
+
 
     terminal_messages = [
             "Errores léxicos:\n" + "\n".join(compilador.lexicalErrors) if len(compilador.lexicalErrors) > 0 else "No hay errores léxicos",
             "Errores sintácticos:\n" + "\n".join(compilador.error_listener.errors) if len(compilador.error_listener.errors) > 0 else "No hay errores sintácticos",
     ]
 
+    # Extraer números de línea de los mensajes de error
+    error_messages = compilador.lexicalErrors + compilador.error_listener.errors 
+
     try:
         terminal_messages.append(
             "Errores semánticos:\n" + "\n".join(compilador.semanticAnalyzer.errors) if len(compilador.semanticAnalyzer.errors) > 0 else "No hay errores semánticos"
         )
+
+        error_messages.extend(getattr(compilador.semanticAnalyzer, 'errors', []))
     except:
         pass
+
+    error_lines = [int(re.search("Linea (\d+)", msg).group(1)) for msg in error_messages if re.search("Linea (\d+)", msg)]
+
+    for line in error_lines:
+        line_start = f"{line}.0"
+        line_end = f"{line}.end"
+        
+        # Añadir el tag "error" a la línea completa
+        code_area.tag_add("error", line_start, line_end)
 
     terminal_content = "\n".join(terminal_messages)
     
@@ -132,6 +151,9 @@ def highlight_text():
 def on_content_change(event):
     # Resaltar texto
     highlight_text()
+
+    # Eliminar resaltado de errores
+    code_area.tag_remove("error", "1.0", tk.END)
     
     # Restablecer el estado "modificado" para futuros eventos
     code_area.edit_modified(False)
@@ -144,7 +166,7 @@ def configure_tags():
     for vtype in variable_types:
         code_area.tag_configure(vtype, foreground="green")
 
-
+    code_area.tag_configure("error", background="red")
 
 
 
