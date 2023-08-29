@@ -1,4 +1,4 @@
-class Main inherits IO {
+class Main {
     a : Int <- 2;
     b : Int <- 5;
     c : Int <- 8;
@@ -12,22 +12,17 @@ class Main inherits IO {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
-          out_int(a);
+          f <- flag;
           test(1, "a", a);
           self;
 	    }
     };
 
-    test(x : Int, y : String, z : Int) : Int {
-        out_int(2)
-    };
 
-    
-    
 };
 
 
-class ClassB {
+class ClassB inherits IO{
    test(a: Int): String {
         out_int(a)
     }; 

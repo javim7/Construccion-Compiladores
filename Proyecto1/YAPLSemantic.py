@@ -24,7 +24,13 @@ class SemanticVisitor:
             return f"La clase 'Main' debe tener un metodo 'main'"
         #ver si alguna clase hereda a Main
         if node.children[2].val == "inherits" and node.children[3].val == "Main":
+            return f"La clase 'Main' no puede ser heredar por ninguna otra clase"
+        
+        if node.children[2].val == "inherits" and class_name == "Main":
             return f"La clase 'Main' no puede heredar de ninguna otra clase"
+
+        if node.children[2].val == "inherits" and node.children[3].val == class_name:
+            return f"La clase '{class_name}' no puede heredar de si misma (herencia recursiva)"
         
         return None
 
@@ -261,9 +267,9 @@ class SemanticVisitor:
                                 if symbolType.lower() != "string":
                                     return f"El metodo '{methodName}' debe recibir un parametro de tipo 'string'"
                       
-                    symbol2 = self.symbol_table.lookup_all("Main")
+                    # symbol2 = self.symbol_table.lookup_all("Main")
                     try:
-                        if symbol2.inheritsFrom == "IO":
+                        if symbol.inheritsFrom == "IO":
                             return None
                     except:
                         pass
@@ -279,9 +285,16 @@ class SemanticVisitor:
 
             #revisar que los parametros si sean los correctos
             parameters = []
+
+            
             for symbol in self.symbol_table.symbols:
                 if methodName in symbol.scope and symbol.id_type == "Parameter" and symbol.scope.startswith(nodeScope):
                     parameters.append(symbol.data_type)
+
+            # print(parameters)
+            if len(parameters) == 0:
+
+                return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
 
             for symbol in self.symbol_table.symbols:
                 if symbol.name == methodName and symbol.id_type == "MethodCall":
