@@ -14,14 +14,13 @@ class Main {
           l <- "hola" + "adios";
           f <- a + b * c;
           f <- 4;
-          x <- test(1);
-          z <- test(1);
-          self;
+          out_bool(flag);
+          return (self);
 	    }
     };
 
     test(a: Int): String {
-        test(a)
+        out_int(a)
     }; 
 
 };
@@ -29,7 +28,7 @@ class Main {
 
 class ClassB {
    test(a: Int): String {
-        test(a)
+        return("hola")
     }; 
 };
 

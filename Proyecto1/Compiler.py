@@ -70,6 +70,11 @@ class Compiler():
 
             #agregar clase IO por default
             classProperties["IO"] = ["out_string", "out_int", "in_string", "in_int"]
+
+            self.symbolTable.insert(Symbol("IO", "Class", "Class", None, None, "global", -1))
+            self.symbolTable.insert(Symbol("String", "Class", "Class", None, None, "global", -1))
+            self.symbolTable.insert(Symbol("Int", "Class", "Class", None, None, "global", -1))
+            self.symbolTable.insert(Symbol("Bool", "Class", "Class", None, None, "global", -1))
             
             # llenar diccionario de clases y sus propiedades
             for node in self.treeStruct.nodes:

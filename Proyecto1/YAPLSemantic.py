@@ -134,7 +134,7 @@ class SemanticVisitor:
             variables = {}
 
             stringOperators = ["+", ","]
-            intOperators = ["+", "-", "*", "/", "%", "(", ")"]
+            intOperators = ["+", "-", "*", "/", "%", "(", ")","~"]
 
             # print("child_values: ", child_values)
             for child in child_values:
@@ -192,7 +192,76 @@ class SemanticVisitor:
             methodName = node.children[0].val
             nodeScope = self.getClassDefineParent(node)
             # print("mehtodName: ", methodName)
-            IOmethods = ["out_int", "out_string", "in_int", "in_string"]
+            IOmethods = ["out_int", "out_string", "in_int", "in_string", "out_bool", "in_bool"]
+
+            if methodName == "return":
+
+                # print("nodeScope: ", nodeScope)
+                # print("methodName: ", methodName)
+
+                node_value = self.getExprChildren(node.children[2])
+
+                methodScope = self.getMethodParent(node)
+
+                wholeScope = nodeScope + "." + methodScope
+
+                # print("wholeScope: ", wholeScope)
+
+                # print("node_value: ", node_value)
+
+                methodType = None
+
+                methodreturnType = None
+
+                for symbol_temp in self.symbol_table.symbols:
+
+                    # print("symbol_temp.name: ", symbol_temp.name)
+                    # print("symbol_temp.scope: ", symbol_temp.scope)
+                    # print(symbol_temp.name == methodName)
+                    # print(symbol_temp.scope == wholeScope)
+
+                    if str(symbol_temp.name) == str(methodName) and str(symbol_temp.scope) == str(wholeScope):
+
+                        methodType = symbol_temp.value
+                    
+                    if symbol_temp.name == methodScope and symbol_temp.scope == nodeScope and symbol_temp.id_type == "Method":
+
+                        methodreturnType = symbol_temp.data_type
+
+
+
+                # print("methodType: ", methodType)
+                # print("methodreturnType: ", methodreturnType)
+
+                method_type_2 = None
+                if methodType in self.names:
+
+                    method_type_2 = self.symbol_table.lookup_all(methodType).data_type
+
+                    if method_type_2.lower() != methodreturnType.lower():
+
+                        return f"El metodo {methodScope} debe retornar un '{methodreturnType}' no un '{method_type_2}'"
+
+                else:
+
+                    method_type_2 = self.tokenDict[methodType]
+
+                    if methodType == "self":
+
+                        if methodreturnType != "SELF_TYPE":
+
+                            return f"El metodo {methodScope} debe retornar un '{methodreturnType}' no un '{methodType}'"
+
+                    else:
+
+                        if method_type_2.lower() != methodreturnType.lower():
+
+                            return f"El metodo {methodScope} debe retornar un '{methodreturnType}' no un '{method_type_2}'"
+
+
+                # print(method_type_2)   
+
+                return None
 
             # ver que el metodo este definido
             for symbol in self.symbol_table.symbols:
@@ -292,10 +361,14 @@ class SemanticVisitor:
                             elif symbol3.name == IOmethods[1] or symbol3.name == IOmethods[3]:
                                 if symbolType.lower() != "string":
                                     return f"El metodo '{methodName}' debe recibir un parametro de tipo 'string'"
+                            
+                            elif symbol3.name == IOmethods[4] or symbol3.name == IOmethods[5]:
+                                if symbolType.lower() != "bool":
+                                    return f"El metodo '{methodName}' debe recibir un parametro de tipo 'bool'"
                       
                     # symbol2 = self.symbol_table.lookup_all("Main")
                     try:
-                        if symbol.inheritsFrom == "IO":
+                        if symbol.name == "IO":
                             return None
                     except:
                         pass
@@ -347,6 +420,11 @@ class SemanticVisitor:
             return node.children[1].val
         
         return self.getClassDefineParent(node.parent)
+    
+    def getMethodParent(self, node):
+        if node.val == "method":
+            return node.children[0].val
+        return self.getMethodParent(node.parent)
 
     def getExprChildren(self, node, child_values=None):
         if child_values is None:

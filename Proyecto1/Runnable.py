@@ -175,7 +175,7 @@ root.title("IDE Compiladores")
 root.geometry("1400x1000")
 
 # Hacer la ventana no redimensionable
-root.resizable(False, False)
+# root.resizable(False, False)
 
 # Frame superior que contendrá el editor y el árbol de archivos
 upper_frame = tk.Frame(root)
