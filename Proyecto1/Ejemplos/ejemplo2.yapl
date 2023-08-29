@@ -12,7 +12,7 @@ class ClassA {
 };
 
 
-class ClassB {
+class ClassB  {
     methodB(): String {
         methodB()
     };

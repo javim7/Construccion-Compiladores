@@ -20,7 +20,7 @@ class Dog inherits Animal {
     };
     
     speak(): String {
-        out_string("Woof, I'm a " + breed + " named " + name)
+        out_string("Woof, I'm a ")
     };
 };
 
@@ -34,14 +34,14 @@ class Cat inherits Animal {
     
     speak(): String {
         {
-            out_string("Meow, I'm a cat named " + name);
+            out_string("Meow, I'm a cat named ");
             out_string("hola");
         }
     };
 };
 
-class Main inherits IO {
+class Main{
     main() : SELF_TYPE  {
-        out_string("main")
+        main()
     };
 };

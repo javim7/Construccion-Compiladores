@@ -41,10 +41,12 @@ class SymbolTable:
     def insert(self, symbolEntry):
         for symbol in self.symbols:
             if symbolEntry.name == symbol.name and symbolEntry.scope == symbol.scope:
-                if symbol.id_type != "Procedure" or symbol.id_type != "MethodCall":
+
+                if symbol.id_type == "Procedure" or symbol.id_type == "MethodCall":
                     pass
                 else:
-                    raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
+                    # raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
+                    pass
             
         valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void", "list"]  # Lista de tipos válidos
         if symbolEntry.data_type.lower() not in valid_data_types:

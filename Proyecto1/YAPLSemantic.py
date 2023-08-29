@@ -26,6 +26,15 @@ class SemanticVisitor:
         if node.children[2].val == "inherits" and node.children[3].val == "Main":
             return f"La clase 'Main' no puede ser heredar por ninguna otra clase"
         
+        elif node.children[2].val == "inherits" and node.children[3].val == "String":
+            return f"La clase 'String' no puede ser heredar por ninguna otra clase"
+        
+        elif node.children[2].val == "inherits" and node.children[3].val == "Int":
+            return f"La clase 'Int' no puede ser heredar por ninguna otra clase"
+        
+        elif node.children[2].val == "inherits" and node.children[3].val == "Bool":
+            return f"La clase 'Bool' no puede ser heredar por ninguna otra clase"
+        
         if node.children[2].val == "inherits" and class_name == "Main":
             return f"La clase 'Main' no puede heredar de ninguna otra clase"
 
@@ -38,9 +47,7 @@ class SemanticVisitor:
     def visit_method_node(self, node):
         methodName = node.children[0].val
         nodeScope = node.parent.parent.children[1].val
-        wholeScope = nodeScope + "." + methodName   
-        lasInstuction = self.getLastMethodInstrucion(wholeScope) # esto puede ser complicado ya que no todas las instrucciones estan en la tabla tampoco
-
+        
         if methodName == "main" and node.children[2].val == "formal":
             return f"El metodo 'main' no puede tener parametros formales"
         
@@ -68,7 +75,7 @@ class SemanticVisitor:
         for child in children:
             if child in self.names:
                 childScope = self.symbol_table.lookup_all(child).scope
-                if childScope != varScope:
+                if childScope.split(".")[0] != varScope.split(".")[0]:
                     return f"El atributo '{child}' no ha sido definida en el scope '{varScope}'"
         #revisar que los tipos sean los correctos
 
@@ -151,6 +158,8 @@ class SemanticVisitor:
                 if firstVal.lower() != var_type.lower():
                     return f"Las variables '{alphanum}' deben ser de tipo '{var_type}' no '{firstVal}'"
               
+
+
                 elif firstVal.lower() == var_type.lower() and firstVal.lower() == "string":
                     for operator in operators:
                         if operator not in stringOperators:
@@ -351,13 +360,32 @@ class SemanticVisitor:
         
         return child_values
     
-    def getLastMethodInstrucion(self, methodName):
-        methodInsructions = []
+    
+    
+    def checkDoubleDeclarations(self):
+
+        poissbleErrors = []
+
+        lista_tuplas = []
+
         for symbol in self.symbol_table.symbols:
-            if symbol.scope == methodName:
-                methodInsructions.append(symbol)
+
+            if (symbol.name, symbol.scope) in lista_tuplas:
+
+                if symbol.id_type == "MethodCall" or symbol.id_type == "Procedure":
+
+                    pass
+                
+                else:
+
+                    poissbleErrors.append(f"ERROR SEMANTICO: El identificador '{symbol.name}' ya ha sido declarado en el scope '{symbol.scope}': Linea {symbol.line}")
+            
+            else:
+
+                lista_tuplas.append((symbol.name, symbol.scope))
         
-        return methodInsructions[-1]
+        return poissbleErrors
+
 
 class SemanticAnalyzer:
     def __init__(self, parse_tree, symbol_table, tokenDict):
@@ -369,7 +397,16 @@ class SemanticAnalyzer:
 
     def analyze(self):
         self.traverse_tree(self.parse_tree.root)
+
+        checkDoubleDeclarations_errors = self.visitor.checkDoubleDeclarations()
+
+        if checkDoubleDeclarations_errors:
+            for error in checkDoubleDeclarations_errors:
+                self.errors.append(error)
+        
         self.display_errors()
+
+
 
     def traverse_tree(self, node):
         if node is not None:
