@@ -38,9 +38,12 @@ class SemanticVisitor:
     def visit_method_node(self, node):
         methodName = node.children[0].val
         nodeScope = node.parent.parent.children[1].val
-        
+        wholeScope = nodeScope + "." + methodName   
+        lasInstuction = self.getLastMethodInstrucion(wholeScope) # esto puede ser complicado ya que no todas las instrucciones estan en la tabla tampoco
+
         if methodName == "main" and node.children[2].val == "formal":
             return f"El metodo 'main' no puede tener parametros formales"
+        
         #ver que los metodos heredadeos sigan la firma del original
         symbolToUse = self.symbol_table.lookup_by_scope(methodName, nodeScope)
         # print(symbolToUse)
@@ -59,6 +62,14 @@ class SemanticVisitor:
             if symbol.name == var_name and symbol.id_type == "Variable" and symbol.data_type == "Void":
                 return f"La variable '{var_name}' no ha sido definida"
 
+        #revisar que las asignaciones esten en el mismo scope
+        varScope = self.symbol_table.lookup_all(var_name).scope
+        children = self.getExprChildren(node.children[2])
+        for child in children:
+            if child in self.names:
+                childScope = self.symbol_table.lookup_all(child).scope
+                if childScope != varScope:
+                    return f"El atributo '{child}' no ha sido definida en el scope '{varScope}'"
         #revisar que los tipos sean los correctos
 
         #obtener el tipo de la variable
@@ -104,7 +115,10 @@ class SemanticVisitor:
                     elif var_type.lower() == "bool" and valueType.lower() == "int":
                         pass
                     else:
-                        return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{valueType}'"
+                        if symbol.data_type.lower() == "id" or symbol.data_type.lower() == "void":
+                            return f"El atributo '{value_node.val}' no ha sido definido en el scope '{varScope}'"
+                        else:
+                            return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
 
         else:
             child_values = self.getExprChildren(expr_node)
@@ -147,6 +161,9 @@ class SemanticVisitor:
                         if operator not in intOperators:
                             return f"La operacion '{operator}' no es valida para variables de tipo '{firstVal}'"
             else:
+                for var in alphanum:
+                    if var not in self.names and self.tokenDict[var].lower() == "id":
+                        return f"El atributo '{var}' no ha sido definido en el scope '{varScope}'"
                 return f"Las variables '{alphanum}' deben ser del mismo tipo '{var_type}'"
 
         return None
@@ -190,14 +207,14 @@ class SemanticVisitor:
 
                         # Guardamos los parametros del metodo en una lista
 
-                        print(">methodName: ", methodName)
+                        # print(">methodName: ", methodName)
 
                         parameters = []
                         for symbol in self.symbol_table.symbols:
                             if methodName in symbol.scope and symbol.id_type == "Parameter" and symbol.scope.startswith(nodeScope):
                                 parameters.append(symbol.data_type)    
 
-                        print(">parameters: ", parameters)  
+                        # print(">parameters: ", parameters)  
 
                         # Verifica que los parametros de la llamada sean los correctos
 
@@ -333,6 +350,14 @@ class SemanticVisitor:
                 child_values.append(child.val)
         
         return child_values
+    
+    def getLastMethodInstrucion(self, methodName):
+        methodInsructions = []
+        for symbol in self.symbol_table.symbols:
+            if symbol.scope == methodName:
+                methodInsructions.append(symbol)
+        
+        return methodInsructions[-1]
 
 class SemanticAnalyzer:
     def __init__(self, parse_tree, symbol_table, tokenDict):

@@ -1,23 +1,25 @@
 class Main {
-    a : Int <- 2;
+   
+    a : Int <- 1;
     b : Int <- 5;
     c : Int <- 8;
     l : String;
     f : Int;
     flag : Bool <- true;
 
-    
-
     main() : SELF_TYPE {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
           f <- flag;
-          test(1, "a", a);
+          test(1);
           self;
 	    }
     };
 
+    test(a: Int): String {
+        out_int(a)
+    }; 
 
 };
 
@@ -27,3 +29,5 @@ class ClassB inherits IO{
         out_int(a)
     }; 
 };
+
+(new Main).main()
