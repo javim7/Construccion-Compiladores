@@ -122,7 +122,7 @@ class SemanticVisitor:
                     elif var_type.lower() == "bool" and valueType.lower() == "int":
                         pass
                     else:
-                        if symbol.data_type.lower() == "id" or symbol.data_type.lower() == "void":
+                        if symbol.data_type.lower() == "id" or symbol.data_type.lower() == "void": #este no
                             return f"El atributo '{value_node.val}' no ha sido definido en el scope '{varScope}'"
                         else:
                             return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
@@ -136,6 +136,7 @@ class SemanticVisitor:
             stringOperators = ["+", ","]
             intOperators = ["+", "-", "*", "/", "%", "(", ")","~"]
 
+           
             # print("child_values: ", child_values)
             for child in child_values:
                 if child.isalnum():
@@ -152,7 +153,16 @@ class SemanticVisitor:
                     alphanum.append(child)
                 else:
                     operators.append(child)
-          
+
+            if "(" in operators and ")" in operators:
+                symbol_type = self.symbol_table.lookup_by_scope(alphanum[0], varScope)
+                symbol_type_2 = symbol_type.data_type
+                if symbol_type_2.lower() != var_type.lower():
+                    return f"La variable '{alphanum[0]}' debe ser de tipo '{var_type}' no '{symbol_type_2}'"
+                return None
+
+            # print(operators)
+
             firstVal = next(iter(variables.values()))
             if all(value == firstVal for value in variables.values()):
                 if firstVal.lower() != var_type.lower():
@@ -374,8 +384,10 @@ class SemanticVisitor:
                         pass
 
             # Si termina el for sin retornar es porque no encontro el metodo (No esta definido en el scope)        
-
-            return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
+            if methodName == "String" or methodName == "Bool" or methodName == "Int":
+                return f"No se permite el casteo explicito {methodName}"
+            else:
+                return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
         
         elif len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
             methodName = node.children[0].val
