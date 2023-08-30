@@ -103,11 +103,11 @@ class SemanticVisitor:
                             self.symbol_table.update_symbol_value(var_name, 0)
                         self.symbol_table.display()
                     elif var_type.lower() == "bool" and symbol.data_type.lower() == "int":
-                        if int(symbol.value) == 0:
-                            print("false")
+                        if symbol.value == "0":
+
                             self.symbol_table.update_symbol_value(var_name, False)
                         else:
-                            print("true")
+
                             self.symbol_table.update_symbol_value(var_name, True)
                         self.symbol_table.display()
                     else:
@@ -186,6 +186,9 @@ class SemanticVisitor:
                     if var.lower() == "not":
                         if var_type.lower() != "bool":
                             return f"La operacion '{var}' no es valida para variables de tipo '{var_type}'"
+                        else:
+                            return None
+
 
                 
                 return f"Las variables '{alphanum}' deben ser del mismo tipo '{var_type}'"
@@ -231,6 +234,32 @@ class SemanticVisitor:
                 methodType = None
 
                 methodreturnType = None
+
+                node_value_string =  " ".join(node_value)
+
+                if "+" in node_value_string:
+                    lista_temp = node_value_string.split("+")
+                    # print("lista_temp: ", lista_temp)
+                    lista_tipos = []
+                    for item in lista_temp:
+                        
+                        item = item.strip(" ")
+
+                        if item in self.names:
+                            symbolIo2 = self.symbol_table.lookup(item)
+                            lista_tipos.append(symbolIo2.data_type)
+                        else:
+                            lista_tipos.append(self.tokenDict[item])
+                        
+                    if all(value.lower() == lista_tipos[0].lower() for value in lista_tipos):
+
+                        symbolType = lista_tipos[0]
+
+                        return None
+                    
+                    else:
+
+                        return f"Los parametros de '{methodName}' deben ser del mismo tipo"
 
                 for symbol_temp in self.symbol_table.symbols:
 
@@ -371,7 +400,29 @@ class SemanticVisitor:
                                 symbolType = symbolIo2.data_type
                             else:
                                 # print(symbol)
-                                symbolType = self.tokenDict[symbol3.value]
+                                if "+" in symbol3.value:
+                                    lista_temp = symbol3.value.split("+")
+                                    lista_tipos = []
+                                    for item in lista_temp:
+                                        
+                                        item = item.strip(" ")
+
+                                        if item in self.names:
+                                            symbolIo2 = self.symbol_table.lookup(item)
+                                            lista_tipos.append(symbolIo2.data_type)
+                                        else:
+                                            lista_tipos.append(self.tokenDict[item])
+                                        
+                                    if all(value.lower() == lista_tipos[0].lower() for value in lista_tipos):
+
+                                        symbolType = lista_tipos[0]
+                                    
+                                    else:
+
+                                        return f"Los parametros de '{methodName}' deben ser del mismo tipo"
+
+                                else:
+                                    symbolType = self.tokenDict[symbol3.value]
                             
                             if symbol3.name == IOmethods[0] or symbol3.name == IOmethods[2]:
                                 if symbolType.lower() != "int":

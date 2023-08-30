@@ -1,25 +1,37 @@
-class ClassA {
-    x : Int;
-    y : Int <- 2;
+class Main {
+   
+    a : Int <- 1;
+    b : Int <- 5;
+    c : Int <- 8;
+    l : String;
+    f : Int;
+    flag : Bool <- false;
+    z : String;
+    h : Bool;
 
-    methodA(): Int {
-        x <- 1
-    };
-    
-    methodB(): Int {
-        methodA()
-    };
-};
-
-
-class ClassB  {
-    methodB(): String {
-        methodB()
-    };
-};
-
-class Main inherits IO {
     main() : SELF_TYPE {
-        self
+      {   
+          l <- "hola" + "adios";
+          f <- a + b * c;
+          flag <- not flag;
+          h <- a;
+          out_bool(flag);
+          return (self);
+	    }
     };
+
+    test(a: Int): Int {
+        return (1)
+    }; 
+
 };
+
+
+class ClassB {
+
+   test(num1: Int, num2: Int): Int {
+    return(num1 + num2)
+   };
+};
+
+(new Main).main()

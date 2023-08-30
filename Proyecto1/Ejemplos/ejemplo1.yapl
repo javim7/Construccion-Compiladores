@@ -1,0 +1,14 @@
+class Main {
+   
+    a : Int <- 1;
+    b : Int <- 5;
+    c : Int <- 8;
+
+    main() : SELF_TYPE {
+      {
+        out_int(a);
+        return self;
+      }
+    };
+
+};
