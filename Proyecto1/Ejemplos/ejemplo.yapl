@@ -13,7 +13,20 @@ class Main {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
-          f <- not c;
+          
+          if "hola" = "hola" 
+            then true
+            else if "b" = "perro"
+            then false
+            else if 2 < 4
+            then false
+            else false
+          fi fi fi;
+
+          while 3 < false
+            loop true
+          pool;
+        
           out_bool(flag);
           return (self);
 	    }

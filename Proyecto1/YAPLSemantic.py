@@ -194,6 +194,10 @@ class SemanticVisitor:
 
     def visit_expr_node(self, node):
         
+        if node.children[0].val == "if" or node.children[0].val == "while":
+
+            return self.check_comparisons(node)
+
         if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
             methodName = node.children[0].val
             nodeScope = self.getClassDefineParent(node)
@@ -455,7 +459,45 @@ class SemanticVisitor:
         
         return child_values
     
-    
+    def check_comparisons(self, node):
+
+        primera_comparacion = node.children[1]
+
+        expresion = self.getExprChildren(primera_comparacion)
+
+        variables_comparadas = [expresion[0], expresion[2]]
+
+        tipos_datos_comparados = []
+
+        for variable in variables_comparadas:
+
+            # Si es una variable no declarada
+
+            if variable in self.names:
+
+                symbol_temporal = self.symbol_table.lookup(variable)
+
+                tipos_datos_comparados.append(symbol_temporal.data_type)
+            
+            # Si es un token
+
+            else:
+
+                tipo_dato = self.tokenDict[variable]
+
+                tipos_datos_comparados.append(tipo_dato)
+
+        if tipos_datos_comparados[0].lower() != tipos_datos_comparados[1].lower():
+
+            if tipos_datos_comparados[0].lower() in ["int","false","true"] and tipos_datos_comparados[1].lower() in ["int","false","true"]:
+
+                return None
+
+            return f"La comparacion '{tipos_datos_comparados[0].lower()} con {tipos_datos_comparados[1].lower()}' no es valida"
+
+
+        return None
+
     
     def checkDoubleDeclarations(self):
 
