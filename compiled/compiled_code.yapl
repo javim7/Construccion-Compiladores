@@ -1,26 +1,35 @@
-class Main inherits IO {
-   pal(s : String) : Bool {
-       if s.length() = 0 
-         then true
-       else if s.length() = 1 
-         then true
-       else if s.substr(0, 1) = s.substr(s.length() - 1, 1) 
-         then pal(s.substr(1, s.length() -2))
-       else false
-       fi fi fi
-   };
-
-   i : Int;
-
-   main() : Object {
-     {
-         i <- ~1;
-         out_string("enter a string\n");
-         if pal(in_string())
-             then out_string("that was a palindrome\n")
-             else out_string("that was not a palindrome\n")
-         fi;
-     }
-   };
+class Main {
    
+    a : Int <- 1;
+    b : Int <- 5;
+    c : Int <- 8;
+    l : String;
+    f : Int;
+    flag : Bool <- true;
+    x : String;
+    z : String;
+
+    main() : SELF_TYPE {
+      {   
+          l <- "hola" + "adios";
+          f <- a + b * c;
+          flag <- not flag;
+          out_bool(flag);
+          return (self);
+	    }
+    };
+
+    test(a: Int): Int {
+        return (a)
+    }; 
+
 };
+
+
+class ClassB {
+   test(a: Int): String {
+        return("hola")
+    }; 
+};
+
+(new Main).main()

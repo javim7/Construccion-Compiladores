@@ -174,8 +174,17 @@ class Compiler():
                                 self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope + "." + current_scope, node.line))
 
                         else:
-                            self.symbolTable.update_symbol_value(var_name, var_value)
-                            self.symbolTable.update_symbol_line(var_name, node.line)
+                            if "not" in var_value:
+                                variable_origina_simbolo = self.symbolTable.lookup_all(var_name)
+                                if variable_origina_simbolo.value == "true":
+                                    self.symbolTable.update_symbol_value(var_name, "false")
+                                    self.symbolTable.update_symbol_line(var_name, node.line)
+                                else:
+                                    self.symbolTable.update_symbol_value(var_name, "true")
+                                    self.symbolTable.update_symbol_line(var_name, node.line)
+                            else:
+                                self.symbolTable.update_symbol_value(var_name, var_value)
+                                self.symbolTable.update_symbol_line(var_name, node.line)
                         
                     elif rule_name == "formal" and node.parent.val != "property":
                         # print("node", node)

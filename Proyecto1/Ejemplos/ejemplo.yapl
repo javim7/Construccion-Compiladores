@@ -13,7 +13,7 @@ class Main {
       {   
           l <- "hola" + "adios";
           f <- a + b * c;
-          f <- test(4);
+          f <- not c;
           out_bool(flag);
           return (self);
 	    }

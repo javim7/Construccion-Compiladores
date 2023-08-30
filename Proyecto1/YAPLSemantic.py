@@ -183,6 +183,11 @@ class SemanticVisitor:
                 for var in alphanum:
                     if var not in self.names and self.tokenDict[var].lower() == "id":
                         return f"El atributo '{var}' no ha sido definido en el scope '{varScope}'"
+                    if var.lower() == "not":
+                        if var_type.lower() != "bool":
+                            return f"La operacion '{var}' no es valida para variables de tipo '{var_type}'"
+
+                
                 return f"Las variables '{alphanum}' deben ser del mismo tipo '{var_type}'"
 
         return None
