@@ -48,6 +48,8 @@ def extract_keywords_from_g4(file_path):
         return reserved_words, variable_types
 
 reserved_words, variable_types = extract_keywords_from_g4('Proyecto1/YAPL.g4')
+reserved_words.extend(['return'])
+variable_types.extend(['Bool'])
 
 def compile_code():
     content = code_area.get(1.0, "end-1c")
@@ -165,6 +167,8 @@ def configure_tags():
     
     for vtype in variable_types:
         code_area.tag_configure(vtype, foreground="green")
+    
+    code_area.tag_configure("return", foreground="orange")
 
     code_area.tag_configure("error", background="red")
 

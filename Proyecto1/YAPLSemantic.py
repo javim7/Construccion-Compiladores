@@ -4,6 +4,7 @@ class SemanticVisitor:
         self.tokenDict = tokenDict
         self.names, self.ids, self.dataTypes, self.values, self.inheritsFroms, self.scopes, self.lines = self.symbol_table.allInfo()
 
+    # Verificar que exista clase main
     def visit_program_node(self, node):
         MainClass = False
         for children in node.children:
@@ -15,6 +16,7 @@ class SemanticVisitor:
             return f"El programa debe tener una clase 'Main'"
         return None
 
+    # Verificar si alguna clase hereda a main o viceversa
     def visit_classdefine_node(self, node):
         class_name = node.children[1].val
         method_names = [symbol.name for symbol in self.symbol_table.symbols if symbol.id_type == "Method" and symbol.scope.startswith(class_name)]
@@ -44,6 +46,7 @@ class SemanticVisitor:
         return None
 
 
+    # Verifica que los metodos heredados sigan la firma del origina y que exista el metodo main
     def visit_method_node(self, node):
         methodName = node.children[0].val
         nodeScope = node.parent.parent.children[1].val
@@ -61,6 +64,7 @@ class SemanticVisitor:
             # print(symbolToMatch)
             if symbolToMatch.data_type != symbolToUse.data_type:
                 return f"El metodo '{methodName}' en el scope '{nodeScope}' debe tener el mismo tipo de retorno que el metodo original en el scope '{inheritedFrom}'"
+
 
     def visit_vardeclaration_node(self, node):
         #revisar si la variable ya fue definida
@@ -92,7 +96,7 @@ class SemanticVisitor:
         if len(expr_node.children) == 1:
             value_node = expr_node.children[0]
             
-
+            # Verifica que las variables se aignen con el mismo tipo
             if value_node.val in self.names:
                 symbol = self.symbol_table.lookup(value_node.val)
                 if symbol.data_type != var_type:
@@ -113,6 +117,7 @@ class SemanticVisitor:
                     else:
                         return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
             
+            # Verifica que los tokens se asignen con el mismo tipo
             elif value_node.val in self.tokenDict:
                 valueType = self.tokenDict[value_node.val]
                 
@@ -127,6 +132,7 @@ class SemanticVisitor:
                         else:
                             return f"La variable '{var_name}' debe ser de tipo '{var_type}' no '{symbol.data_type}'"
 
+        
         else:
             child_values = self.getExprChildren(expr_node)
             operators = []
@@ -137,7 +143,7 @@ class SemanticVisitor:
             intOperators = ["+", "-", "*", "/", "%", "(", ")","~"]
 
            
-            # print("child_values: ", child_values)
+            #Verifica que hayan operadores dentro de la asignacion x <- 1 + 2
             for child in child_values:
                 if child.isalnum():
                     # print(child)
@@ -154,6 +160,7 @@ class SemanticVisitor:
                 else:
                     operators.append(child)
 
+            # Verifica y asigna el return de un metodo
             if "(" in operators and ")" in operators:
                 symbol_type = self.symbol_table.lookup_by_scope(alphanum[0], varScope)
                 symbol_type_2 = symbol_type.data_type
@@ -163,6 +170,7 @@ class SemanticVisitor:
 
             # print(operators)
 
+            # Verifica que las variables se aignen con el mismo tipo
             firstVal = next(iter(variables.values()))
             if all(value == firstVal for value in variables.values()):
                 if firstVal.lower() != var_type.lower():
@@ -197,10 +205,13 @@ class SemanticVisitor:
 
     def visit_expr_node(self, node):
         
+
+        # Verifica while loops e ifs
         if node.children[0].val == "if" or node.children[0].val == "while":
 
             return self.check_comparisons(node)
 
+        # methodcall sin parametros
         if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
             methodName = node.children[0].val
             nodeScope = self.getClassDefineParent(node)
@@ -210,6 +221,7 @@ class SemanticVisitor:
             
             return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
         
+        # methodcall con parametros u operacion IO o return
         elif len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
             methodName = node.children[0].val
             nodeScope = self.getClassDefineParent(node)
@@ -311,7 +323,7 @@ class SemanticVisitor:
 
                 return None
 
-            # ver que el metodo este definido
+            # Verifica que el metodo este definido en el scope
             for symbol in self.symbol_table.symbols:
                
                 # Verifica que el metodo este definido en el scope actual
@@ -449,6 +461,7 @@ class SemanticVisitor:
             else:
                 return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
         
+        # Methodcall con uno o mas varios parametros
         elif len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
             methodName = node.children[0].val
 
@@ -462,7 +475,7 @@ class SemanticVisitor:
                 if methodName in symbol.scope and symbol.id_type == "Parameter" and symbol.scope.startswith(nodeScope):
                     parameters.append(symbol.data_type)
 
-            # print(parameters)
+            # No existe ese metodo en el scope
             if len(parameters) == 0:
 
                 return f"El metodo '{methodName}' no ha sido definido en el scope '{nodeScope}'"
@@ -487,17 +500,22 @@ class SemanticVisitor:
                     else:
                         return f"El metodo '{methodName}' debe recibir {len(parameters)} parametro(s) de tipo '{', '.join(parameters)}'"
 
+    # HELPER METHODS
+
+    # Agarramos el scope de la clase
     def getClassDefineParent(self, node):
         if node.val == "classDefine":
             return node.children[1].val
         
         return self.getClassDefineParent(node.parent)
     
+    # Agarramos el scope del metodo
     def getMethodParent(self, node):
         if node.val == "method":
             return node.children[0].val
         return self.getMethodParent(node.parent)
 
+    # Agarramos los hijos de un nodo expr
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
             child_values = []  # Initialize the list only in the initial call
@@ -510,6 +528,7 @@ class SemanticVisitor:
         
         return child_values
     
+    # Verifica que las comparaciones sean validas
     def check_comparisons(self, node):
 
         primera_comparacion = node.children[1]
@@ -549,7 +568,7 @@ class SemanticVisitor:
 
         return None
 
-    
+    # Revisa que no se declaren dos veces el mismo identificador
     def checkDoubleDeclarations(self):
 
         poissbleErrors = []

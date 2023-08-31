@@ -1,61 +1,44 @@
-class Animal {
-    name: String;
-    constructor(newName: String) : Object {
-        name <- newName
+class Main {
+   
+    a : Int <- 1;
+    b : Int <- 5;
+    c : Int <- 8;
+    l : String;
+    f : Int;
+    flag : Bool <- false;
+    z : String;
+    h : Bool;
+
+    main() : SELF_TYPE {
+      {   
+          l <- "hola" + "adios";
+          f <- a + b * c;
+          flag <- not flag;
+          h <- a;
+          out_bool(flag);
+          return (self);
+	    }
     };
-    
-    speak(): String {
-        out_string(name)
-    };
+
+    test(a: Int): Int {
+        return (1)
+    }; 
+
 };
 
-class Dog inherits Animal {
-    breed: String;
-    constructor(newName: String, newBreed: String) : Object {
-        {
-            name <- newName;
-            breed <- newBreed;
 
-            if "hola" = "hola" 
-            then true
-            else if "b" = "perro"
-            then false
-            else if 2 < 4
-            then false
-            else false
-            fi fi fi;
+class ClassB inherits Int {
 
-            speak();
-        }
-    };
-    
-    speak(): String {
-        return ("wau" + " im a dog named " + name);
-    };
+   test(num1: Int, num2: Int): Int {
+    return(num1 + num2)
+   };
 };
 
-class Cat inherits Animal {
-    constructor(newName: String) : Object {
-        {
-            name <- newName;
-            while 3 < false
-            loop true
-            pool;
-            speak();
-        }
-    };
-    
-    speak(): String {
-        {
-            out_string("Meow, I'm a cat named " + name);
-            out_string("hola");
-            return ("meow");
-        }
-    };
+class Prueba inherits Bool {
+
+   test(num1: Int, num2: Int): Int {
+    return(num1 + num2)
+   };
 };
 
-class Main{
-    main() : SELF_TYPE  {
-        main()
-    };
-};
+(new Main).main()
