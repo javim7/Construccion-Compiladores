@@ -10,7 +10,7 @@ from Compiler import *
 
 def main():
     
-    compilador = Compiler('Proyecto1/Ejemplos/ejemplo2.yapl')
+    compilador = Compiler('Proyecto1/Ejemplos/ejemplo1.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()

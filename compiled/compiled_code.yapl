@@ -1,44 +1,15 @@
-class Main {
-   
+class Main2 {
+   #
     a : Int <- 1;
     b : Int <- 5;
     c : Int <- 8;
-    l : String;
-    f : Int;
-    flag : Bool <- false;
-    z : String;
-    h : Bool;
+    d : String;
 
-    main() : SELF_TYPE {
-      {   
-          l <- "hola" + "adios";
-          f <- a + b * c;
-          flag <- not flag;
-          h <- a;
-          out_bool(flag);
-          return (self);
-	    }
+    main()  SELF_TYPE {
+      {
+        out_int(a);
+        return self;
+      }
     };
 
-    test(a: Int): Int {
-        return (1)
-    }; 
-
 };
-
-
-class ClassB inherits Int {
-
-   test(num1: Int, num2: Int): Int {
-    return(num1 + num2)
-   };
-};
-
-class Prueba inherits Bool {
-
-   test(num1: Int, num2: Int): Int {
-    return(num1 + num2)
-   };
-};
-
-(new Main).main()

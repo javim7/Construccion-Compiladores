@@ -48,8 +48,9 @@ class SymbolTable:
                     # raise ValueError(f"Symbol '{symbolEntry.name}' already exists in the same scope: {symbolEntry.scope}.")
                     pass
             
-        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void", "list"]  # Lista de tipos válidos
+        valid_data_types = ['int', 'float', 'string', 'bool', "class", "id", "block_comment", "type", "object", "self_type", "void", "list", "missing", ""]  # Lista de tipos válidos
         if symbolEntry.data_type.lower() not in valid_data_types:
+            print("symbolEntry.data_type: ", symbolEntry.data_type)
             raise ValueError(f"Invalid data type for symbol '{symbolEntry.name}': {symbolEntry.data_type}")
         
         self.symbols.append(symbolEntry)

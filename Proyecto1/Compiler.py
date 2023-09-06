@@ -50,212 +50,212 @@ class Compiler():
             print("\nERRORES SINTACTICOS IDENTIFICADOS:")
             for error in self.error_listener.errors:
                 print(error)
-        else:
-            print("\nARBOL SINTACTICO GENERADO CORRECTAMENTE")
-            tree = self.getTreeString()
-            root = self.build_tree(self.tree)
-            self.treeStruct = ParseTree()
-            self.traverse_tree(root, self.treeStruct)
-            # for node in self.treeStruct.nodes:
-            #     print(node)
-            self.treeStruct.root = self.treeStruct.nodes[0]
-            # print(self.treeStruct)
+        # else:
+        print("\nARBOL SINTACTICO GENERADO CORRECTAMENTE")
+        tree = self.getTreeString()
+        root = self.build_tree(self.tree)
+        self.treeStruct = ParseTree()
+        self.traverse_tree(root, self.treeStruct)
+        # for node in self.treeStruct.nodes:
+        #     print(node)
+        self.treeStruct.root = self.treeStruct.nodes[0]
+        # print(self.treeStruct)
 
-            drawTree = Drawer(self.treeStruct)
-            drawTree.draw(self.treeStruct.root)
-            drawTree.save("parse_tree")
+        drawTree = Drawer(self.treeStruct)
+        drawTree.draw(self.treeStruct.root)
+        drawTree.save("parse_tree")
 
-            classProperties = {}
-            className = ""
+        classProperties = {}
+        className = ""
 
-            #agregar clase IO por default
-            classProperties["IO"] = ["out_string", "out_int", "in_string", "in_int"]
+        #agregar clase IO por default
+        classProperties["IO"] = ["out_string", "out_int", "in_string", "in_int"]
 
-            self.symbolTable.insert(Symbol("IO", "Class", "Class", None, None, "global", -1))
-            self.symbolTable.insert(Symbol("String", "Class", "Class", None, None, "global", -1))
-            self.symbolTable.insert(Symbol("Int", "Class", "Class", None, None, "global", -1))
-            self.symbolTable.insert(Symbol("Bool", "Class", "Class", None, None, "global", -1))
-            
-            # llenar diccionario de clases y sus propiedades
-            for node in self.treeStruct.nodes:
-                if isinstance(node, ParseTreeNode):
-                    rule_name = node.val
+        self.symbolTable.insert(Symbol("IO", "Class", "Class", None, None, "global", -1))
+        self.symbolTable.insert(Symbol("String", "Class", "Class", None, None, "global", -1))
+        self.symbolTable.insert(Symbol("Int", "Class", "Class", None, None, "global", -1))
+        self.symbolTable.insert(Symbol("Bool", "Class", "Class", None, None, "global", -1))
+        
+        # llenar diccionario de clases y sus propiedades
+        for node in self.treeStruct.nodes:
+            if isinstance(node, ParseTreeNode):
+                rule_name = node.val
 
-                    if rule_name == "classDefine":
-                        className = node.children[1].val
-                        classProperties[className] = []
+                if rule_name == "classDefine":
+                    className = node.children[1].val
+                    classProperties[className] = []
 
-                    if rule_name == "property":
-                        classProperties[className].append(node.children[0].children[0].val)
-                    
-                    if rule_name == "method":
-                        classProperties[className].append(node.children[0].val)
+                if rule_name == "property":
+                    classProperties[className].append(node.children[0].children[0].val)
+                
+                if rule_name == "method":
+                    classProperties[className].append(node.children[0].val)
 
-            # print("\nTABLA DE CLASES:")
-            # print(classProperties)
+        # print("\nTABLA DE CLASES:")
+        # print(classProperties)
 
-            # print("\nTABLA DE SIMBOLOS:")
-            
-            global_scope = "global"
-            class_scope = ""
-            method_scope = ""
-            current_scope = global_scope
+        # print("\nTABLA DE SIMBOLOS:")
+        
+        global_scope = "global"
+        class_scope = ""
+        method_scope = ""
+        current_scope = global_scope
 
-            #iteramos los nodos del arbol y llenamos la tabla de simbolos
-            for node in self.treeStruct.nodes:
-                # print(node)
-                if isinstance(node, ParseTreeNode):
-                    rule_name = node.val
-                    
-                    if rule_name == "classDefine":
-                        current_scope = global_scope
+        #iteramos los nodos del arbol y llenamos la tabla de simbolos
+        for node in self.treeStruct.nodes:
+            # print(node)
+            if isinstance(node, ParseTreeNode):
+                rule_name = node.val
+                
+                if rule_name == "classDefine":
+                    current_scope = global_scope
+                    # print(node)
+                    class_name = node.children[1].val
+                    if node.children[2].val == "inherits":
+                        inherits_name = node.children[3].val
+                        self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, inherits_name, current_scope, node.line))
+                    else:
+                        self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, None, current_scope, node.line))
+                    class_scope = class_name
+                    current_scope = class_name
+                    method_scope = ""
+                elif rule_name == "method":
+                    current_scope = class_scope
+                    method_name = node.children[0].val
+                    method_type = self.extract_method_return_type(node)
+                    self.symbolTable.insert(Symbol(method_name, "Method", method_type, None, None, current_scope, node.line))
+                    method_scope = method_name
+                    current_scope = method_name
+                elif rule_name == "property":
+                    # print("node", node)
+                    if len(node.children) > 1:
+                        # print("Si entro aca---")
                         # print(node)
-                        class_name = node.children[1].val
-                        if node.children[2].val == "inherits":
-                            inherits_name = node.children[3].val
-                            self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, inherits_name, current_scope, node.line))
-                        else:
-                            self.symbolTable.insert(Symbol(class_name, "Class", "Class", None, None, current_scope, node.line))
-                        class_scope = class_name
-                        current_scope = class_name
-                        method_scope = ""
-                    elif rule_name == "method":
-                        current_scope = class_scope
-                        method_name = node.children[0].val
-                        method_type = self.extract_method_return_type(node)
-                        self.symbolTable.insert(Symbol(method_name, "Method", method_type, None, None, current_scope, node.line))
-                        method_scope = method_name
-                        current_scope = method_name
-                    elif rule_name == "property":
-                        # print("node", node)
-                        if len(node.children) > 1:
-                            # print("Si entro aca---")
-                            # print(node)
-                            current_scope = method_scope if method_scope != "" else class_scope
-                            childFormal = node.children[0]
-                            childExpr = node.children[2]
-                            # print(child)
-                            var_name = childFormal.children[0].val
-                            var_type = childFormal.children[2].val
-                            var_value = childExpr.children[0].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope, node.line))
-                        else:
-                            # print(node)
-                            # print("entro aca tambien")
-                            current_scope = method_scope if method_scope != "" else class_scope
-                            childFormal = node.children[0]
-                            var_name = childFormal.children[0].val
-                            var_type = childFormal.children[2].val
-                            self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, class_scope, node.line))
-                    elif rule_name == "varDeclaration":
-                        # print("node", node)
                         current_scope = method_scope if method_scope != "" else class_scope
+                        childFormal = node.children[0]
                         childExpr = node.children[2]
-                        var_name = node.children[0].val
-                        if len(childExpr.children) == 1:
-                            var_value = childExpr.children[0].val
-                        else:
-                            var_value = self.getExprChildren(childExpr)
+                        # print(child)
+                        var_name = childFormal.children[0].val
+                        var_type = childFormal.children[2].val
+                        var_value = childExpr.children[0].val
+                        self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope, node.line))
+                    else:
+                        # print(node)
+                        # print("entro aca tambien")
+                        current_scope = method_scope if method_scope != "" else class_scope
+                        childFormal = node.children[0]
+                        var_name = childFormal.children[0].val
+                        var_type = childFormal.children[2].val
+                        self.symbolTable.insert(Symbol(var_name, "Variable", var_type, None, None, class_scope, node.line))
+                elif rule_name == "varDeclaration":
+                    # print("node", node)
+                    current_scope = method_scope if method_scope != "" else class_scope
+                    childExpr = node.children[2]
+                    var_name = node.children[0].val
+                    if len(childExpr.children) == 1:
+                        var_value = childExpr.children[0].val
+                    else:
+                        var_value = self.getExprChildren(childExpr)
 
-                        matching_formal_symbol = None
+                    matching_formal_symbol = None
+                    for symbol in self.symbolTable.symbols:
+                        if symbol.name == var_name and symbol.id_type == "Variable" and (symbol.scope.split(".")[0] == class_scope or symbol.scope.split(".")[0] == method_scope):
+                            matching_formal_symbol = symbol
+                            break 
+                    # print("matching_formal_symbol", matching_formal_symbol, "var_name", var_name, "var_value", var_value)
+                    if matching_formal_symbol is None:
                         for symbol in self.symbolTable.symbols:
-                            if symbol.name == var_name and symbol.id_type == "Variable" and (symbol.scope.split(".")[0] == class_scope or symbol.scope.split(".")[0] == method_scope):
+                            if symbol.name == var_name and symbol.id_type == "Variable":
                                 matching_formal_symbol = symbol
                                 break 
-                        # print("matching_formal_symbol", matching_formal_symbol, "var_name", var_name, "var_value", var_value)
                         if matching_formal_symbol is None:
-                            for symbol in self.symbolTable.symbols:
-                                if symbol.name == var_name and symbol.id_type == "Variable":
-                                    matching_formal_symbol = symbol
-                                    break 
-                            if matching_formal_symbol is None:
-                                self.symbolTable.insert(Symbol(var_name, "Variable", "Void", var_value, None, class_scope + "." + current_scope, node.line))
-                            else:
-                                self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope + "." + current_scope, node.line))
-
+                            self.symbolTable.insert(Symbol(var_name, "Variable", "Void", var_value, None, class_scope + "." + current_scope, node.line))
                         else:
-                            if "not" in var_value:
-                                variable_origina_simbolo = self.symbolTable.lookup_all(var_name)
-                                if variable_origina_simbolo.value == "true":
-                                    self.symbolTable.update_symbol_value(var_name, "false")
-                                    self.symbolTable.update_symbol_line(var_name, node.line)
-                                else:
-                                    self.symbolTable.update_symbol_value(var_name, "true")
-                                    self.symbolTable.update_symbol_line(var_name, node.line)
-                            else:
-                                self.symbolTable.update_symbol_value(var_name, var_value)
+                            self.symbolTable.insert(Symbol(var_name, "Variable", matching_formal_symbol.data_type, var_value, matching_formal_symbol.scope, class_scope + "." + current_scope, node.line))
+
+                    else:
+                        if "not" in var_value:
+                            variable_origina_simbolo = self.symbolTable.lookup_all(var_name)
+                            if variable_origina_simbolo.value == "true":
+                                self.symbolTable.update_symbol_value(var_name, "false")
                                 self.symbolTable.update_symbol_line(var_name, node.line)
-                        
-                    elif rule_name == "formal" and node.parent.val != "property":
-                        # print("node", node)
-                        current_scope = method_scope if method_scope != "" else class_scope
-                        var_name = node.children[0].val
-                        var_type = node.children[2].val
-                        self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, None, class_scope +"."+ current_scope, node.line))
-
-                    elif rule_name == "expr" and len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
-                        method_call_name = node.children[0].val
-                        self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
-
-                    elif rule_name == "expr" and len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
-                        procedure_name = node.children[0].val
-                        matching_method_symbol = None
-                        for symbol in self.symbolTable.symbols:
-                            if symbol.name == procedure_name and symbol.id_type == "Method":
-                                matching_method_symbol = symbol
-                                break
-                        if matching_method_symbol:
-                            self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
-                        else:
-                            
-                            self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
-
-                    elif rule_name == "expr" and len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
-                        methodName = node.children[0].val
-                        children = node.children[2:-1]
-                        childrenStrings = []
-                        for child in children:
-                            if child.val == "expr":
-                                childrenStrings.append(self.getExprChildren(child))
                             else:
-                                childrenStrings.append(child.val)
-                        
-                        childrenStr = "".join(childrenStrings)
-                        self.symbolTable.insert(Symbol(methodName, "MethodCall", "Void", childrenStr, None, class_scope + "." + method_scope, node.line))
-
-            # self.symbolTable.display()
-
-            # recorrer la tabla de simbolos y verficar que los metodos y atributos son heredados
-            claseActual = ""
-            for symbol in self.symbolTable.symbols:
-                if symbol.inheritsFrom:
-                    claseActual = symbol.inheritsFrom
-                    claseHeredando = symbol.name
-                    for symbol2 in self.symbolTable.symbols:
-                        if claseHeredando in symbol2.scope and symbol2.name != "constructor":
-                            # print("claseHeredando", claseHeredando, "claseActual", claseActual, "symbol2", symbol2.name)
-                            try:
-                                if symbol2.name in classProperties[claseActual]:
-                                    symbol2.inheritsFrom = claseActual
-                            except:
-                                pass
-            
-                if symbol.value is None and symbol.id_type == "Variable":
-                    if symbol.data_type == "String":
-                        symbol.update_value("")
-                    elif symbol.data_type == "Int":
-                        symbol.update_value(0)
-                    elif symbol.data_type == "Bool":
-                        symbol.update_value(False)
+                                self.symbolTable.update_symbol_value(var_name, "true")
+                                self.symbolTable.update_symbol_line(var_name, node.line)
+                        else:
+                            self.symbolTable.update_symbol_value(var_name, var_value)
+                            self.symbolTable.update_symbol_line(var_name, node.line)
                     
-            print("\nTABLA DE SIMBOLOS:")
-            self.symbolTable.display()
+                elif rule_name == "formal" and node.parent.val != "property":
+                    # print("node", node)
+                    current_scope = method_scope if method_scope != "" else class_scope
+                    var_name = node.children[0].val
+                    var_type = node.children[2].val
+                    self.symbolTable.insert(Symbol(var_name, "Parameter", var_type, None, None, class_scope +"."+ current_scope, node.line))
+
+                elif rule_name == "expr" and len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")":
+                    method_call_name = node.children[0].val
+                    self.symbolTable.insert(Symbol(method_call_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
+
+                elif rule_name == "expr" and len(node.children) == 4 and node.children[1].val == "(" and node.children[3].val == ")":
+                    procedure_name = node.children[0].val
+                    matching_method_symbol = None
+                    for symbol in self.symbolTable.symbols:
+                        if symbol.name == procedure_name and symbol.id_type == "Method":
+                            matching_method_symbol = symbol
+                            break
+                    if matching_method_symbol:
+                        self.symbolTable.insert(Symbol(procedure_name, "MethodCall", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
+                    else:
+                        
+                        self.symbolTable.insert(Symbol(procedure_name, "Procedure", "Void", self.getExprChildren(node.children[2]), None, class_scope + "." + method_scope, node.line))
+
+                elif rule_name == "expr" and len(node.children) > 4 and node.children[1].val == "(" and node.children[-1].val == ")":
+                    methodName = node.children[0].val
+                    children = node.children[2:-1]
+                    childrenStrings = []
+                    for child in children:
+                        if child.val == "expr":
+                            childrenStrings.append(self.getExprChildren(child))
+                        else:
+                            childrenStrings.append(child.val)
+                    
+                    childrenStr = "".join(childrenStrings)
+                    self.symbolTable.insert(Symbol(methodName, "MethodCall", "Void", childrenStr, None, class_scope + "." + method_scope, node.line))
+
+        # self.symbolTable.display()
+
+        # recorrer la tabla de simbolos y verficar que los metodos y atributos son heredados
+        claseActual = ""
+        for symbol in self.symbolTable.symbols:
+            if symbol.inheritsFrom:
+                claseActual = symbol.inheritsFrom
+                claseHeredando = symbol.name
+                for symbol2 in self.symbolTable.symbols:
+                    if claseHeredando in symbol2.scope and symbol2.name != "constructor":
+                        # print("claseHeredando", claseHeredando, "claseActual", claseActual, "symbol2", symbol2.name)
+                        try:
+                            if symbol2.name in classProperties[claseActual]:
+                                symbol2.inheritsFrom = claseActual
+                        except:
+                            pass
+        
+            if symbol.value is None and symbol.id_type == "Variable":
+                if symbol.data_type == "String":
+                    symbol.update_value("")
+                elif symbol.data_type == "Int":
+                    symbol.update_value(0)
+                elif symbol.data_type == "Bool":
+                    symbol.update_value(False)
+                
+        print("\nTABLA DE SIMBOLOS:")
+        self.symbolTable.display()
 
     def semanticAnalysis(self):
-        if not self.error_listener.errors:
-            print("\n------ANALISIS SEMANTICO------")
-            self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
-            self.semanticAnalyzer.analyze()
+        # if not self.error_listener.errors:
+        print("\n------ANALISIS SEMANTICO------")
+        self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
+        self.semanticAnalyzer.analyze()
     
     def getExprChildren(self, node, child_values=None):
         if child_values is None:

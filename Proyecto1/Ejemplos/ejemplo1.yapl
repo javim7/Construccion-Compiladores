@@ -3,6 +3,7 @@ class Main {
     a : Int <- 1;
     b : Int <- 5;
     c : Int <- 8;
+    d : String;
 
     main() : SELF_TYPE {
       {
