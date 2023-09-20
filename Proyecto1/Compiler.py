@@ -249,6 +249,18 @@ class Compiler():
                     symbol.update_value(False)
                 
         print("\nTABLA DE SIMBOLOS:")
+        
+        # Asignar los bytes a cada variable de tipo Int, String y Bool:
+
+        for symbol in self.symbolTable.symbols:
+            if symbol.data_type == "Int" and symbol.id_type == "Variable":
+                symbol.bytes = 4
+            elif symbol.data_type == "String" and symbol.id_type == "Variable":
+                symbol.bytes = len(symbol.value) + 1
+            elif symbol.data_type == "Bool" and symbol.id_type == "Variable":
+                symbol.bytes = 1
+ 
+
         self.symbolTable.display()
 
     def semanticAnalysis(self):
