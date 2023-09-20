@@ -5,10 +5,10 @@ class Main {
     c : Int <- 8;
     d : String;
 
-    main() : SELF_TYPE {
+    main() : Int {
       {
         out_int(a);
-        return self;
+        return(a);
       }
     };
 
