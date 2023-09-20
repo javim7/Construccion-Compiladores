@@ -1,9 +1,12 @@
 class Main {
    
     a : Int <- 1;
-    b : Int <- 5;
-    c : Int <- 8;
-    d : String;
+    b : Int;
+    c : Int;
+    d : String <- "Hola";
+    e : Bool <- true;
+    f : String;
+    g : Bool;
 
     main() : Int {
       {

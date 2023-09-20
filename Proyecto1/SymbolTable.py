@@ -9,6 +9,7 @@ class Symbol:
         self.inheritsFrom = inheritsFrom
         self.scope = scope
         self.line = line
+        self.bytes = None
     
     def update_value(self, new_value):
         # Verificar si el nuevo valor tiene el mismo tipo que el tipo original del símbolo
@@ -140,9 +141,9 @@ class SymbolTable:
     #         print(symbol)
     def display(self):
         table = PrettyTable()
-        table.field_names = ["Name", "ID Type", "Data Type", "Value","Inherits","Scope", "Line"]
+        table.field_names = ["Name", "ID Type", "Data Type", "Value","Inherits","Scope", "Line", "Bytes"]
 
         for symbol in self.symbols:
-            table.add_row([symbol.name, symbol.id_type, symbol.data_type, symbol.value,symbol.inheritsFrom, symbol.scope, symbol.line])
+            table.add_row([symbol.name, symbol.id_type, symbol.data_type, symbol.value,symbol.inheritsFrom, symbol.scope, symbol.line, symbol.bytes])
 
         print(table)
