@@ -1,17 +1,15 @@
 class Main {
    
     a : Int <- 1;
-    b : Int;
-    c : Int;
-    d : String <- "Hola";
-    e : Bool <- true;
-    f : String;
-    g : Bool;
+    b : Int <- 2;
+    c : Int <- 3;
+    d : Int <- 4;
+    e : Int;
 
     main() : Int {
       {
-        out_int(a);
-        return(a);
+        e <- a + a * (b-c) + (b-c) * d;
+        return(e);
       }
     };
 
