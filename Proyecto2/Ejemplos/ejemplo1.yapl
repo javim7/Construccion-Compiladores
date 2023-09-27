@@ -2,13 +2,11 @@ class Main {
    
     a : Int <- 1;
     b : Int <- 2;
-    c : Int <- 3;
-    d : Int <- 4;
-    e : Int;
+    c : Int;
 
     main() : Int {
       {
-        e <- a + a * (b-c) + (b-c) * d;
+        c <- a + b - a;
         return(e);
       }
     };

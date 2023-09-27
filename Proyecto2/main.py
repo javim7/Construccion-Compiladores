@@ -7,19 +7,21 @@ Lab: Generacion de Scanner y Parser
 
 #importando el compilador
 from Compiler import *
-from Intermediate import *
+from Cuadrupla import *
 
 def main():
     
-    compilador = Compiler('Proyecto1/Ejemplos/ejemplo1.yapl')
+    compilador = Compiler('Ejemplos/ejemplo1.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
     compilador.semanticAnalysis()
 
-    # arbol = compilador.treeStruct
-    # postorder(arbol.root)
+    arbol = compilador.treeStruct
 
+    intermedio = Intermediate(arbol)
+
+    print(intermedio)
 
 if __name__ == '__main__':
     main()
