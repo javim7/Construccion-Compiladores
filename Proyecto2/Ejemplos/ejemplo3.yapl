@@ -1,0 +1,61 @@
+class Animal {
+    name: String;
+    constructor(newName: String) : Object {
+        name <- newName
+    };
+    
+    speak(): String {
+        out_string(name)
+    };
+};
+
+class Dog inherits Animal {
+    breed: String;
+    constructor(newName: String, newBreed: String) : Object {
+        {
+            name <- newName;
+            breed <- newBreed;
+
+            if "hola" = "hola" 
+            then true
+            else if "b" = "perro"
+            then false
+            else if 2 < 4
+            then false
+            else false
+            fi fi fi;
+
+            speak();
+        }
+    };
+    
+    speak(): String {
+        return ("wau" + " im a dog named " + name);
+    };
+};
+
+class Cat inherits Animal {
+    constructor(newName: String) : Object {
+        {
+            name <- newName;
+            while 3 < false
+            loop true
+            pool;
+            speak();
+        }
+    };
+    
+    speak(): String {
+        {
+            out_string("Meow, I'm a cat named " + name);
+            out_string("hola");
+            return ("meow");
+        }
+    };
+};
+
+class Main{
+    main() : SELF_TYPE  {
+        main()
+    };
+};
