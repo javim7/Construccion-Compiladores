@@ -1,14 +1,19 @@
 class Main {
-   
     a : Int <- 1;
     b : Int <- 2;
     c : Int;
+    d : Int <- 1;
+    e : Int <- 2;
 
     main() : Int {
-      {
-        c <- a + b - a;
-        return(e);
+      { 
+        c <- 2 * a;
+        return(d + e);
       }
+    };
+
+    metodoB(a:Int) : Int{
+      out_int(a)
     };
 
 };

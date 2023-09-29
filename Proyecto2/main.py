@@ -11,17 +11,17 @@ from Cuadrupla import *
 
 def main():
     
-    compilador = Compiler('Ejemplos/ejemplo1.yapl')
+    compilador = Compiler('Proyecto2/Ejemplos/ejemplo1.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
     compilador.semanticAnalysis()
+    
+    if not compilador.semanticAnalyzer.errors:
+        arbol = compilador.treeStruct
+        intermedio = Intermediate(arbol)
 
-    arbol = compilador.treeStruct
-
-    intermedio = Intermediate(arbol)
-
-    print(intermedio)
+        print(intermedio)
 
 if __name__ == '__main__':
     main()

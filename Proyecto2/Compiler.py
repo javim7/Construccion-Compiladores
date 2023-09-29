@@ -128,7 +128,7 @@ class Compiler():
                     current_scope = method_name
                 elif rule_name == "property":
                     # print("node", node)
-                    if len(node.children) > 1:
+                    if len(node.children) > 1: # es una asignacion
                         # print("Si entro aca---")
                         # print(node)
                         current_scope = method_scope if method_scope != "" else class_scope
@@ -139,9 +139,7 @@ class Compiler():
                         var_type = childFormal.children[2].val
                         var_value = childExpr.children[0].val
                         self.symbolTable.insert(Symbol(var_name, "Variable", var_type, var_value, None, class_scope, node.line))
-                    else:
-                        # print(node)
-                        # print("entro aca tambien")
+                    else: # solo es una declaracion
                         current_scope = method_scope if method_scope != "" else class_scope
                         childFormal = node.children[0]
                         var_name = childFormal.children[0].val
@@ -303,7 +301,7 @@ class Compiler():
                 print(error)
         else:
             print("\nARBOL SINTACTICO GENERADO:")
-            command = f"antlr4-parse Proyecto1/YAPL.g4 program  -gui {self.input}"
+            command = f"antlr4-parse Proyecto2/YAPL.g4 program  -gui {self.input}"
             os.system(command)
 
     def getTreeString(self):

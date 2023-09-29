@@ -25,4 +25,4 @@ class Drawer:
             self.draw(child, node_name)
 
     def save(self, filename):
-        self.graph.render("Proyecto1/Tree/" + filename, view=False)
+        self.graph.render("Proyecto2/Tree/" + filename, view=False)
