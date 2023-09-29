@@ -19,6 +19,7 @@ class Intermediate():
         self.arbol = arbol
         self.temp_counter = 1
         self.label_counter = 1
+        self.index = 0
 
         self.recorrer_arbol(arbol.root)
 
@@ -96,7 +97,6 @@ class Intermediate():
         # ver los formals
         contador = 0
         for child in children:
-            print("child: ", child.val)
             if child.val == "expr":
                 self.lista_cuadruplas.append(Cuadrupla("PRE_PARAM", child.children[0].val, None, None))
                 contador += 1
@@ -187,7 +187,7 @@ class Intermediate():
                 
                 # Creamos la cuadrupla con la operación y los operandos
                 cuadrupla = Cuadrupla(child_values[1], child_values[0], child_values[2], temp)
-                print(cuadrupla)
+                # print(cuadrupla)
                 
                 # Agregamos la cuadrupla a la lista de cuadruplas
                 self.lista_cuadruplas.append(cuadrupla)
@@ -246,11 +246,11 @@ class Intermediate():
     def __str__(self):
         # Crear una tabla con las columnas adecuadas
         table = PrettyTable()
-        table.field_names = ["Operador", "Operando 1", "Operando 2", "Resultado"]
+        table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
 
         # Agregar las cuadruplas a la tabla
         for cuadrupla in self.lista_cuadruplas:
-            table.add_row([cuadrupla.operador, cuadrupla.operando1, cuadrupla.operando2, cuadrupla.resultado])
+            table.add_row([self.lista_cuadruplas.index(cuadrupla), cuadrupla.operador, cuadrupla.operando1, cuadrupla.operando2, cuadrupla.resultado])
 
         # Retornar la representación de la tabla como cadena
         return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"

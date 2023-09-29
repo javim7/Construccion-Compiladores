@@ -2,7 +2,7 @@
 Jose Hernandez: 20053
 Javier Mombiela: 20067
 
-Lab: Generacion de Scanner y Parser
+Proyecto2: Codigo Intermedio
 '''
 
 #importando el compilador
