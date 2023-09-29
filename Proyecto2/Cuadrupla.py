@@ -49,7 +49,7 @@ class Intermediate():
             elif len(node.children) > 3 and node.children[1].val == "(" and node.children[-1].val == ")": # es un metodo con parametros
                 self.methodCallParamsQuad(node)
             elif len(node.children) == 3: # es operacion aritmetica
-                self.aritmethicQuad(node)
+                self.arithmeticQuad(node)
             if node.children[0].val == "return": # es un return
                 self.returnQuad(node)
 
@@ -124,8 +124,8 @@ class Intermediate():
             child_values = []
             for child in node.children:
                 if child.val == "expr":
-                    # Si el hijo es un nodo expr, llamamos recursivamente a aritmethicQuad(node)
-                    child_values.append(self.aritmethicQuad(child))
+                    # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
+                    child_values.append(self.arithmeticQuad(child))
                 else:
                     # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
                     child_values.append(child.val)
@@ -137,7 +137,7 @@ class Intermediate():
             self.lista_cuadruplas.append(cuadrupla)
         else:
             # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
-            return node.val if len(node.children) == 0 else self.aritmethicQuad(node.children[0])
+            return node.val if len(node.children) == 0 else self.arithmeticQuad(node.children[0])
 
     # funcion para crear la cuadrupla de variables asignadas
     def varDeclarationQuad(self, node=None):
@@ -147,8 +147,8 @@ class Intermediate():
             child_values = []
             for child in node.children:
                 if child.val == "expr":
-                    # Si el hijo es un nodo expr, llamamos recursivamente a aritmethicQuad(node)
-                    child_values.append(self.aritmethicQuad(child))
+                    # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
+                    child_values.append(self.arithmeticQuad(child))
                 else:
                     # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
                     child_values.append(child.val)
@@ -160,7 +160,7 @@ class Intermediate():
             self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para crear la cuadrupla de operaciones aritmeticas
-    def aritmethicQuad(self, node=None):
+    def arithmeticQuad(self, node=None):
         # Si el nodo ya ha sido procesado, simplemente retornamos su valor
         if node in self.processed_nodes:
             return node.val
@@ -171,8 +171,8 @@ class Intermediate():
             child_values = []
             for child in node.children:
                 if child.val == "expr":
-                    # Si el hijo es un nodo expr, llamamos recursivamente a aritmethicQuad(node)
-                    child_values.append(self.aritmethicQuad(child))
+                    # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
+                    child_values.append(self.arithmeticQuad(child))
                 elif child.val in ["(", ")"]:
                     # Si el hijo es un paréntesis, lo ignoramos
                     continue
@@ -202,7 +202,7 @@ class Intermediate():
                 return child_values[0] if child_values else None
         else:
             # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
-            return node.val if len(node.children) == 0 else self.aritmethicQuad(node.children[0])
+            return node.val if len(node.children) == 0 else self.arithmeticQuad(node.children[0])
 
     # funcion para crear la cuadrupla de metodo
     def methodQuad(self, node=None):
@@ -256,7 +256,7 @@ class Intermediate():
         return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
     
     # codigo que se usa para verificar si la cuadrupla ya esta en el diccionario
-    # def aritmethicQuad(self, node=None):
+    # def arithmeticQuad(self, node=None):
     #     # Si el nodo ya ha sido procesado, simplemente retornamos su valor
     #     if node in self.processed_nodes:
     #         return node.val
@@ -267,8 +267,8 @@ class Intermediate():
     #         child_values = []
     #         for child in node.children:
     #             if child.val == "expr":
-    #                 # Si el hijo es un nodo expr, llamamos recursivamente a aritmethicQuad(node)
-    #                 child_values.append(self.aritmethicQuad(child))
+    #                 # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
+    #                 child_values.append(self.arithmeticQuad(child))
     #             else:
     #                 # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
     #                 child_values.append(child.val)
@@ -296,4 +296,4 @@ class Intermediate():
     #         return temp
     #     else:
     #         # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
-    #         return node.val if len(node.children) == 0 else self.aritmethicQuad(node.children[0])
+    #         return node.val if len(node.children) == 0 else self.arithmeticQuad(node.children[0])
