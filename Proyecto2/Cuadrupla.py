@@ -48,7 +48,8 @@ class Intermediate():
                 self.methodCallQuad(node)
             elif len(node.children) > 3 and node.children[1].val == "(" and node.children[-1].val == ")": # es un metodo con parametros
                 self.methodCallParamsQuad(node)
-            elif len(node.children) == 3: # es operacion aritmetica
+            elif len(node.children) == 3 and node.children[1] in ["+", "/", "-", "*"]: # es operacion aritmetica
+                print(node)
                 self.arithmeticQuad(node)
             if node.children[0].val == "return": # es un return
                 self.returnQuad(node)
@@ -103,7 +104,6 @@ class Intermediate():
         
         # creamos el temporal
         temp = self.create_new_temp()
-
         # creamos la cuadrupla
         cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, contador, temp)
         self.lista_cuadruplas.append(cuadrupla)
@@ -254,46 +254,3 @@ class Intermediate():
 
         # Retornar la representación de la tabla como cadena
         return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
-    
-    # codigo que se usa para verificar si la cuadrupla ya esta en el diccionario
-    # def arithmeticQuad(self, node=None):
-    #     # Si el nodo ya ha sido procesado, simplemente retornamos su valor
-    #     if node in self.processed_nodes:
-    #         return node.val
-
-    #     # Si el nodo tiene hijos
-    #     if len(node.children) > 1:
-    #         # Obtenemos los hijos del nodo expr
-    #         child_values = []
-    #         for child in node.children:
-    #             if child.val == "expr":
-    #                 # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
-    #                 child_values.append(self.arithmeticQuad(child))
-    #             else:
-    #                 # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
-    #                 child_values.append(child.val)
-            
-    #         # Buscamos en la lista de cuadruplas existentes para ver si ya hay una cuadrupla con los mismos operandos y operación
-    #         for cuadrupla in self.lista_cuadruplas:
-    #             if cuadrupla.operador == child_values[1] and cuadrupla.operando1 == child_values[0] and cuadrupla.operando2 == child_values[2]:
-    #                 # Si encontramos una cuadrupla existente, simplemente retornamos su resultado
-    #                 return cuadrupla.resultado
-            
-    #         # Si no encontramos una cuadrupla existente, creamos un nuevo temporal para almacenar el resultado de la operación
-    #         temp = self.create_new_temp()
-            
-    #         # Creamos la cuadrupla con la operación y los operandos
-    #         cuadrupla = Cuadrupla(child_values[1], child_values[0], child_values[2], temp)
-            
-    #         # Agregamos la cuadrupla a la lista de cuadruplas
-    #         self.lista_cuadruplas.append(cuadrupla)
-            
-    #         # Agregamos el nodo a la lista de nodos procesados y al diccionario con su temporal correspondiente
-    #         self.processed_nodes.add(node)
-    #         self.dic_cuadruplas[node] = temp
-
-    #         # Retornamos el temporal que almacena el resultado de la operación
-    #         return temp
-    #     else:
-    #         # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
-    #         return node.val if len(node.children) == 0 else self.arithmeticQuad(node.children[0])

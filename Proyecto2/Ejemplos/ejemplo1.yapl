@@ -7,12 +7,13 @@ class Main {
 
     main() : Int {
       { 
-        c <- 2 * 3 -5;
+        a <- 2 * 3;
+        c <- 2 * 3 - 5;
         metodoB(a, b);
         out_int(2);
         if a<b
-        then a=1
-        else a = 2
+        then a<-1
+        else a <- 2
         fi;
 
         return(c);
