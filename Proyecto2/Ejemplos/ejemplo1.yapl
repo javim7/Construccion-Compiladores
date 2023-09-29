@@ -7,13 +7,14 @@ class Main {
 
     main() : Int {
       { 
-        c <- 2 * a;
-        return(d + e);
+        c <- 2 * 3 -5;
+        metodoB(a, b);
+        return(c);
       }
     };
-
-    metodoB(a:Int) : Int{
-      out_int(a)
+  
+    metodoB(a:Int, b: Int) : Int{
+      d <- a / b
     };
 
 };

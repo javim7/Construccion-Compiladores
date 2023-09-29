@@ -19,6 +19,8 @@ def main():
     
     if not compilador.semanticAnalyzer.errors:
         arbol = compilador.treeStruct
+        # for node in arbol.nodes:
+        #     print(node)
         intermedio = Intermediate(arbol)
 
         print(intermedio)

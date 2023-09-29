@@ -160,6 +160,8 @@ class SemanticVisitor:
                 else:
                     operators.append(child)
 
+            # print("alphanum: ", alphanum)
+            # print("variables: ", variables)
             # Verifica y asigna el return de un metodo
             if "(" in operators and ")" in operators:
                 symbol_type = self.symbol_table.lookup_by_scope(alphanum[0], varScope)
@@ -171,12 +173,10 @@ class SemanticVisitor:
             # print(operators)
 
             # Verifica que las variables se aignen con el mismo tipo
-            firstVal = next(iter(variables.values()))
-            if all(value == firstVal for value in variables.values()):
+            firstVal = next(iter(variables.values())).lower()
+            if all(value.lower() == firstVal for value in variables.values()):
                 if firstVal.lower() != var_type.lower():
                     return f"Las variables '{alphanum}' deben ser de tipo '{var_type}' no '{firstVal}'"
-              
-
 
                 elif firstVal.lower() == var_type.lower() and firstVal.lower() == "string":
                     for operator in operators:
@@ -197,8 +197,6 @@ class SemanticVisitor:
                         else:
                             return None
 
-
-                
                 return f"Las variables '{alphanum}' deben ser del mismo tipo '{var_type}'"
 
         return None

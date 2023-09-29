@@ -1,3 +1,5 @@
+from prettytable import PrettyTable
+
 class Cuadrupla:
     def __init__(self, operador, operando1, operando2, resultado):
         self.operador = operador
@@ -41,7 +43,11 @@ class Intermediate():
         rule = node.val
 
         if rule == "expr":
-            if len(node.children) == 3: # es operacion aritmetica
+            if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")": # es un metodo sin parametros
+                self.methodCallQuad(node)
+            elif len(node.children) > 3 and node.children[1].val == "(" and node.children[-1].val == ")": # es un metodo con parametros
+                self.methodCallParamsQuad(node)
+            elif len(node.children) == 3: # es operacion aritmetica
                 self.aritmethicQuad(node)
             if node.children[0].val == "return": # es un return
                 self.returnQuad(node)
@@ -52,7 +58,7 @@ class Intermediate():
         elif rule == "varDeclaration": # es una declaracion de variable
             self.varDeclarationQuad(node)
 
-        elif rule == "method":
+        elif rule == "method": # es un metodo
             self.methodQuad(node)
 
     # Agarramos los hijos de un nodo expr
@@ -68,14 +74,46 @@ class Intermediate():
         
         return child_values
     
+    # funcion para crear la cuadrupla de methodCall sin parametros
+    def methodCallQuad(self, node):
+        cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, 0, None)
+        self.lista_cuadruplas.append(cuadrupla)
+
+        # Agregamos el nodo a la lista de nodos procesados
+        self.processed_nodes.add(node)
+
+    # funcion para crear la cuadrupla de methodCall con parametros
+    def methodCallParamsQuad(self, node):
+
+        #saltarnos si es un return
+        if node.children[0].val == "return":
+            return
+
+        children = node.children
+        # ver los formals
+        contador = 0
+        for child in children:
+            print("child: ", child.val)
+            if child.val == "expr":
+                self.lista_cuadruplas.append(Cuadrupla("PRE_PARAM", child.children[0].val, None, None))
+                contador += 1
+        
+        # creamos el temporal
+        temp = self.create_new_temp()
+
+        # creamos la cuadrupla
+        cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, contador, temp)
+        self.lista_cuadruplas.append(cuadrupla)
+
+    #if para ver si es asignacion o solo declaracion
     def propertyQuad(self, node=None):
-        #if para ver si es asignacion o solo declaracion
         if len(node.children) > 1: # es una asignacion
             formal = node.children[0]
             expr = node.children[2]
             cuadrupla = Cuadrupla("<-", expr.children[0].val, None, formal.children[0].val)
             self.lista_cuadruplas.append(cuadrupla)
 
+    # funcion para crear la cuadrupla de returns
     def returnQuad(self, node=None):
         # Si el nodo tiene hijos
         if len(node.children) > 1:
@@ -90,7 +128,7 @@ class Intermediate():
                     child_values.append(child.val)
             
             # Creamos la cuadrupla con la operación de asignación y los operandos
-            cuadrupla = Cuadrupla("return", child_values[2], None, None)
+            cuadrupla = Cuadrupla("RETURN", child_values[2], None, None)
             
             # Agregamos la cuadrupla a la lista de cuadruplas
             self.lista_cuadruplas.append(cuadrupla)
@@ -98,6 +136,7 @@ class Intermediate():
             # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
             return node.val if len(node.children) == 0 else self.aritmethicQuad(node.children[0])
 
+    # funcion para crear la cuadrupla de variables asignadas
     def varDeclarationQuad(self, node=None):
         # Si el nodo tiene hijos
         if len(node.children) > 1:
@@ -117,6 +156,7 @@ class Intermediate():
             # Agregamos la cuadrupla a la lista de cuadruplas
             self.lista_cuadruplas.append(cuadrupla)
 
+    # funcion para crear la cuadrupla de operaciones aritmeticas
     def aritmethicQuad(self, node=None):
         # Si el nodo ya ha sido procesado, simplemente retornamos su valor
         if node in self.processed_nodes:
@@ -130,37 +170,70 @@ class Intermediate():
                 if child.val == "expr":
                     # Si el hijo es un nodo expr, llamamos recursivamente a aritmethicQuad(node)
                     child_values.append(self.aritmethicQuad(child))
+                elif child.val in ["(", ")"]:
+                    # Si el hijo es un paréntesis, lo ignoramos
+                    continue
                 else:
-                    # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
+                    # Si el hijo no es un nodo expr ni un paréntesis, simplemente agregamos su valor a la lista
                     child_values.append(child.val)
             
-            # Creamos un nuevo temporal para almacenar el resultado de la operación
-            temp = self.create_new_temp()
-            
-            # Creamos la cuadrupla con la operación y los operandos
-            cuadrupla = Cuadrupla(child_values[1], child_values[0], child_values[2], temp)
-            
-            # Agregamos la cuadrupla a la lista de cuadruplas
-            self.lista_cuadruplas.append(cuadrupla)
-            
-            # Agregamos el nodo a la lista de nodos procesados
-            self.processed_nodes.add(node)
+            # Si hay suficientes valores en child_values para formar una cuadrupla
+            if len(child_values) >= 3:
+                # Creamos un nuevo temporal para almacenar el resultado de la operación
+                temp = self.create_new_temp()
+                
+                # Creamos la cuadrupla con la operación y los operandos
+                cuadrupla = Cuadrupla(child_values[1], child_values[0], child_values[2], temp)
+                print(cuadrupla)
+                
+                # Agregamos la cuadrupla a la lista de cuadruplas
+                self.lista_cuadruplas.append(cuadrupla)
+                
+                # Agregamos el nodo a la lista de nodos procesados
+                self.processed_nodes.add(node)
 
-            # Retornamos el temporal que almacena el resultado de la operación
-            return temp
+                # Retornamos el temporal que almacena el resultado de la operación
+                return temp
+            else:
+                # Si no hay suficientes valores en child_values, simplemente retornamos el primer valor
+                return child_values[0] if child_values else None
         else:
             # Si el nodo no tiene hijos o solo tiene uno, entonces es una variable o un número, y simplemente lo retornamos
             return node.val if len(node.children) == 0 else self.aritmethicQuad(node.children[0])
 
+    # funcion para crear la cuadrupla de metodo
     def methodQuad(self, node=None):
-        pass
+
+        children = node.children
+        
+        # creamos la cuadrupla
+        cuadrupla = Cuadrupla("METHOD_START", node.children[0].val, node.children[-4].val, None)
+        self.lista_cuadruplas.append(cuadrupla)
+
+        for child in children:
+            if child.val == "formal":
+                self.paramQuad(child)
+
+    # funcion para crear la cuadrupla de los parametros de un metodo
+    def paramQuad(self, node=None):
+            
+        # creamos la cuadrupla
+        cuadrupla = Cuadrupla("PARAM", node.children[0].val, node.children[2].val, None)
+        self.lista_cuadruplas.append(cuadrupla)
 
     def __str__(self):
-        result = "\nCODIGO INTERMEDIO:\n"
+        # Crear una tabla con las columnas adecuadas
+        table = PrettyTable()
+        table.field_names = ["Operador", "Operando 1", "Operando 2", "Resultado"]
+
+        # Agregar las cuadruplas a la tabla
         for cuadrupla in self.lista_cuadruplas:
-            result += str(cuadrupla) + "\n"
-        return result
+            table.add_row([cuadrupla.operador, cuadrupla.operando1, cuadrupla.operando2, cuadrupla.resultado])
+
+        # Retornar la representación de la tabla como cadena
+        return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
     
+    # codigo que se usa para verificar si la cuadrupla ya esta en el diccionario
     # def aritmethicQuad(self, node=None):
     #     # Si el nodo ya ha sido procesado, simplemente retornamos su valor
     #     if node in self.processed_nodes:

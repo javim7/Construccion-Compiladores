@@ -4,34 +4,21 @@ class Main {
     b : Int <- 5;
     c : Int <- 8;
     l : String;
-    f : Int;
-    flag : Bool <- false;
-    z : String;
-    h : Bool;
 
     main() : SELF_TYPE {
-      {   
-          l <- "hola" + "adios";
-          f <- a + b * c;
-          flag <- not flag;
-          h <- a;
-          out_bool(flag);
-          return (self);
-	    }
+      b <- c
     };
 
-    test(a: Int): Int {
-        return (1)
-    }; 
-
 };
 
+class Calculadora {
+    b : Int;
 
-class ClassB {
+    constructor() : Object {
+        b <- resta(1,2)
+    }
 
-   test(num1: Int, num2: Int): Int {
-    return(num1 + num2)
-   };
-};
-
-(new Main).main()
+    resta(a : Int, b : Int) : Int {
+        return(a+b)
+    }
+}
