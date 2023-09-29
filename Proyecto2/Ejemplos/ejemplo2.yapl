@@ -12,13 +12,15 @@ class Main {
 };
 
 class Calculadora {
-    b : Int;
 
-    constructor() : Object {
-        b <- resta(1,2)
-    }
+    b : Int;
 
     resta(a : Int, b : Int) : Int {
         return(a+b)
     }
+
+    constructor() : Object {
+        b <- resta(1,2)
+    }
+    
 }

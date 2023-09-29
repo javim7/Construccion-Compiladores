@@ -61,6 +61,9 @@ class Intermediate():
         elif rule == "method": # es un metodo
             self.methodQuad(node)
 
+        elif rule == "classDefine": # es una clase
+            self.classQuad(node)
+
     # Agarramos los hijos de un nodo expr
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
@@ -213,6 +216,25 @@ class Intermediate():
         for child in children:
             if child.val == "formal":
                 self.paramQuad(child)
+    
+    # funcion para crear la cuadrupla de clase
+    def classQuad(self, node=None):
+
+        # Revisamos si la clase incluye herencia
+
+        if node.children[2].val == "inherits":
+
+            cuadrupla = Cuadrupla("CLASS", node.children[1].val, node.children[3].val, None)
+
+            self.lista_cuadruplas.append(cuadrupla)
+        
+        # La clase no incluye herencia
+
+        else:
+
+            cuadrupla = Cuadrupla("CLASS", node.children[1].val, None, None)
+
+            self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para crear la cuadrupla de los parametros de un metodo
     def paramQuad(self, node=None):
