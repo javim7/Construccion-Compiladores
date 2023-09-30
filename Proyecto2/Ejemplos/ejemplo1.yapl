@@ -19,6 +19,8 @@ class Main {
         else a <- 3
         fi fi;
 
+        out_int(a);
+
         return(c);
       }
     };

@@ -1,71 +1,183 @@
 from prettytable import PrettyTable
 
 class Cuadrupla:
+
     def __init__(self, operador, operando1, operando2, resultado):
+
+        # Asigna el operador pasado como argumento a la variable de instancia self.operador
+        
         self.operador = operador
+        
+        # Asigna el primer operando pasado como argumento a la variable de instancia self.operando1
+        
         self.operando1 = operando1
+        
+        # Asigna el segundo operando pasado como argumento a la variable de instancia self.operando2
+        
         self.operando2 = operando2
+        
+        # Asigna el resultado pasado como argumento a la variable de instancia self.resultado
+        
         self.resultado = resultado
 
     def __str__(self):
+
+        # Retorna una representación en cadena de la cuádrupla en un formato específico
+        
         return f"Cuadrupla: {self.operador}, {self.operando1}, {self.operando2}, {self.resultado}"
+
 
 class Intermediate():
     
     def __init__(self, arbol):
-        self.lista_cuadruplas = []
-        self.dic_cuadruplas = {}
-        self.processed_nodes = set()
-        self.arbol = arbol
-        self.temp_counter = 1
-        self.label_counter = 1
-        self.index = 0
 
+        # Inicializa una lista vacía para almacenar cuádruplas
+        
+        self.lista_cuadruplas = []
+        
+        # Inicializa un diccionario vacío para almacenar cuádruplas
+        
+        self.dic_cuadruplas = {}
+        
+        # Inicializa un conjunto vacío para almacenar nodos procesados
+        
+        self.processed_nodes = set()
+        
+        # Almacena el árbol pasado como argumento en la variable de instancia self.arbol
+        
+        self.arbol = arbol
+        
+        # Inicializa un contador de temporales
+        
+        self.temp_counter = 1
+        
+        # Inicializa un contador de etiquetas
+        
+        self.label_counter = 1
+        
+        # Inicializa un índice a 0
+        
+        self.index = 0
+        
+        # Llama al método recorrer_arbol con la raíz del árbol como argumento
+        
         self.recorrer_arbol(arbol.root)
 
+
     def create_new_temp(self):
+
+        # Crea una nueva variable temporal usando el contador de temporales (temp_counter)
+        
         temp = f"t{self.temp_counter}"
+        
+        # Incrementa el contador de temporales para el próximo uso
+        
         self.temp_counter += 1
+        
+        # Retorna la nueva variable temporal creada
+        
         return temp
 
+
     def create_new_label(self):
+
+        # Crea una nueva etiqueta usando el contador de etiquetas (label_counter)
+        
         label = f"L{self.label_counter}"
+        
+        # Incrementa el contador de etiquetas para el próximo uso
+        
         self.label_counter += 1
+        
+        # Retorna la nueva etiqueta creada
+        
         return label
 
+
     def recorrer_arbol(self, node=None):
+
+        # Verifica si el nodo proporcionado no es None
+        
         if node is not None:
+            
+            # Llama al método generar_codigo_tres_direcciones para el nodo actual
+            
             self.generar_codigo_tres_direcciones(node)
+            
+            # Itera sobre todos los hijos del nodo actual y llama recursivamente al método recorrer_arbol para cada hijo
+            
             for child in node.children:
+
                 self.recorrer_arbol(child)
 
-    def generar_codigo_tres_direcciones(self, node=None):
-        rule = node.val
 
+    def generar_codigo_tres_direcciones(self, node=None):
+
+        # Asigna el valor del nodo a la variable rule
+        
+        rule = node.val
+        
+        # Obtiene la cantidad de hijos del nodo y la almacena en la variable children_len
+        
+        children_len = len(node.children)
+        
         if rule == "expr":
-            # print(node)
-            if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")": # es un metodo sin parametros
+            
+            # Comprueba si es un método sin parámetros
+            
+            if children_len == 3 and node.children[1].val == "(" and node.children[2].val == ")":
+                
                 self.methodCallQuad(node)
-            elif len(node.children) > 3 and node.children[1].val == "(" and node.children[-1].val == ")": # es un metodo con parametros
+                
+            # Comprueba si es un método con parámetros
+            
+            elif children_len > 3 and node.children[1].val == "(" and node.children[-1].val == ")":
+                
                 self.methodCallParamsQuad(node)
-            elif len(node.children) == 3 and node.children[1].val in ["+", "/", "-", "*"]: # es operacion aritmetica
+                
+            # Comprueba si es operación aritmética
+            
+            elif children_len == 3 and node.children[1].val in ["+", "/", "-", "*"]:
+                
                 self.arithmeticQuad(node)
-            elif len(node.children) == 7 and node.children[0].val == "if" and node.children[-1].val == "fi": # es un if
+                
+            # Comprueba si es un if
+            
+            elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
+                
                 self.ifQuad(node)
-            if node.children[0].val == "return": # es un return
+                
+            # Comprueba si es un return
+            
+            if node.children[0].val == "return":
+                
                 self.returnQuad(node)
 
-        elif rule == "property": # es una asignacion de variable
+        elif rule == "property":
+            
+            # Es una asignación de variable
+            
             self.propertyQuad(node)
-
-        elif rule == "varDeclaration": # es una declaracion de variable
+            
+        elif rule == "varDeclaration":
+            
+            # Es una declaración de variable
+            
             self.varDeclarationQuad(node)
-
-        elif rule == "method": # es un metodo
+            
+        elif rule == "method":
+            
+            # Es un método
+            
             self.methodQuad(node)
-
-        elif rule == "classDefine": # es una clase
+            
+        elif rule == "classDefine":
+            
+            # Es una clase
+            
             self.classQuad(node)
+
+
 
     # Agarramos los hijos de un nodo expr
     def getExprChildren(self, node, child_values=None):
@@ -129,6 +241,7 @@ class Intermediate():
 
     # funcion para crear la cuadrupla de if
     def ifQuad(self, node=None):
+
         if node in self.processed_nodes:
             return node.val
         
