@@ -34,6 +34,10 @@ class Intermediate():
         # Inicializa una lista vacía para almacenar cuádruplas
         
         self.lista_cuadruplas = []
+
+        # Conjunto para almacenar etiquetas ya creadas
+
+        self.created_labels = set()
         
         # Inicializa un diccionario vacío para almacenar cuádruplas
         
@@ -240,37 +244,72 @@ class Intermediate():
         return labels
 
     # funcion para crear la cuadrupla de if
-    def ifQuad(self, node=None):
+    def ifQuad(self, node=None, exit_label=None):
 
-        if node in self.processed_nodes:
-            return node.val
+        # Obtenemos la condición, el bloque then y el bloque else de los hijos del nodo
+
+        # Una estrucuta if se ve de la siguiente manera: Children: ['if', 'expr', 'then', 'expr', 'else', 'expr', 'fi']
+
+        cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+
+        # Generamos cuádruplas para la condición
+
+        cond_quad = self.getExprChildren(cond_node)
+
+        # Suponiendo que 'tn' es el resultado de la condición EJEMPLO: tn_temp = t6 y false_label = L1
+
+        tn_temp = self.create_new_temp()
+
+        false_label = self.create_new_label()
+
+        self.lista_cuadruplas.append(Cuadrupla(cond_quad[1], cond_quad[0], cond_quad[2], tn_temp))
+
+        self.lista_cuadruplas.append(Cuadrupla('JUMP_IF_FALSE', tn_temp, '_', false_label))
+
+        # Generamos cuádruplas para el bloque then
+
+        # TODO En este caso then_quad es un NODO del arbol de tipo "VarDeclaration" pero tenemos que revisar despues si siempre sera esto
+
+        self.varDeclarationQuad(then_node)
+
+        # Solo crea una nueva etiqueta de salida si no se proporcionó una
+
+        if exit_label is None:
+
+            exit_label = self.create_new_label()
+
+        # Generamos una etiqueta para el bloque else
+
+        self.lista_cuadruplas.append(Cuadrupla('LABEL', '_', '_', false_label))
+
+        # Instrucción para saltar al final del bloque if-else
+
+        self.lista_cuadruplas.append(Cuadrupla('JUMP', '_', '_', exit_label))
+
+        # Chequea si el bloque else es otro if
+
+        if else_node.children[0].val == 'if':
+
+            self.ifQuad(else_node, exit_label)
+
+        else:
+
+            # TODO En este caso then_quad es un NODO del arbol de tipo "VarDeclaration" pero tenemos que revisar despues si siempre sera esto
+
+            self.varDeclarationQuad(else_node)
         
-        #creamos las etiquetasq
-        labels = self.createIfLabels(node)
-        labels.append(self.create_new_label())
-        print(labels)
+        # Generamos una etiqueta para el bloque exit final del if-else
 
-        #creamos la cuadrupla de la condicion
-        condicion = self.getExprChildren(node.children[1])
-        temp = self.create_new_temp()
-        cuadrupla = Cuadrupla(condicion[1], condicion[0], condicion[2], temp)
-        self.lista_cuadruplas.append(cuadrupla)
+        # Verifica si la etiqueta ya ha sido creada antes de agregar una nueva etiqueta
 
-        #ccreamos la cuadrupla del gotof
-        cuadrupla = Cuadrupla("GOTOF", temp, None, labels[0])
-        self.lista_cuadruplas.append(cuadrupla)
+        if exit_label not in self.created_labels:
 
-        #agregamos la cuadrupla deel cuerpo del if
-        self.recorrer_arbol(node.children[3])
-        #goto al label final
-        cuadrupla = Cuadrupla("GOTO", None, None, labels[-1])
+            self.lista_cuadruplas.append(Cuadrupla('LABEL', '_', '_', exit_label))
 
-        #create la cuadrupla del label1
-        cuadrupla = Cuadrupla("LABEL", None, None, labels[0])
-        # else if
+            # Agrega la etiqueta al conjunto de etiquetas creadas
 
-        #agregamos el nodo a nodos procesados
-        self.processed_nodes.add(node)
+            self.created_labels.add(exit_label)  
+
 
     #if para ver si es asignacion o solo declaracion
     def propertyQuad(self, node=None):
