@@ -34,7 +34,6 @@ class Intermediate():
         return label
 
     def recorrer_arbol(self, node=None):
-
         if node is not None:
             self.generar_codigo_tres_direcciones(node)
             for child in node.children:
@@ -44,13 +43,15 @@ class Intermediate():
         rule = node.val
 
         if rule == "expr":
+            # print(node)
             if len(node.children) == 3 and node.children[1].val == "(" and node.children[2].val == ")": # es un metodo sin parametros
                 self.methodCallQuad(node)
             elif len(node.children) > 3 and node.children[1].val == "(" and node.children[-1].val == ")": # es un metodo con parametros
                 self.methodCallParamsQuad(node)
-            elif len(node.children) == 3 and node.children[1] in ["+", "/", "-", "*"]: # es operacion aritmetica
-                print(node)
+            elif len(node.children) == 3 and node.children[1].val in ["+", "/", "-", "*"]: # es operacion aritmetica
                 self.arithmeticQuad(node)
+            elif len(node.children) == 7 and node.children[0].val == "if" and node.children[-1].val == "fi": # es un if
+                self.ifQuad(node)
             if node.children[0].val == "return": # es un return
                 self.returnQuad(node)
 
@@ -108,6 +109,56 @@ class Intermediate():
         cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, contador, temp)
         self.lista_cuadruplas.append(cuadrupla)
 
+    def createIfLabels(self, node=None):
+        # Initialize a list to store labels
+        labels = []
+
+        # Check if node has children
+        if node and hasattr(node, 'children'):
+            # Loop through each child
+            for child in node.children:
+                # If child value is 'if', create a new label and add it to the list
+                if child.val == "if":
+                    label = self.create_new_label()
+                    labels.append(label)
+
+                # Recursively call function on child and extend the label list with returned labels
+                labels.extend(self.createIfLabels(child))
+
+        return labels
+
+    # funcion para crear la cuadrupla de if
+    def ifQuad(self, node=None):
+        if node in self.processed_nodes:
+            return node.val
+        
+        #creamos las etiquetasq
+        labels = self.createIfLabels(node)
+        labels.append(self.create_new_label())
+        print(labels)
+
+        #creamos la cuadrupla de la condicion
+        condicion = self.getExprChildren(node.children[1])
+        temp = self.create_new_temp()
+        cuadrupla = Cuadrupla(condicion[1], condicion[0], condicion[2], temp)
+        self.lista_cuadruplas.append(cuadrupla)
+
+        #ccreamos la cuadrupla del gotof
+        cuadrupla = Cuadrupla("GOTOF", temp, None, labels[0])
+        self.lista_cuadruplas.append(cuadrupla)
+
+        #agregamos la cuadrupla deel cuerpo del if
+        self.recorrer_arbol(node.children[3])
+        #goto al label final
+        cuadrupla = Cuadrupla("GOTO", None, None, labels[-1])
+
+        #create la cuadrupla del label1
+        cuadrupla = Cuadrupla("LABEL", None, None, labels[0])
+        # else if
+
+        #agregamos el nodo a nodos procesados
+        self.processed_nodes.add(node)
+
     #if para ver si es asignacion o solo declaracion
     def propertyQuad(self, node=None):
         if len(node.children) > 1: # es una asignacion
@@ -141,6 +192,9 @@ class Intermediate():
 
     # funcion para crear la cuadrupla de variables asignadas
     def varDeclarationQuad(self, node=None):
+        if node in self.processed_nodes:
+            return node.val
+
         # Si el nodo tiene hijos
         if len(node.children) > 1:
             # Obtenemos los hijos del nodo VarDeclaration

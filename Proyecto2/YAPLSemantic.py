@@ -530,9 +530,7 @@ class SemanticVisitor:
     def check_comparisons(self, node):
 
         primera_comparacion = node.children[1]
-
         expresion = self.getExprChildren(primera_comparacion)
-
         variables_comparadas = [expresion[0], expresion[2]]
 
         tipos_datos_comparados = []
