@@ -1,4 +1,5 @@
 from prettytable import PrettyTable
+from termcolor import colored
 
 class Cuadrupla:
 
@@ -149,7 +150,7 @@ class Intermediate():
             
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
                 
-                self.ifQuad(node)
+                self.ifQuadGenerate(node)
                 
             # Comprueba si es un return
             
@@ -308,7 +309,117 @@ class Intermediate():
 
             # Agrega la etiqueta al conjunto de etiquetas creadas
 
-            self.created_labels.add(exit_label)  
+            self.created_labels.add(exit_label) 
+
+    def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None):
+
+        if start_label is not None:
+
+            self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, start_label))
+
+        # Este metodo esta creado para ser una version mejorada del ifQuad.
+
+        # Un condicional if se ve de la siguiente manera: ['if', 'expr', 'then', 'expr', 'else', 'expr', 'fi']
+
+        # Obtenemos la condición, el bloque then y el bloque else de los hijos del nodo
+
+        cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+
+        # Realizamos la cuadrupla de la condicion
+
+        cond_quad = self.getExprChildren(cond_node)
+
+        # Generamos una variable t para almacenar el resultado de la condicion
+
+        t_condicion = self.create_new_temp()
+
+        # Generamos la cuadrupla de la condicion
+
+        self.lista_cuadruplas.append(Cuadrupla(cond_quad[1], cond_quad[0], cond_quad[2], t_condicion))
+
+        # Una vez que tenemos el resultado de la condicion, creamos una etiqueta para el bloque then
+
+        l_condicion = self.create_new_label()
+
+        # Creamos la cuadrupla de la etiqueta en caso de que la condicion sea falsa
+
+        self.lista_cuadruplas.append(Cuadrupla("JUMP_IF_FALSE", t_condicion, None, l_condicion))
+
+        # Creamos el cuerpo de la condicion then en caso de que la condicion sea verdadera
+
+        print("thennode ",then_node)
+
+        self.varDeclarationQuad(then_node)
+
+        # En este punto ya evaluamos el cuerpo del then, por lo que creamos una etiqueta para la salida del if
+
+        if exit_label is None:
+
+            exit_label = self.create_new_label()
+        
+        # Creamos la cuadrupla de salto para salir del if
+
+        self.lista_cuadruplas.append(Cuadrupla("JUMP", None, None, exit_label))
+
+        # Revismos si el cuerpo del else es otro if
+
+        if else_node.children[0].val == "if":
+
+            self.ifQuadEnhanced(else_node, exit_label, l_condicion)
+        
+        # Si el cuerpo del else no es otro if, entonces es un bloque de codigo normal
+
+        else:
+
+            self.varDeclarationQuad(else_node)
+
+        pass 
+
+
+
+    def ifQuadGenerate(self, node):
+
+        # Esta implementacion del ifQuad es para generar el codigo intermedio de un if utilizando una aproximacion distinta a la del ifQuadEnhanced
+
+        # Primero, generaramos todas las etiquetas que necesitamos para el if
+
+        # Creamos una etiqueta para el inicio del if
+
+        l_inicio = self.create_new_label()
+
+        # Creamos una etiqueta por cada posible else if que pueda tener el if
+
+        cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+
+        cantidad_labels_elseif = 0
+
+        if else_node.children[0].val == "if":
+
+            cantidad_labels_elseif = self.obtenerLabelIf(node)
+        
+        print("La cantidad de elseif es: ", cantidad_labels_elseif)
+
+        
+
+        
+    def obtenerLabelIf(self, node):
+
+        try:
+
+            cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+
+            if else_node.children[0].val == "if":
+
+                return 1 + self.obtenerLabelIf(node.children[0])
+            
+            else:
+
+                return 0
+        
+        except:
+
+            return 0
+
 
 
     #if para ver si es asignacion o solo declaracion
@@ -454,9 +565,27 @@ class Intermediate():
         table = PrettyTable()
         table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
 
+        # Definir un diccionario de colores para cada operador
+        operator_colors = {
+            'JUMP_IF_FALSE': 'red',
+            'METHOD_START': 'green',
+            '<-': 'cyan',
+            'LABEL': 'yellow',
+            # ... (otros operadores y colores)
+        }
+
         # Agregar las cuadruplas a la tabla
         for cuadrupla in self.lista_cuadruplas:
-            table.add_row([self.lista_cuadruplas.index(cuadrupla), cuadrupla.operador, cuadrupla.operando1, cuadrupla.operando2, cuadrupla.resultado])
+            operator_color = operator_colors.get(cuadrupla.operador, 'white')  # Default a blanco si el operador no está en el diccionario
+            colored_row = [colored(item, operator_color) for item in [
+                self.lista_cuadruplas.index(cuadrupla), 
+                cuadrupla.operador, 
+                cuadrupla.operando1, 
+                cuadrupla.operando2, 
+                cuadrupla.resultado
+            ]]
+            table.add_row(colored_row)
 
         # Retornar la representación de la tabla como cadena
         return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
+
