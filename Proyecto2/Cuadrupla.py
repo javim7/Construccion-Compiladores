@@ -221,11 +221,15 @@ class Intermediate():
         else:
             self.processed_nodes.add(node)
 
-        cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, 0, None)
+        temp = self.create_new_temp()
+
+        cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, 0, temp)
         self.lista_cuadruplas.append(cuadrupla)
 
         # Agregamos el nodo a la lista de nodos procesados
         self.processed_nodes.add(node)
+
+        return temp
 
     # funcion para crear la cuadrupla de methodCall con parametros
     def methodCallParamsQuad(self, node):
@@ -252,6 +256,8 @@ class Intermediate():
         # creamos la cuadrupla
         cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, contador, temp)
         self.lista_cuadruplas.append(cuadrupla)
+
+        return temp
 
     def createIfLabels(self, node=None):
         # Initialize a list to store labels
@@ -445,7 +451,31 @@ class Intermediate():
             for child in node.children:
                 if child.val == "expr":
                     # Si el hijo es un nodo expr, llamamos recursivamente a arithmeticQuad(node)
-                    child_values.append(self.arithmeticQuad(child))
+
+                    # Si es un parametro llamamos a methodCallParamsQuad
+
+                    # Comprueba si es un método sin parámetros
+            
+                    children_len = len(child.children)
+
+                    if children_len == 3 and child.children[1].val == "(" and child.children[2].val == ")":
+                        
+                        temp = self.methodCallQuad(child)
+
+                        child_values.append(temp)
+                        
+                    # Comprueba si es un método con parámetros
+                    
+                    elif children_len > 3 and child.children[1].val == "(" and child.children[-1].val == ")":
+                        
+                        temp = self.methodCallParamsQuad(child)
+
+                        child_values.append(temp)
+
+                    else:
+                        temp = self.arithmeticQuad(child)
+
+                        child_values.append(temp)
                 else:
                     # Si el hijo no es un nodo expr, simplemente agregamos su valor a la lista
                     child_values.append(child.val)
