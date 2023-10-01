@@ -1,15 +1,36 @@
-class Main2 {
-   #
+class Main {
     a : Int <- 1;
-    b : Int <- 5;
-    c : Int <- 8;
-    d : String;
+    b : Int <- 2;
+    c : Int;
+    d : Int <- 1;
+    e : Int <- 2;
 
-    main()  SELF_TYPE {
-      {
+    main() : Int {
+      { 
+        a <- 2 * 3;
+        c <- 2 * 3 - 5;
+        metodoB(a, b);
+        out_int(2);
+        
+        if a<b
+        then a <- metodoB(a, b)
+        else if a = b
+        then a <- 5
+        else a <- 6
+        fi fi;
+
         out_int(a);
-        return self;
+
+        while a < 3
+        loop a <- a + 1
+        pool;
+
+        return(c);
       }
+    };
+  
+    metodoB(a:Int, b: Int) : Int{
+      d <- a / b
     };
 
 };

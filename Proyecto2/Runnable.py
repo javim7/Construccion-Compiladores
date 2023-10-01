@@ -47,7 +47,7 @@ def extract_keywords_from_g4(file_path):
         
         return reserved_words, variable_types
 
-reserved_words, variable_types = extract_keywords_from_g4('Proyecto1/YAPL.g4')
+reserved_words, variable_types = extract_keywords_from_g4('Proyecto2/YAPL.g4')
 reserved_words.extend(['return'])
 variable_types.extend(['Bool'])
 
@@ -79,8 +79,8 @@ def compile_code():
 
 
     terminal_messages = [
-            "Errores léxicos:\n" + "\n".join(compilador.lexicalErrors) if len(compilador.lexicalErrors) > 0 else "No hay errores léxicos",
-            "Errores sintácticos:\n" + "\n".join(compilador.error_listener.errors) if len(compilador.error_listener.errors) > 0 else "No hay errores sintácticos",
+           str(current_time) + " Errores léxicos:\n" + "\n".join(compilador.lexicalErrors) if len(compilador.lexicalErrors) > 0 else str(current_time) +" No hay errores léxicos",
+           str(current_time) + " Errores sintácticos:\n" + "\n".join(compilador.error_listener.errors) if len(compilador.error_listener.errors) > 0 else str(current_time) + " No hay errores sintácticos",
     ]
 
     # Extraer números de línea de los mensajes de error
@@ -88,7 +88,7 @@ def compile_code():
 
     try:
         terminal_messages.append(
-            "Errores semánticos:\n" + "\n".join(compilador.semanticAnalyzer.errors) if len(compilador.semanticAnalyzer.errors) > 0 else "No hay errores semánticos"
+            str(current_time) + " Errores semánticos:\n" + "\n".join(compilador.semanticAnalyzer.errors) if len(compilador.semanticAnalyzer.errors) > 0 else str(current_time) + " No hay errores semánticos"
         )
 
         error_messages.extend(getattr(compilador.semanticAnalyzer, 'errors', []))
@@ -205,7 +205,7 @@ code_area.pack(pady=20, padx=20, expand=True, fill="both")
 current_directory = os.getcwd()
 
 # Ruta a la carpeta 'Ejemplos/' en el directorio de trabajo actual
-ejemplos_path = os.path.join(current_directory, "Proyecto1")
+ejemplos_path = os.path.join(current_directory, "Proyecto2")
 # ejemplos_path = os.path.join(current_directory, "Proyecto1/Ejemplos")
 
 
