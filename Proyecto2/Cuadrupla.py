@@ -150,7 +150,7 @@ class Intermediate():
             
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
                 
-                self.ifQuadGenerate(node)
+                self.ifQuadEnhanced(node)
                 
             # Comprueba si es un return
             
@@ -311,7 +311,7 @@ class Intermediate():
 
             self.created_labels.add(exit_label) 
 
-    def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None):
+    def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None, primera_vez=True):
 
         if start_label is not None:
 
@@ -347,9 +347,11 @@ class Intermediate():
 
         # Creamos el cuerpo de la condicion then en caso de que la condicion sea verdadera
 
-        print("thennode ",then_node)
-
-        self.varDeclarationQuad(then_node)
+        # En el caso de que la condicion sea verdadera:
+        print("Creando cuerpo del then:")
+        cuad_tempr = self.varDeclarationQuad(then_node.children[0])
+        print(cuad_tempr) 
+        print("Cuerpo del then creado.")
 
         # En este punto ya evaluamos el cuerpo del then, por lo que creamos una etiqueta para la salida del if
 
@@ -365,14 +367,27 @@ class Intermediate():
 
         if else_node.children[0].val == "if":
 
-            self.ifQuadEnhanced(else_node, exit_label, l_condicion)
+            self.ifQuadEnhanced(else_node, exit_label, l_condicion, primera_vez=False)
         
         # Si el cuerpo del else no es otro if, entonces es un bloque de codigo normal
 
         else:
 
-            self.varDeclarationQuad(else_node)
+            self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, l_condicion))
 
+            self.varDeclarationQuad(else_node.children[0])
+
+            self.lista_cuadruplas.append(Cuadrupla("JUMP", None, None, exit_label))
+        
+
+        # Creamos la cuadrupla para la exit label del if
+
+        if primera_vez:
+
+            self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
+
+        # Cuadrupla comodin para ifelse:
+        self.lista_cuadruplas.append(Cuadrupla("❌","❌","❌","❌"))
         pass 
 
 
@@ -475,6 +490,7 @@ class Intermediate():
             
             # Agregamos la cuadrupla a la lista de cuadruplas
             self.lista_cuadruplas.append(cuadrupla)
+            return cuadrupla
 
     # funcion para crear la cuadrupla de operaciones aritmeticas
     def arithmeticQuad(self, node=None):
@@ -571,8 +587,18 @@ class Intermediate():
             'METHOD_START': 'green',
             '<-': 'cyan',
             'LABEL': 'yellow',
-            # ... (otros operadores y colores)
+            'JUMP': 'magenta',
+            '<': 'green',
         }
+
+        # grey
+        # red
+        # green
+        # yellow
+        # blue
+        # magenta
+        # cyan
+        # white
 
         # Agregar las cuadruplas a la tabla
         for cuadrupla in self.lista_cuadruplas:

@@ -14,14 +14,8 @@ class Main {
         
         if a<b
         then a <- 1
-        else if a=b
-        then a <- 2
-        else if a=b
-        then a <- 2
-        else if a=b
-        then a <- 2
         else a <- 3
-        fi fi fi fi;
+        fi;
 
         out_int(a);
 
