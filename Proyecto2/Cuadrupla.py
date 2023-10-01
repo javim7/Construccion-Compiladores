@@ -150,10 +150,12 @@ class Intermediate():
             
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
                 
+                self.lista_cuadruplas.append(Cuadrupla("---","---","---","---"))
+
                 self.ifQuadEnhanced(node)
 
                 # Cuadrupla comodin para ifelse:
-                self.lista_cuadruplas.append(Cuadrupla("❌","❌","❌","❌"))
+                self.lista_cuadruplas.append(Cuadrupla("---","---","---","---"))
                 
             # Comprueba si es un return
             
@@ -202,6 +204,12 @@ class Intermediate():
     
     # funcion para crear la cuadrupla de methodCall sin parametros
     def methodCallQuad(self, node):
+
+        if node in self.processed_nodes:
+            return
+        else:
+            self.processed_nodes.add(node)
+
         cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, 0, None)
         self.lista_cuadruplas.append(cuadrupla)
 
@@ -210,6 +218,11 @@ class Intermediate():
 
     # funcion para crear la cuadrupla de methodCall con parametros
     def methodCallParamsQuad(self, node):
+
+        if node in self.processed_nodes:
+            return
+        else:
+            self.processed_nodes.add(node)
 
         #saltarnos si es un return
         if node.children[0].val == "return":
@@ -316,6 +329,9 @@ class Intermediate():
 
     def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None, primera_vez=True):
 
+        if node in self.processed_nodes:
+            return
+
         if start_label is not None:
 
             self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, start_label))
@@ -351,10 +367,7 @@ class Intermediate():
         # Creamos el cuerpo de la condicion then en caso de que la condicion sea verdadera
 
         # En el caso de que la condicion sea verdadera:
-        print("Creando cuerpo del then:")
-        cuad_tempr = self.varDeclarationQuad(then_node.children[0])
-        print(cuad_tempr) 
-        print("Cuerpo del then creado.")
+        cuad_tempr = self.recorrer_arbol(then_node)
 
         # En este punto ya evaluamos el cuerpo del then, por lo que creamos una etiqueta para la salida del if
 
@@ -368,6 +381,8 @@ class Intermediate():
 
         # Revismos si el cuerpo del else es otro if
 
+        self.processed_nodes.add(node)
+
         if else_node.children[0].val == "if":
 
             self.ifQuadEnhanced(else_node, exit_label, l_condicion, primera_vez=False)
@@ -378,7 +393,7 @@ class Intermediate():
 
             self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, l_condicion))
 
-            self.varDeclarationQuad(else_node.children[0])
+            self.recorrer_arbol(else_node)
 
             self.lista_cuadruplas.append(Cuadrupla("JUMP", None, None, exit_label))
         
@@ -388,7 +403,6 @@ class Intermediate():
         if primera_vez:
 
             self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
-        pass 
 
 
 
@@ -471,7 +485,9 @@ class Intermediate():
     # funcion para crear la cuadrupla de variables asignadas
     def varDeclarationQuad(self, node=None):
         if node in self.processed_nodes:
-            return node.val
+            return
+        else:
+            self.processed_nodes.add(node)
 
         # Si el nodo tiene hijos
         if len(node.children) > 1:
@@ -496,7 +512,7 @@ class Intermediate():
     def arithmeticQuad(self, node=None):
         # Si el nodo ya ha sido procesado, simplemente retornamos su valor
         if node in self.processed_nodes:
-            return node.val
+            return
 
         # Si el nodo tiene hijos
         if len(node.children) > 1:
@@ -583,12 +599,13 @@ class Intermediate():
 
         # Definir un diccionario de colores para cada operador
         operator_colors = {
-            'JUMP_IF_FALSE': 'red',
+            'JUMP_IF_FALSE': 'magenta',
             'METHOD_START': 'green',
             '<-': 'cyan',
             'LABEL': 'yellow',
-            'JUMP': 'magenta',
+            'JUMP': 'grey',
             '<': 'green',
+            '---': 'red',
         }
 
         # grey
