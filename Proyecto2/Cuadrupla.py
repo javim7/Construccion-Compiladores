@@ -150,13 +150,24 @@ class Intermediate():
             
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
                 
-                self.lista_cuadruplas.append(Cuadrupla("---","---","---","---"))
+                self.lista_cuadruplas.append(Cuadrupla("IFS","---","---","---"))
 
                 self.ifQuadEnhanced(node)
 
                 # Cuadrupla comodin para ifelse:
-                self.lista_cuadruplas.append(Cuadrupla("---","---","---","---"))
-                
+                self.lista_cuadruplas.append(Cuadrupla("---","---","---","END"))
+
+            # Comprueba si es un while
+
+            elif children_len == 5 and node.children[0].val == "while" and node.children[-1].val == "pool":
+
+                self.lista_cuadruplas.append(Cuadrupla("WHL","---","---","---"))
+
+                self.whileQuad(node)
+
+                # Cuadrupla comodin para while:
+                self.lista_cuadruplas.append(Cuadrupla("---","---","---","END"))
+
             # Comprueba si es un return
             
             if node.children[0].val == "return":
@@ -261,72 +272,6 @@ class Intermediate():
         return labels
 
     # funcion para crear la cuadrupla de if
-    def ifQuad(self, node=None, exit_label=None):
-
-        # Obtenemos la condición, el bloque then y el bloque else de los hijos del nodo
-
-        # Una estrucuta if se ve de la siguiente manera: Children: ['if', 'expr', 'then', 'expr', 'else', 'expr', 'fi']
-
-        cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
-
-        # Generamos cuádruplas para la condición
-
-        cond_quad = self.getExprChildren(cond_node)
-
-        # Suponiendo que 'tn' es el resultado de la condición EJEMPLO: tn_temp = t6 y false_label = L1
-
-        tn_temp = self.create_new_temp()
-
-        false_label = self.create_new_label()
-
-        self.lista_cuadruplas.append(Cuadrupla(cond_quad[1], cond_quad[0], cond_quad[2], tn_temp))
-
-        self.lista_cuadruplas.append(Cuadrupla('JUMP_IF_FALSE', tn_temp, '_', false_label))
-
-        # Generamos cuádruplas para el bloque then
-
-        # TODO En este caso then_quad es un NODO del arbol de tipo "VarDeclaration" pero tenemos que revisar despues si siempre sera esto
-
-        self.varDeclarationQuad(then_node)
-
-        # Solo crea una nueva etiqueta de salida si no se proporcionó una
-
-        if exit_label is None:
-
-            exit_label = self.create_new_label()
-
-        # Generamos una etiqueta para el bloque else
-
-        self.lista_cuadruplas.append(Cuadrupla('LABEL', '_', '_', false_label))
-
-        # Instrucción para saltar al final del bloque if-else
-
-        self.lista_cuadruplas.append(Cuadrupla('JUMP', '_', '_', exit_label))
-
-        # Chequea si el bloque else es otro if
-
-        if else_node.children[0].val == 'if':
-
-            self.ifQuad(else_node, exit_label)
-
-        else:
-
-            # TODO En este caso then_quad es un NODO del arbol de tipo "VarDeclaration" pero tenemos que revisar despues si siempre sera esto
-
-            self.varDeclarationQuad(else_node)
-        
-        # Generamos una etiqueta para el bloque exit final del if-else
-
-        # Verifica si la etiqueta ya ha sido creada antes de agregar una nueva etiqueta
-
-        if exit_label not in self.created_labels:
-
-            self.lista_cuadruplas.append(Cuadrupla('LABEL', '_', '_', exit_label))
-
-            # Agrega la etiqueta al conjunto de etiquetas creadas
-
-            self.created_labels.add(exit_label) 
-
     def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None, primera_vez=True):
 
         if node in self.processed_nodes:
@@ -404,51 +349,55 @@ class Intermediate():
 
             self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
 
+    # funcion para crear la cuadrupla de while
+    def whileQuad(self, node=None):
 
+        if node in self.processed_nodes:
+            return
+        else:
+            self.processed_nodes.add(node)
 
-    def ifQuadGenerate(self, node):
+        # Creamos un label para el comienzo del while
 
-        # Esta implementacion del ifQuad es para generar el codigo intermedio de un if utilizando una aproximacion distinta a la del ifQuadEnhanced
+        start_label = self.create_new_label()
 
-        # Primero, generaramos todas las etiquetas que necesitamos para el if
+        # Creamos la cuadrupla del label
 
-        # Creamos una etiqueta para el inicio del if
+        self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, start_label))
 
-        l_inicio = self.create_new_label()
+        # Creamos un label para el final del while
 
-        # Creamos una etiqueta por cada posible else if que pueda tener el if
+        exit_label = self.create_new_label()
 
-        cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+        # Obtenemos el cuerpo del while
 
-        cantidad_labels_elseif = 0
+        condicion, cuerpo = node.children[1], node.children[3]
 
-        if else_node.children[0].val == "if":
+        cuad_condicion = self.getExprChildren(condicion)
 
-            cantidad_labels_elseif = self.obtenerLabelIf(node)
-        
-        print("La cantidad de elseif es: ", cantidad_labels_elseif)
+        # Creamos una variable temporal para almacenar el resultado de la condicion
 
-        
+        t_condicion = self.create_new_temp()
 
-        
-    def obtenerLabelIf(self, node):
+        # Creamos la cuadrupla de la condicion
 
-        try:
+        self.lista_cuadruplas.append(Cuadrupla(cuad_condicion[1], cuad_condicion[0], cuad_condicion[2], t_condicion))
 
-            cond_node, then_node, else_node = node.children[1], node.children[3], node.children[5]
+        # Creamos la cuadrupla de salto en caso de que la condicion sea falsa
 
-            if else_node.children[0].val == "if":
+        self.lista_cuadruplas.append(Cuadrupla("JUMP_IF_FALSE", t_condicion, None, exit_label))
 
-                return 1 + self.obtenerLabelIf(node.children[0])
-            
-            else:
+        # Creamos la/las cuadruplas del cuerpo del while
 
-                return 0
-        
-        except:
+        self.recorrer_arbol(cuerpo)
 
-            return 0
+        # Creamos la cuadrupla de salto para volver a evaluar la condicion
 
+        self.lista_cuadruplas.append(Cuadrupla("JUMP", None, None, start_label))
+
+        # Creamos la cuadrupla del label de salida del while
+
+        self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
 
 
     #if para ver si es asignacion o solo declaracion
@@ -606,6 +555,8 @@ class Intermediate():
             'JUMP': 'grey',
             '<': 'green',
             '---': 'red',
+            'IFS': 'red',
+            'WHL': 'red',
         }
 
         # grey
