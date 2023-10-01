@@ -13,9 +13,11 @@ class Main {
         out_int(2);
         
         if a<b
-        then a <- 1
-        else a <- 3
-        fi;
+        then a <- 5000
+        else if a = b
+        then a <- 3000
+        else a <- 1000
+        fi fi;
 
         out_int(a);
 

@@ -151,6 +151,9 @@ class Intermediate():
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
                 
                 self.ifQuadEnhanced(node)
+
+                # Cuadrupla comodin para ifelse:
+                self.lista_cuadruplas.append(Cuadrupla("❌","❌","❌","❌"))
                 
             # Comprueba si es un return
             
@@ -385,9 +388,6 @@ class Intermediate():
         if primera_vez:
 
             self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
-
-        # Cuadrupla comodin para ifelse:
-        self.lista_cuadruplas.append(Cuadrupla("❌","❌","❌","❌"))
         pass 
 
 
