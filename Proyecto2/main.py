@@ -14,6 +14,7 @@ def main():
     compilador = Compiler('Proyecto2/Ejemplos/ejemplo1.yapl')
 
     compilador.lexicalAnalysis()
+    #compilador.syntacticAnalysis2()
     compilador.syntacticAnalysis()
     compilador.semanticAnalysis()
     

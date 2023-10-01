@@ -1,4 +1,4 @@
-// Parse Tree
+// ASTree
 digraph {
 	node0 [label=program]
 	node1 [label=classDefine]
