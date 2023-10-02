@@ -571,45 +571,65 @@ class Intermediate():
         cuadrupla = Cuadrupla("PARAM", node.children[0].val, node.children[2].val, None)
         self.lista_cuadruplas.append(cuadrupla)
 
+    # def __str__(self):
+    #     # Crear una tabla con las columnas adecuadas
+    #     table = PrettyTable()
+    #     table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
+
+    #     # Definir un diccionario de colores para cada operador
+    #     operator_colors = {
+    #         'JUMP_IF_FALSE': 'magenta',
+    #         'METHOD_START': 'green',
+    #         '<-': 'cyan',
+    #         'LABEL': 'yellow',
+    #         'JUMP': 'grey',
+    #         '<': 'green',
+    #         '---': 'red',
+    #         'IFS': 'red',
+    #         'WHL': 'red',
+    #     }
+
+    #     # grey
+    #     # red
+    #     # green
+    #     # yellow
+    #     # blue
+    #     # magenta
+    #     # cyan
+    #     # white
+
+    #     # Agregar las cuadruplas a la tabla
+    #     for cuadrupla in self.lista_cuadruplas:
+    #         operator_color = operator_colors.get(cuadrupla.operador, 'white')  # Default a blanco si el operador no está en el diccionario
+    #         colored_row = [colored(item, operator_color) for item in [
+    #             self.lista_cuadruplas.index(cuadrupla), 
+    #             cuadrupla.operador, 
+    #             cuadrupla.operando1, 
+    #             cuadrupla.operando2, 
+    #             cuadrupla.resultado
+    #         ]]
+    #         table.add_row(colored_row)
+
+    #     # Retornar la representación de la tabla como cadena
+    #     return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
+    
+
     def __str__(self):
         # Crear una tabla con las columnas adecuadas
         table = PrettyTable()
         table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
 
-        # Definir un diccionario de colores para cada operador
-        operator_colors = {
-            'JUMP_IF_FALSE': 'magenta',
-            'METHOD_START': 'green',
-            '<-': 'cyan',
-            'LABEL': 'yellow',
-            'JUMP': 'grey',
-            '<': 'green',
-            '---': 'red',
-            'IFS': 'red',
-            'WHL': 'red',
-        }
-
-        # grey
-        # red
-        # green
-        # yellow
-        # blue
-        # magenta
-        # cyan
-        # white
-
         # Agregar las cuadruplas a la tabla
         for cuadrupla in self.lista_cuadruplas:
-            operator_color = operator_colors.get(cuadrupla.operador, 'white')  # Default a blanco si el operador no está en el diccionario
-            colored_row = [colored(item, operator_color) for item in [
+            table.add_row([
                 self.lista_cuadruplas.index(cuadrupla), 
                 cuadrupla.operador, 
                 cuadrupla.operando1, 
                 cuadrupla.operando2, 
                 cuadrupla.resultado
-            ]]
-            table.add_row(colored_row)
+            ])
 
         # Retornar la representación de la tabla como cadena
-        return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
+        return f"{table}"
+
 

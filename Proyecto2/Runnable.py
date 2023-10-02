@@ -1,11 +1,12 @@
 from datetime import datetime
-from tkinter import Text, ttk
+from tkinter import Text, ttk, Frame
 import tkinter as tk
 import platform 
 import re
 import os
 
 from Compiler import *
+from Cuadrupla import *
 
 # Paso 1: Función para poblar el árbol de directorios
 def populate_tree(tree, node):
@@ -110,6 +111,20 @@ def compile_code():
     terminal_area.delete(1.0, tk.END)
     terminal_area.insert(tk.END, terminal_content)
     terminal_area.config(state=tk.DISABLED)
+
+    if not compilador.semanticAnalyzer.errors:
+
+        arbol = compilador.treeStruct
+
+        intermedio = Intermediate(arbol)
+
+        print(intermedio)
+
+        text_area.delete(1.0, tk.END)
+
+        text_area.insert(tk.END, intermedio)
+
+    
     
 
 def redraw():
@@ -214,15 +229,22 @@ if not os.path.exists(ejemplos_path):
     print(f"El directorio 'Proyecto1' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
     # print(f"El directorio 'Proyecto1/Ejemplos/' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
 
-else:
-    # Crear el Treeview para los archivos
-    file_tree = ttk.Treeview(upper_frame, columns=("fullpath",), displaycolumns=(), height=25)
-    file_tree.pack(pady=20, padx=20, side="right", expand=True, fill="both")
+# Crear un Frame para el área de archivos y el área nueva de texto
+files_and_text_frame = Frame(upper_frame)
+files_and_text_frame.pack(pady=20, padx=20, side="right", fill="both", expand=True)
 
+# Crear el Treeview para los archivos dentro del nuevo frame
+file_tree = ttk.Treeview(files_and_text_frame, columns=("fullpath",), displaycolumns=(), height=12)  # ajustar el height según sea necesario
+file_tree.pack(side="top", fill="both", expand=True)
 
-    # Agregar el directorio base al Treeview
-    root_node = file_tree.insert("", "end", text=ejemplos_path, values=(ejemplos_path,))
-    populate_tree(file_tree, root_node)
+# Agregar el directorio base al Treeview
+root_node = file_tree.insert("", "end", text=ejemplos_path, values=(ejemplos_path,))
+populate_tree(file_tree, root_node)
+
+# Nueva sección: agregar una ventana de texto DEBAJO del área de selección de archivos dentro del mismo frame
+text_area = Text(files_and_text_frame, height=12, wrap="none")  # Configurar la altura según lo necesario
+text_area.pack(side="top", fill="both", expand=True)
+
 
 # Agregar un "+" para indicar que se puede expandir
 file_tree.insert(root_node, "end")
@@ -232,10 +254,6 @@ file_tree.bind("<<TreeviewOpen>>", lambda event: populate_tree(file_tree, file_t
 
 # Configurar el evento para cargar archivos al hacer doble clic
 file_tree.bind("<Double-1>", load_file_into_editor)
-
-
-
-
 
 
 # Área de la "terminal"

@@ -15,8 +15,8 @@ class Main {
         if a<b
         then a <- metodoB(a, b)
         else if a = b
-        then a <- 5
-        else a <- 6
+        then a <- 5555
+        else a <- 6666
         fi fi;
 
         out_int(a);
