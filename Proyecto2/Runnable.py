@@ -8,6 +8,50 @@ import os
 from Compiler import *
 from Cuadrupla import *
 
+keywords = {
+    # Palabras clave
+    "METHOD_START": ("yellow", None),
+    "LABEL": ("blue", None),
+    "RETURN": ("green", None),
+    "CLASS": ("cyan", None),
+    "PRE_PARAM": ("coral", None),
+    "METHOD_CALL": ("pink", None),
+    "IFS": ("steelblue", None),
+    "JUMP_IF_FALSE": ("salmon", None),
+    "JUMP": ("seagreen", None),
+    "PARAM": ("skyblue", None),
+    "WHL": ("gold", None), # Cambiamos "goldenrodyellow" a "gold"
+
+    # Operadores aritméticos
+    "*": ("gray", None),
+    "+": ("gray", None),
+    "-": ("gray", None),
+    "/": ("gray", None),
+
+    # Otros operadores
+    "<-": ("lavender", None),
+    "<": ("lavender", None),
+    "=": ("lavender", None)
+}
+
+def highlight_keywords(text_widget):
+    for keyword, (fg, bg) in keywords.items():
+        highlight_pattern(text_widget, keyword, fg, bg)
+
+def highlight_pattern(text_widget, pattern, fg, bg=None):
+    text_widget.tag_remove(pattern, '1.0', tk.END)
+    start_idx = '1.0'
+    while True:
+        start_idx = text_widget.search(pattern, start_idx, nocase=True, stopindex=tk.END)
+        if not start_idx: break
+        end_idx = f"{start_idx} + {len(pattern)}c"
+        text_widget.tag_add(pattern, start_idx, end_idx)
+        if bg:
+            text_widget.tag_config(pattern, foreground=fg, background=bg)
+        else:
+            text_widget.tag_config(pattern, foreground=fg)
+        start_idx = end_idx
+
 # Paso 1: Función para poblar el árbol de directorios
 def populate_tree(tree, node):
     # Eliminar todos los nodos hijos existentes
@@ -112,6 +156,7 @@ def compile_code():
     terminal_area.insert(tk.END, terminal_content)
     terminal_area.config(state=tk.DISABLED)
 
+
     if not compilador.semanticAnalyzer.errors:
 
         arbol = compilador.treeStruct
@@ -123,6 +168,8 @@ def compile_code():
         text_area.delete(1.0, tk.END)
 
         text_area.insert(tk.END, intermedio)
+
+        highlight_keywords(text_area)
 
     
     
