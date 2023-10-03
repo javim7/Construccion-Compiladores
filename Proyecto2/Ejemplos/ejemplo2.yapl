@@ -1,26 +1,54 @@
 class Main {
-   
     a : Int <- 1;
-    b : Int <- 5;
-    c : Int <- 8;
-    l : String;
+    b : Int <- 2;
+    c : Int;
+    d : Int <- 1;
+    e : Int <- 2;
 
-    main() : SELF_TYPE {
-      b <- c
+    main() : Int {
+      { 
+        a <- 2 * 3;
+        b <- (2 * a) + (b - 3 * 4);
+        c <- multiplicar(a, b);
+        out_int(c);
+        
+        if a<b
+        then if a=b
+        then c <- 3
+        else c <-4
+        fi
+        else if a = b
+        then a <- 5
+        else a <- 6
+        fi fi;
+
+        out_int(a);
+
+        while a < 3
+        loop {
+          if d < e
+          then multiplicar(d, e)
+          else dividir(d, e)
+          fi;
+        }
+        pool;
+
+        return(c);
+      }
+    };
+  
+    dividir(a:Int, b: Int) : Int{
+     {
+       c <- a / b;
+       return c;
+     }
+    };
+    
+    multiplicar(a:Int, b: Int) : Int{
+     {
+       c <- a * b;
+       return c;
+     }
     };
 
 };
-
-class Calculadora {
-
-    b : Int;
-
-    resta(a : Int, b : Int) : Int {
-        return(a+b)
-    }
-
-    constructor() : Object {
-        b <- resta(1,2)
-    }
-    
-}

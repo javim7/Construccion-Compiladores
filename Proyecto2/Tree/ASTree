@@ -45,7 +45,7 @@ digraph {
 	node16 -> node21
 	node22 [label=expr]
 	node16 -> node22
-	node23 [label=2]
+	node23 [label=5]
 	node22 -> node23
 	node24 [label=";"]
 	node1 -> node24
@@ -61,26 +61,26 @@ digraph {
 	node27 -> node29
 	node30 [label=Int]
 	node27 -> node30
-	node31 [label=";"]
-	node1 -> node31
-	node32 [label=feature_list]
-	node1 -> node32
-	node33 [label=property]
+	node31 [label="<-"]
+	node26 -> node31
+	node32 [label=expr]
+	node26 -> node32
+	node33 [label=8]
 	node32 -> node33
-	node34 [label=formal]
-	node33 -> node34
-	node35 [label=d]
-	node34 -> node35
-	node36 [label=":"]
-	node34 -> node36
-	node37 [label=Int]
-	node34 -> node37
-	node38 [label="<-"]
-	node33 -> node38
-	node39 [label=expr]
-	node33 -> node39
-	node40 [label=1]
-	node39 -> node40
+	node34 [label=";"]
+	node1 -> node34
+	node35 [label=feature_list]
+	node1 -> node35
+	node36 [label=property]
+	node35 -> node36
+	node37 [label=formal]
+	node36 -> node37
+	node38 [label=d]
+	node37 -> node38
+	node39 [label=":"]
+	node37 -> node39
+	node40 [label=Int]
+	node37 -> node40
 	node41 [label=";"]
 	node1 -> node41
 	node42 [label=feature_list]
@@ -89,414 +89,232 @@ digraph {
 	node42 -> node43
 	node44 [label=formal]
 	node43 -> node44
-	node45 [label=e]
+	node45 [label=l]
 	node44 -> node45
 	node46 [label=":"]
 	node44 -> node46
-	node47 [label=Int]
+	node47 [label=String]
 	node44 -> node47
-	node48 [label="<-"]
-	node43 -> node48
-	node49 [label=expr]
-	node43 -> node49
-	node50 [label=2]
+	node48 [label=";"]
+	node1 -> node48
+	node49 [label=feature_list]
+	node1 -> node49
+	node50 [label=method]
 	node49 -> node50
-	node51 [label=";"]
-	node1 -> node51
-	node52 [label=feature_list]
-	node1 -> node52
-	node53 [label=method]
-	node52 -> node53
-	node54 [label=main]
-	node53 -> node54
-	node55 [label="("]
-	node53 -> node55
-	node56 [label=")"]
-	node53 -> node56
-	node57 [label=":"]
-	node53 -> node57
-	node58 [label=Int]
-	node53 -> node58
-	node59 [label="{"]
-	node53 -> node59
-	node60 [label=expr]
-	node53 -> node60
-	node61 [label="{"]
+	node51 [label=main]
+	node50 -> node51
+	node52 [label="("]
+	node50 -> node52
+	node53 [label=")"]
+	node50 -> node53
+	node54 [label=":"]
+	node50 -> node54
+	node55 [label=SELF_TYPE]
+	node50 -> node55
+	node56 [label="{"]
+	node50 -> node56
+	node57 [label=expr]
+	node50 -> node57
+	node58 [label="{"]
+	node57 -> node58
+	node59 [label=expr]
+	node57 -> node59
+	node60 [label=varDeclaration]
+	node59 -> node60
+	node61 [label=a]
 	node60 -> node61
-	node62 [label=expr]
+	node62 [label="<-"]
 	node60 -> node62
-	node63 [label=varDeclaration]
-	node62 -> node63
-	node64 [label=a]
+	node63 [label=expr]
+	node60 -> node63
+	node64 [label=expr]
 	node63 -> node64
-	node65 [label="<-"]
-	node63 -> node65
-	node66 [label=expr]
+	node65 [label=2]
+	node64 -> node65
+	node66 [label="*"]
 	node63 -> node66
 	node67 [label=expr]
-	node66 -> node67
-	node68 [label=2]
+	node63 -> node67
+	node68 [label=4]
 	node67 -> node68
-	node69 [label="*"]
-	node66 -> node69
+	node69 [label=";"]
+	node57 -> node69
 	node70 [label=expr]
-	node66 -> node70
-	node71 [label=3]
+	node57 -> node70
+	node71 [label=varDeclaration]
 	node70 -> node71
-	node72 [label=";"]
-	node60 -> node72
-	node73 [label=expr]
-	node60 -> node73
-	node74 [label=varDeclaration]
-	node73 -> node74
-	node75 [label=c]
+	node72 [label=b]
+	node71 -> node72
+	node73 [label="<-"]
+	node71 -> node73
+	node74 [label=expr]
+	node71 -> node74
+	node75 [label=expr]
 	node74 -> node75
-	node76 [label="<-"]
-	node74 -> node76
-	node77 [label=expr]
+	node76 [label=5]
+	node75 -> node76
+	node77 [label="-"]
 	node74 -> node77
 	node78 [label=expr]
-	node77 -> node78
+	node74 -> node78
 	node79 [label=expr]
 	node78 -> node79
-	node80 [label=2]
+	node80 [label=6]
 	node79 -> node80
 	node81 [label="*"]
 	node78 -> node81
 	node82 [label=expr]
 	node78 -> node82
-	node83 [label=3]
+	node83 [label=10]
 	node82 -> node83
-	node84 [label="-"]
-	node77 -> node84
+	node84 [label=";"]
+	node57 -> node84
 	node85 [label=expr]
-	node77 -> node85
-	node86 [label=5]
+	node57 -> node85
+	node86 [label=varDeclaration]
 	node85 -> node86
-	node87 [label=";"]
-	node60 -> node87
-	node88 [label=expr]
-	node60 -> node88
-	node89 [label=metodoB]
-	node88 -> node89
-	node90 [label="("]
-	node88 -> node90
-	node91 [label=expr]
-	node88 -> node91
-	node92 [label=a]
-	node91 -> node92
-	node93 [label=","]
-	node88 -> node93
-	node94 [label=expr]
-	node88 -> node94
-	node95 [label=b]
-	node94 -> node95
-	node96 [label=")"]
-	node88 -> node96
-	node97 [label=";"]
-	node60 -> node97
-	node98 [label=expr]
-	node60 -> node98
-	node99 [label=out_int]
-	node98 -> node99
-	node100 [label="("]
-	node98 -> node100
-	node101 [label=expr]
-	node98 -> node101
-	node102 [label=2]
-	node101 -> node102
-	node103 [label=")"]
-	node98 -> node103
-	node104 [label=";"]
-	node60 -> node104
-	node105 [label=expr]
-	node60 -> node105
-	node106 [label=if]
-	node105 -> node106
-	node107 [label=expr]
-	node105 -> node107
-	node108 [label=expr]
-	node107 -> node108
-	node109 [label=a]
-	node108 -> node109
-	node110 [label="<"]
-	node107 -> node110
-	node111 [label=expr]
-	node107 -> node111
+	node87 [label=c]
+	node86 -> node87
+	node88 [label="<-"]
+	node86 -> node88
+	node89 [label=expr]
+	node86 -> node89
+	node90 [label=suma]
+	node89 -> node90
+	node91 [label="("]
+	node89 -> node91
+	node92 [label=expr]
+	node89 -> node92
+	node93 [label=a]
+	node92 -> node93
+	node94 [label=","]
+	node89 -> node94
+	node95 [label=expr]
+	node89 -> node95
+	node96 [label=b]
+	node95 -> node96
+	node97 [label=")"]
+	node89 -> node97
+	node98 [label=";"]
+	node57 -> node98
+	node99 [label="}"]
+	node57 -> node99
+	node100 [label="}"]
+	node50 -> node100
+	node101 [label=";"]
+	node1 -> node101
+	node102 [label=feature_list]
+	node1 -> node102
+	node103 [label=method]
+	node102 -> node103
+	node104 [label=suma]
+	node103 -> node104
+	node105 [label="("]
+	node103 -> node105
+	node106 [label=formal]
+	node103 -> node106
+	node107 [label=a]
+	node106 -> node107
+	node108 [label=":"]
+	node106 -> node108
+	node109 [label=Int]
+	node106 -> node109
+	node110 [label=","]
+	node103 -> node110
+	node111 [label=formal]
+	node103 -> node111
 	node112 [label=b]
 	node111 -> node112
-	node113 [label=then]
-	node105 -> node113
-	node114 [label=expr]
-	node105 -> node114
-	node115 [label=if]
-	node114 -> node115
-	node116 [label=expr]
-	node114 -> node116
-	node117 [label=expr]
-	node116 -> node117
-	node118 [label=a]
-	node117 -> node118
-	node119 [label="="]
-	node116 -> node119
-	node120 [label=expr]
-	node116 -> node120
-	node121 [label=b]
-	node120 -> node121
-	node122 [label=then]
-	node114 -> node122
-	node123 [label=expr]
-	node114 -> node123
-	node124 [label=varDeclaration]
-	node123 -> node124
-	node125 [label=c]
-	node124 -> node125
-	node126 [label="<-"]
-	node124 -> node126
-	node127 [label=expr]
-	node124 -> node127
-	node128 [label=3]
-	node127 -> node128
-	node129 [label=else]
-	node114 -> node129
-	node130 [label=expr]
-	node114 -> node130
-	node131 [label=varDeclaration]
-	node130 -> node131
-	node132 [label=c]
-	node131 -> node132
-	node133 [label="<-"]
-	node131 -> node133
-	node134 [label=expr]
-	node131 -> node134
-	node135 [label=4]
-	node134 -> node135
-	node136 [label=fi]
-	node114 -> node136
-	node137 [label=else]
-	node105 -> node137
-	node138 [label=expr]
-	node105 -> node138
-	node139 [label=if]
-	node138 -> node139
-	node140 [label=expr]
-	node138 -> node140
-	node141 [label=expr]
-	node140 -> node141
-	node142 [label=a]
-	node141 -> node142
-	node143 [label="="]
-	node140 -> node143
-	node144 [label=expr]
-	node140 -> node144
-	node145 [label=b]
-	node144 -> node145
-	node146 [label=then]
-	node138 -> node146
-	node147 [label=expr]
-	node138 -> node147
-	node148 [label=varDeclaration]
-	node147 -> node148
-	node149 [label=a]
-	node148 -> node149
-	node150 [label="<-"]
-	node148 -> node150
-	node151 [label=expr]
-	node148 -> node151
-	node152 [label=5]
-	node151 -> node152
-	node153 [label=else]
-	node138 -> node153
-	node154 [label=expr]
-	node138 -> node154
-	node155 [label=varDeclaration]
-	node154 -> node155
-	node156 [label=a]
-	node155 -> node156
-	node157 [label="<-"]
-	node155 -> node157
-	node158 [label=expr]
-	node155 -> node158
-	node159 [label=6]
-	node158 -> node159
-	node160 [label=fi]
-	node138 -> node160
-	node161 [label=fi]
-	node105 -> node161
-	node162 [label=";"]
-	node60 -> node162
-	node163 [label=expr]
-	node60 -> node163
-	node164 [label=out_int]
-	node163 -> node164
-	node165 [label="("]
-	node163 -> node165
-	node166 [label=expr]
-	node163 -> node166
-	node167 [label=a]
-	node166 -> node167
-	node168 [label=")"]
-	node163 -> node168
-	node169 [label=";"]
-	node60 -> node169
-	node170 [label=expr]
-	node60 -> node170
-	node171 [label=while]
-	node170 -> node171
-	node172 [label=expr]
-	node170 -> node172
-	node173 [label=expr]
-	node172 -> node173
-	node174 [label=a]
-	node173 -> node174
-	node175 [label="<"]
-	node172 -> node175
-	node176 [label=expr]
-	node172 -> node176
-	node177 [label=3]
-	node176 -> node177
-	node178 [label=loop]
-	node170 -> node178
-	node179 [label=expr]
-	node170 -> node179
-	node180 [label="{"]
-	node179 -> node180
-	node181 [label=expr]
-	node179 -> node181
-	node182 [label=if]
-	node181 -> node182
-	node183 [label=expr]
-	node181 -> node183
-	node184 [label=expr]
-	node183 -> node184
-	node185 [label=d]
-	node184 -> node185
-	node186 [label="<"]
-	node183 -> node186
-	node187 [label=expr]
-	node183 -> node187
-	node188 [label=e]
-	node187 -> node188
-	node189 [label=then]
-	node181 -> node189
-	node190 [label=expr]
-	node181 -> node190
-	node191 [label=out_int]
-	node190 -> node191
-	node192 [label="("]
-	node190 -> node192
-	node193 [label=expr]
-	node190 -> node193
-	node194 [label=d]
-	node193 -> node194
-	node195 [label=")"]
-	node190 -> node195
-	node196 [label=else]
-	node181 -> node196
-	node197 [label=expr]
-	node181 -> node197
-	node198 [label=out_int]
-	node197 -> node198
-	node199 [label="("]
-	node197 -> node199
-	node200 [label=expr]
-	node197 -> node200
-	node201 [label=e]
-	node200 -> node201
-	node202 [label=")"]
-	node197 -> node202
-	node203 [label=fi]
-	node181 -> node203
-	node204 [label=";"]
-	node179 -> node204
-	node205 [label="}"]
-	node179 -> node205
-	node206 [label=pool]
-	node170 -> node206
-	node207 [label=";"]
-	node60 -> node207
-	node208 [label=expr]
-	node60 -> node208
-	node209 [label=return]
-	node208 -> node209
-	node210 [label="("]
-	node208 -> node210
-	node211 [label=expr]
-	node208 -> node211
-	node212 [label=c]
-	node211 -> node212
-	node213 [label=")"]
-	node208 -> node213
-	node214 [label=";"]
-	node60 -> node214
-	node215 [label="}"]
-	node60 -> node215
-	node216 [label="}"]
-	node53 -> node216
-	node217 [label=";"]
-	node1 -> node217
-	node218 [label=feature_list]
-	node1 -> node218
-	node219 [label=method]
-	node218 -> node219
-	node220 [label=metodoB]
-	node219 -> node220
-	node221 [label="("]
-	node219 -> node221
-	node222 [label=formal]
-	node219 -> node222
-	node223 [label=a]
-	node222 -> node223
-	node224 [label=":"]
-	node222 -> node224
-	node225 [label=Int]
-	node222 -> node225
-	node226 [label=","]
-	node219 -> node226
-	node227 [label=formal]
-	node219 -> node227
-	node228 [label=b]
-	node227 -> node228
-	node229 [label=":"]
-	node227 -> node229
-	node230 [label=Int]
-	node227 -> node230
-	node231 [label=")"]
-	node219 -> node231
-	node232 [label=":"]
-	node219 -> node232
-	node233 [label=Int]
-	node219 -> node233
-	node234 [label="{"]
-	node219 -> node234
-	node235 [label=expr]
-	node219 -> node235
-	node236 [label=varDeclaration]
-	node235 -> node236
-	node237 [label=d]
-	node236 -> node237
-	node238 [label="<-"]
-	node236 -> node238
-	node239 [label=expr]
-	node236 -> node239
-	node240 [label=expr]
-	node239 -> node240
-	node241 [label=a]
-	node240 -> node241
-	node242 [label="/"]
-	node239 -> node242
-	node243 [label=expr]
-	node239 -> node243
-	node244 [label=b]
-	node243 -> node244
-	node245 [label="}"]
-	node219 -> node245
-	node246 [label=";"]
-	node1 -> node246
-	node247 [label="}"]
-	node1 -> node247
-	node248 [label=";"]
-	node0 -> node248
-	node249 [label=<EOF>]
-	node0 -> node249
+	node113 [label=":"]
+	node111 -> node113
+	node114 [label=Int]
+	node111 -> node114
+	node115 [label=")"]
+	node103 -> node115
+	node116 [label=":"]
+	node103 -> node116
+	node117 [label=Int]
+	node103 -> node117
+	node118 [label="{"]
+	node103 -> node118
+	node119 [label=expr]
+	node103 -> node119
+	node120 [label="{"]
+	node119 -> node120
+	node121 [label=expr]
+	node119 -> node121
+	node122 [label=varDeclaration]
+	node121 -> node122
+	node123 [label=d]
+	node122 -> node123
+	node124 [label="<-"]
+	node122 -> node124
+	node125 [label=expr]
+	node122 -> node125
+	node126 [label=expr]
+	node125 -> node126
+	node127 [label=a]
+	node126 -> node127
+	node128 [label="+"]
+	node125 -> node128
+	node129 [label=expr]
+	node125 -> node129
+	node130 [label=b]
+	node129 -> node130
+	node131 [label=";"]
+	node119 -> node131
+	node132 [label=expr]
+	node119 -> node132
+	node133 [label=varDeclaration]
+	node132 -> node133
+	node134 [label=l]
+	node133 -> node134
+	node135 [label="<-"]
+	node133 -> node135
+	node136 [label=expr]
+	node133 -> node136
+	node137 [label="\"Suma Exitosa!\""]
+	node136 -> node137
+	node138 [label=";"]
+	node119 -> node138
+	node139 [label=expr]
+	node119 -> node139
+	node140 [label=out_string]
+	node139 -> node140
+	node141 [label="("]
+	node139 -> node141
+	node142 [label=expr]
+	node139 -> node142
+	node143 [label=l]
+	node142 -> node143
+	node144 [label=")"]
+	node139 -> node144
+	node145 [label=";"]
+	node119 -> node145
+	node146 [label=expr]
+	node119 -> node146
+	node147 [label=return]
+	node146 -> node147
+	node148 [label="("]
+	node146 -> node148
+	node149 [label=expr]
+	node146 -> node149
+	node150 [label=d]
+	node149 -> node150
+	node151 [label=")"]
+	node146 -> node151
+	node152 [label=";"]
+	node119 -> node152
+	node153 [label="}"]
+	node119 -> node153
+	node154 [label="}"]
+	node103 -> node154
+	node155 [label=";"]
+	node1 -> node155
+	node156 [label="}"]
+	node1 -> node156
+	node157 [label=";"]
+	node0 -> node157
+	node158 [label=<EOF>]
+	node0 -> node158
 }

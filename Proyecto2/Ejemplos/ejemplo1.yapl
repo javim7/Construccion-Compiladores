@@ -1,44 +1,26 @@
 class Main {
+   
     a : Int <- 1;
-    b : Int <- 2;
-    c : Int;
-    d : Int <- 1;
-    e : Int <- 2;
+    b : Int <- 5;
+    c : Int <- 8;
+    d : Int;
+    l : String;
 
-    main() : Int {
-      { 
-        a <- 2 * 3;
-        c <- 2 * 3 - 5;
-        metodoB(a, b);
-        out_int(2);
-        
-        if a<b
-        then if a=b
-        then c <- 3
-        else c <-4
-        fi
-        else if a = b
-        then a <- 5
-        else a <- 6
-        fi fi;
-
-        out_int(a);
-
-        while a < 3
-        loop {
-          if d < e
-          then out_int(d)
-          else out_int(e)
-          fi;
-        }
-        pool;
-
-        return(c);
+    main() : SELF_TYPE {
+      {
+        a <- 2 * 4;
+        b <- 5 - 6  * 10;
+        c <- suma(a,b);
       }
     };
-  
-    metodoB(a:Int, b: Int) : Int{
-      d <- a / b
+
+    suma(a: Int, b: Int): Int {
+      {
+        d <- a + b;
+        l <- "Suma Exitosa!";
+        out_string(l);
+        return(d);
+      }
     };
 
 };

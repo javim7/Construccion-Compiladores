@@ -163,7 +163,7 @@ class SemanticVisitor:
             # print("alphanum: ", alphanum)
             # print("variables: ", variables)
             # Verifica y asigna el return de un metodo
-            if "(" in operators and ")" in operators:
+            if "(" in operators and ")" in operators and operators.count("(") == 1 and operators.count(")") == 1:
                 symbol_type = self.symbol_table.lookup_by_scope(alphanum[0], varScope)
                 symbol_type_2 = symbol_type.data_type
                 if symbol_type_2.lower() != var_type.lower():
