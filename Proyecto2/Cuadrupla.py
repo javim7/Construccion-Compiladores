@@ -259,24 +259,6 @@ class Intermediate():
 
         return temp
 
-    def createIfLabels(self, node=None):
-        # Initialize a list to store labels
-        labels = []
-
-        # Check if node has children
-        if node and hasattr(node, 'children'):
-            # Loop through each child
-            for child in node.children:
-                # If child value is 'if', create a new label and add it to the list
-                if child.val == "if":
-                    label = self.create_new_label()
-                    labels.append(label)
-
-                # Recursively call function on child and extend the label list with returned labels
-                labels.extend(self.createIfLabels(child))
-
-        return labels
-
     # funcion para crear la cuadrupla de if
     def ifQuadEnhanced(self, node=None, exit_label=None, start_label=None, primera_vez=True):
 
@@ -353,7 +335,7 @@ class Intermediate():
 
         if primera_vez:
 
-            self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
+            self.lista_cuadruplas.append(Cuadrupla("EXIT_LABEL", None, None, exit_label))
 
     # funcion para crear la cuadrupla de while
     def whileQuad(self, node=None):
@@ -403,7 +385,7 @@ class Intermediate():
 
         # Creamos la cuadrupla del label de salida del while
 
-        self.lista_cuadruplas.append(Cuadrupla("LABEL", None, None, exit_label))
+        self.lista_cuadruplas.append(Cuadrupla("EXIT_LABEL", None, None, exit_label))
 
 
     #if para ver si es asignacion o solo declaracion

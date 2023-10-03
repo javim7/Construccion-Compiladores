@@ -13,7 +13,10 @@ class Main {
         out_int(2);
         
         if a<b
-        then a <- metodoB(a, b)
+        then if a=b
+        then c <- 3
+        else c <-4
+        fi
         else if a = b
         then a <- 5
         else a <- 6
@@ -22,7 +25,12 @@ class Main {
         out_int(a);
 
         while a < 3
-        loop a <- a + 1
+        loop {
+          if d < e
+          then out_int(d)
+          else out_int(e)
+          fi;
+        }
         pool;
 
         return(c);

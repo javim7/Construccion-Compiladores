@@ -13,7 +13,10 @@ class Main {
         out_int(2);
         
         if a<b
-        then a <- metodoB(a, b)
+        then if a=b
+        then c <- 3
+        else c <-4
+        fi
         else if a = b
         then a <- 5
         else a <- 6
