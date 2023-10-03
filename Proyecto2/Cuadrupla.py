@@ -203,11 +203,11 @@ class Intermediate():
     # Agarramos los hijos de un nodo expr
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
-            child_values = []  # Initialize the list only in the initial call
+            child_values = []  # Inicializa la lista de valores de los hijos del nodo expr
         
         for child in node.children:
             if child.val == "expr":
-                self.getExprChildren(child, child_values)  # Pass the existing list to the recursive call
+                self.getExprChildren(child, child_values)  #Pasa la lista como argumento para que se mantenga entre llamadas recursivas
             else:
                 child_values.append(child.val)
         
