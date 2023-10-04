@@ -20,7 +20,9 @@ keywords = {
     "JUMP_IF_FALSE": ("salmon", None),
     "JUMP": ("seagreen", None),
     "PARAM": ("skyblue", None),
-    "WHL": ("gold", None), # Cambiamos "goldenrodyellow" a "gold"
+    "WHL": ("gold", None), 
+    "STACK_INIT": ("red", None),
+    "EMPTY_STACK": ("red", None),
 
     # Operadores aritméticos
     "*": ("gray", None),

@@ -131,14 +131,18 @@ class Intermediate():
             # Comprueba si es un método sin parámetros
             
             if children_len == 3 and node.children[1].val == "(" and node.children[2].val == ")":
-                
+
                 self.methodCallQuad(node)
-                
+
             # Comprueba si es un método con parámetros
             
             elif children_len > 3 and node.children[1].val == "(" and node.children[-1].val == ")":
+
+                # self.lista_cuadruplas.append(Cuadrupla("STACK_INIT","---","---","---"))
                 
                 self.methodCallParamsQuad(node)
+
+                # self.lista_cuadruplas.append(Cuadrupla("---","---","---","EMPTY_STACK"))
                 
             # Comprueba si es operación aritmética
             
@@ -239,10 +243,13 @@ class Intermediate():
         else:
             self.processed_nodes.add(node)
 
+        
+
         #saltarnos si es un return
         if node.children[0].val == "return":
             return
 
+        self.lista_cuadruplas.append(Cuadrupla("STACK_INIT","---","---","---"))
         children = node.children
         # ver los formals
         contador = 0
@@ -256,6 +263,7 @@ class Intermediate():
         # creamos la cuadrupla
         cuadrupla = Cuadrupla("METHOD_CALL", node.children[0].val, contador, temp)
         self.lista_cuadruplas.append(cuadrupla)
+        self.lista_cuadruplas.append(Cuadrupla("---","---","---","EMPTY_STACK"))
 
         return temp
 

@@ -267,6 +267,21 @@ class Compiler():
         self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
         self.semanticAnalyzer.analyze()
     
+    def buildAST(self):
+        print("\n------Building AST------")
+        tree = self.getTreeString()
+        root = self.build_tree(self.tree)
+        self.treeStruct = ParseTree()
+        self.traverse_tree(root, self.treeStruct)
+        # for node in self.treeStruct.nodes:
+        #     print(node)
+        self.treeStruct.root = self.treeStruct.nodes[0]
+        # print(self.treeStruct)
+
+        drawTree = Drawer(self.treeStruct)
+        drawTree.draw(self.treeStruct.root)
+        drawTree.save("ast_image")
+    
     def getExprChildren(self, node, child_values=None):
         if child_values is None:
             child_values = []  # Initialize the list only in the initial call
