@@ -559,7 +559,7 @@ class SemanticVisitor:
 
                 return None
 
-            return f"La comparacion '{tipos_datos_comparados[0].lower()} con {tipos_datos_comparados[1].lower()}' no es valida"
+            return f"La comparación '{tipos_datos_comparados[0].lower()} con {tipos_datos_comparados[1].lower()}' no es válida"
 
 
         return None
@@ -581,7 +581,7 @@ class SemanticVisitor:
                 
                 else:
 
-                    poissbleErrors.append(f"ERROR SEMANTICO: El identificador '{symbol.name}' ya ha sido declarado en el scope '{symbol.scope}': Linea {symbol.line}")
+                    poissbleErrors.append(f"ERROR SEMÁNTICO: El identificador '{symbol.name}' ya ha sido declarado en el scope '{symbol.scope}': Línea {symbol.line}")
             
             else:
 
@@ -624,13 +624,13 @@ class SemanticAnalyzer:
                 self.traverse_tree(child)
 
     def report_error(self, message, line_number):
-        error = f"{message}: Linea {line_number}"
-        self.errors.append("ERROR SEMANTICO: " +  error)
+        error = f"{message}: Línea {line_number}"
+        self.errors.append("ERROR SEMÁNTICO: " +  error)
 
     def display_errors(self):
         if self.errors:
-            print("\nERRORES SEMANTICOS DETECTADOS:")
+            print("\nERRORES SEMÁNTICOS DETECTADOS:")
             for error in self.errors:
                 print(error)
         else:
-            print("No se encontraron errores semanticos.")
+            print("No se encontraron errores semánticos.")

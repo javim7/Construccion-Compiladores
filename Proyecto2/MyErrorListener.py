@@ -7,5 +7,5 @@ class MyErrorListener(ErrorListener):
 
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         if "extraneous input" not in msg:
-            error_message = f"ERROR SINTACTICO: El problema es: {msg} : Linea {line}"
+            error_message = f"ERROR SINTÁCTICO: El problema es: {msg} : Línea {line}"
             self.errors.append(error_message)

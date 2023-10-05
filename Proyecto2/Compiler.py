@@ -27,14 +27,14 @@ class Compiler():
         self.tokens = {}
     
     def lexicalAnalysis(self):
-        print("\n------ANALISIS LEXICO------")
+        print("\n------ANÁLISIS LÉXICO------")
         nonErrors, lexicalErrors = self.get_tokens()
 
         if lexicalErrors:
             print("\nTOKENS IDENTIFICADOS:")
             for token in nonErrors:
                 print(token)
-            print("\nERRORES LEXICOS IDENTIFICADOS:")
+            print("\nERRORES LÉXICOS IDENTIFICADOS:")
             for error in lexicalErrors:
                 print(error)
             # print()
@@ -45,13 +45,13 @@ class Compiler():
             print()
 
     def syntacticAnalysis(self):
-        print("\n------ANALISIS SINTACTICO------")
+        print("\n------ANÁLISIS SINTÁCTICO------")
         if self.error_listener.errors:
-            print("\nERRORES SINTACTICOS IDENTIFICADOS:")
+            print("\nERRORES SINTÁCTICOS IDENTIFICADOS:")
             for error in self.error_listener.errors:
                 print(error)
         # else:
-        print("\nARBOL SINTACTICO GENERADO CORRECTAMENTE")
+        print("\nARBOL SINTÁCTICO GENERADO CORRECTAMENTE")
         tree = self.getTreeString()
         root = self.build_tree(self.tree)
         self.treeStruct = ASTree()
@@ -246,7 +246,7 @@ class Compiler():
                 elif symbol.data_type == "Bool":
                     symbol.update_value(False)
                 
-        print("\nTABLA DE SIMBOLOS:")
+        print("\nTABLA DE SÍMBOLOS:")
         
         # Asignar los bytes a cada variable de tipo Int, String y Bool:
 
@@ -263,7 +263,7 @@ class Compiler():
 
     def semanticAnalysis(self):
         # if not self.error_listener.errors:
-        print("\n------ANALISIS SEMANTICO------")
+        print("\n------ANÁLISIS SEMÁNTICO------")
         self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
         self.semanticAnalyzer.analyze()
     
@@ -311,11 +311,11 @@ class Compiler():
 
     def syntacticAnalysis2(self):
         if self.error_listener.errors:
-            print("\nERRORES SINTACTICOS IDENTIFICADOS:")
+            print("\nERRORES SINTÁCTICOS IDENTIFICADOS:")
             for error in self.error_listener.errors:
                 print(error)
         else:
-            print("\nARBOL SINTACTICO GENERADO:")
+            print("\nARBOL SINTÁCTICO GENERADO:")
             command = f"antlr4-parse Proyecto2/YAPL.g4 program  -gui {self.input}"
             os.system(command)
 
@@ -442,11 +442,11 @@ class Compiler():
                 column += len(lexeme)
 
             if token_name == "ERROR":
-                self.lexicalErrors.append(f"{token_name} LEXICO: Caracter '{lexeme}' no identificado : Linea {line}")
+                self.lexicalErrors.append(f"{token_name} LÉXICO: Caracter '{lexeme}' no identificado : Línea {line}")
             else:
                 good_tokens.append(f"Token: {token_name:{max_name_length}} | "
                   f"Lexema: {lexeme:{max_lexeme_length}} | "
-                  f"Linea: {line:>{max_line_length}} | "
+                  f"Línea: {line:>{max_line_length}} | "
                   f"Columna: {column:>{max_column_length}}")
 
         return good_tokens, self.lexicalErrors
