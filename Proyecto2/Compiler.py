@@ -1,7 +1,7 @@
 import os
 from Drawer import *
 from antlr4 import *
-from ParseTree import *
+from ASTree import *
 from SymbolTable import *
 from YAPLSemantic import *
 from MyErrorListener import *
@@ -54,7 +54,7 @@ class Compiler():
         print("\nARBOL SINTACTICO GENERADO CORRECTAMENTE")
         tree = self.getTreeString()
         root = self.build_tree(self.tree)
-        self.treeStruct = ParseTree()
+        self.treeStruct = ASTree()
         self.traverse_tree(root, self.treeStruct)
         # for node in self.treeStruct.nodes:
         #     print(node)
@@ -78,7 +78,7 @@ class Compiler():
         
         # llenar diccionario de clases y sus propiedades
         for node in self.treeStruct.nodes:
-            if isinstance(node, ParseTreeNode):
+            if isinstance(node, ASTreeNode):
                 rule_name = node.val
 
                 if rule_name == "classDefine":
@@ -104,7 +104,7 @@ class Compiler():
         #iteramos los nodos del arbol y llenamos la tabla de simbolos
         for node in self.treeStruct.nodes:
             # print(node)
-            if isinstance(node, ParseTreeNode):
+            if isinstance(node, ASTreeNode):
                 rule_name = node.val
                 
                 if rule_name == "classDefine":
@@ -271,7 +271,7 @@ class Compiler():
         print("\n------Building AST------")
         tree = self.getTreeString()
         root = self.build_tree(self.tree)
-        self.treeStruct = ParseTree()
+        self.treeStruct = ASTree()
         self.traverse_tree(root, self.treeStruct)
         # for node in self.treeStruct.nodes:
         #     print(node)
@@ -331,9 +331,9 @@ class Compiler():
                 rule_index = node.getRuleIndex()
                 rule_name = self.parser.ruleNames[rule_index]
                 # print("RuleName:",rule_name)
-                tree_node = ParseTreeNode(rule_name)
+                tree_node = ASTreeNode(rule_name)
             else:
-                tree_node = ParseTreeNode(str(node))
+                tree_node = ASTreeNode(str(node))
             
             # Set the errorNode Variable to True if the node represents an error
             if isinstance(node, ErrorNode):

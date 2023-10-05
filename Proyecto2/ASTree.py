@@ -1,4 +1,4 @@
-class ParseTreeNode():
+class ASTreeNode():
     def __init__(self, val):
         self.val = val
         self.errorNode = False
@@ -20,7 +20,7 @@ class ParseTreeNode():
         s += f"\n\tLine: {self.line}"
         return s
     
-class ParseTree():
+class ASTree():
     def __init__(self):
         self.root = None
         self.nodes = []
@@ -29,7 +29,7 @@ class ParseTree():
         self.nodes.append(node)
 
     def __str__(self):
-        s = f"ParseTree: {self.root.val}"
+        s = f"ASTree: {self.root.val}"
         if len(self.nodes) > 0:
             s += f"\n\tNodes: {[node.val for node in self.nodes]}"
         return s
