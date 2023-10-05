@@ -1,20 +1,20 @@
 class Main {
-   
+   #
     a : Int <- 1;
     b : Int <- 5;
     c : Int <- 8;
     d : Int;
-    l : String;
+    l : String
 
     main() : SELF_TYPE {
       {
-        a <- 2 * 4;
+        a <- "2" * 4;
         b <- 5 - 6  * 10;
         c <- suma(a,b);
       }
     };
 
-    suma(a: Int, b: Int): Int  {
+    suma(a: Int, b: Int): Int {
       {
         d <- a + b;
         l <- "Suma Exitosa!";

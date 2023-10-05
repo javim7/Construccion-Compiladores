@@ -1,9 +1,9 @@
-from datetime import datetime
-from tkinter import Text, ttk, Frame
-import tkinter as tk
-import platform 
 import re
 import os
+import platform 
+import tkinter as tk
+from datetime import datetime
+from tkinter import Text, ttk, Frame
 
 from Compiler import *
 from Cuadrupla import *

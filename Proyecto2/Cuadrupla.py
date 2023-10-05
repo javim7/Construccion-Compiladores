@@ -6,25 +6,20 @@ class Cuadrupla:
     def __init__(self, operador, operando1, operando2, resultado):
 
         # Asigna el operador pasado como argumento a la variable de instancia self.operador
-        
         self.operador = operador
-        
+
         # Asigna el primer operando pasado como argumento a la variable de instancia self.operando1
-        
         self.operando1 = operando1
         
         # Asigna el segundo operando pasado como argumento a la variable de instancia self.operando2
-        
         self.operando2 = operando2
         
         # Asigna el resultado pasado como argumento a la variable de instancia self.resultado
-        
         self.resultado = resultado
 
     def __str__(self):
 
         # Retorna una representación en cadena de la cuádrupla en un formato específico
-        
         return f"Cuadrupla: {self.operador}, {self.operando1}, {self.operando2}, {self.resultado}"
 
 
@@ -33,39 +28,30 @@ class Intermediate():
     def __init__(self, arbol):
 
         # Inicializa una lista vacía para almacenar cuádruplas
-        
         self.lista_cuadruplas = []
 
         # Conjunto para almacenar etiquetas ya creadas
-
         self.created_labels = set()
         
         # Inicializa un diccionario vacío para almacenar cuádruplas
-        
         self.dic_cuadruplas = {}
         
         # Inicializa un conjunto vacío para almacenar nodos procesados
-        
         self.processed_nodes = set()
         
         # Almacena el árbol pasado como argumento en la variable de instancia self.arbol
-        
         self.arbol = arbol
         
         # Inicializa un contador de temporales
-        
         self.temp_counter = 1
         
         # Inicializa un contador de etiquetas
-        
         self.label_counter = 1
         
         # Inicializa un índice a 0
-        
         self.index = 0
         
         # Llama al método recorrer_arbol con la raíz del árbol como argumento
-        
         self.recorrer_arbol(arbol.root)
 
 
@@ -561,48 +547,48 @@ class Intermediate():
         cuadrupla = Cuadrupla("PARAM", node.children[0].val, node.children[2].val, None)
         self.lista_cuadruplas.append(cuadrupla)
 
-    # def __str__(self):
-    #     # Crear una tabla con las columnas adecuadas
-    #     table = PrettyTable()
-    #     table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
+    # funcion para traducir las cuadruplas a codigo de tres direcciones
+    def translate(self):
 
-    #     # Definir un diccionario de colores para cada operador
-    #     operator_colors = {
-    #         'JUMP_IF_FALSE': 'magenta',
-    #         'METHOD_START': 'green',
-    #         '<-': 'cyan',
-    #         'LABEL': 'yellow',
-    #         'JUMP': 'grey',
-    #         '<': 'green',
-    #         '---': 'red',
-    #         'IFS': 'red',
-    #         'WHL': 'red',
-    #     }
+        codigo_tres_direcciones = ""
+        indentacion = 0
 
-    #     # grey
-    #     # red
-    #     # green
-    #     # yellow
-    #     # blue
-    #     # magenta
-    #     # cyan
-    #     # white
+        # Iteramos sobre la lista de cuadruplas
+        for cuadrupla in self.lista_cuadruplas:
 
-    #     # Agregar las cuadruplas a la tabla
-    #     for cuadrupla in self.lista_cuadruplas:
-    #         operator_color = operator_colors.get(cuadrupla.operador, 'white')  # Default a blanco si el operador no está en el diccionario
-    #         colored_row = [colored(item, operator_color) for item in [
-    #             self.lista_cuadruplas.index(cuadrupla), 
-    #             cuadrupla.operador, 
-    #             cuadrupla.operando1, 
-    #             cuadrupla.operando2, 
-    #             cuadrupla.resultado
-    #         ]]
-    #         table.add_row(colored_row)
+            codigo_tres_direcciones += f"{indentacion*'    '}"
 
-    #     # Retornar la representación de la tabla como cadena
-    #     return f"\n-----------CODIGO INTERMEDIO-----------\n{table}\n"
-    
+            if cuadrupla.operador == "<-":
+                codigo_tres_direcciones += f"{cuadrupla.resultado} = {cuadrupla.operando1}\n"
+            elif cuadrupla.operador in ["+", "/", "-", "*", "<", ">", "=", "<=", ">="]:
+                codigo_tres_direcciones += f"{cuadrupla.resultado} = {cuadrupla.operando1} {cuadrupla.operador} {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "PRE_PARAM":
+                codigo_tres_direcciones += f"PRE_PARAM {cuadrupla.operando1}\n"
+            elif cuadrupla.operador == "METHOD_CALL":
+                codigo_tres_direcciones += f"{cuadrupla.resultado} = CALL {cuadrupla.operando1}, {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "CLASS":
+                codigo_tres_direcciones += f"CLASS {cuadrupla.operando1}:\n"
+                indentacion += 1
+            elif cuadrupla.operador == "METHOD_START":
+                codigo_tres_direcciones += f"METHOD {cuadrupla.operando1}, {cuadrupla.operando2}:\n"
+            elif cuadrupla.operador == "PARAM": 
+                codigo_tres_direcciones += f"PARAM {cuadrupla.operando1}, {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "RETURN":
+                codigo_tres_direcciones += f"RETURN {cuadrupla.operando1}\n"
+            elif cuadrupla.operador == "IFS":
+                codigo_tres_direcciones += f"IF:\n"
+            elif cuadrupla.operador == "WHL":
+                codigo_tres_direcciones += f"WHILE:\n"
+            elif cuadrupla.operador == "LABEL":
+                codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
+            elif cuadrupla.operador == "EXIT_LABEL":
+                codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
+            elif cuadrupla.operador == "JUMP_IF_FALSE":
+                codigo_tres_direcciones += f"ifFalse {cuadrupla.operando1}, goto {cuadrupla.resultado}\n"
+            elif cuadrupla.operador == "JUMP":
+                codigo_tres_direcciones += f"ifTrue, goto {cuadrupla.resultado}\n"
+
+        return codigo_tres_direcciones
 
     def __str__(self):
         # Crear una tabla con las columnas adecuadas

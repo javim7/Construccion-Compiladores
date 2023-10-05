@@ -11,7 +11,7 @@ from Cuadrupla import *
 
 def main():
     
-    compilador = Compiler('Proyecto2/Ejemplos/ejemplo1.yapl')
+    compilador = Compiler('Proyecto2/Ejemplos/ejemplo2.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
@@ -20,10 +20,9 @@ def main():
     if not compilador.semanticAnalyzer.errors:
 
         arbol = compilador.treeStruct
-
         intermedio = Intermediate(arbol)
-
         print(intermedio)
+        print(intermedio.translate())
 
 if __name__ == '__main__':
     main()
