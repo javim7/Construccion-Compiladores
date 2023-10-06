@@ -571,18 +571,23 @@ class Intermediate():
                 indentacion += 1
             elif cuadrupla.operador == "METHOD_START":
                 codigo_tres_direcciones += f"METHOD {cuadrupla.operando1}, {cuadrupla.operando2}:\n"
+                indentacion += 1
             elif cuadrupla.operador == "PARAM": 
                 codigo_tres_direcciones += f"PARAM {cuadrupla.operando1}, {cuadrupla.operando2}\n"
             elif cuadrupla.operador == "RETURN":
                 codigo_tres_direcciones += f"RETURN {cuadrupla.operando1}\n"
+                indentacion -= 1
             elif cuadrupla.operador == "IFS":
                 codigo_tres_direcciones += f"IF:\n"
+                indentacion += 1
             elif cuadrupla.operador == "WHL":
                 codigo_tres_direcciones += f"WHILE:\n"
+                indentacion += 1
             elif cuadrupla.operador == "LABEL":
                 codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
             elif cuadrupla.operador == "EXIT_LABEL":
                 codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
+                indentacion -= 1
             elif cuadrupla.operador == "JUMP_IF_FALSE":
                 codigo_tres_direcciones += f"ifFalse {cuadrupla.operando1}, goto {cuadrupla.resultado}\n"
             elif cuadrupla.operador == "JUMP":
