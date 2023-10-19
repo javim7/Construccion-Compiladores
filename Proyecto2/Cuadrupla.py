@@ -4,21 +4,12 @@ from termcolor import colored
 class Cuadrupla:
 
     def __init__(self, operador, operando1, operando2, resultado):
-
-        # Asigna el operador pasado como argumento a la variable de instancia self.operador
-        self.operador = operador
-
-        # Asigna el primer operando pasado como argumento a la variable de instancia self.operando1
-        self.operando1 = operando1
-        
-        # Asigna el segundo operando pasado como argumento a la variable de instancia self.operando2
-        self.operando2 = operando2
-        
-        # Asigna el resultado pasado como argumento a la variable de instancia self.resultado
-        self.resultado = resultado
+        self.operador = operador # Asigna el operador pasado como argumento a la variable de instancia self.operador
+        self.operando1 = operando1# Asigna el primer operando pasado como argumento a la variable de instancia self.operando1
+        self.operando2 = operando2# Asigna el segundo operando pasado como argumento a la variable de instancia self.operando2
+        self.resultado = resultado# Asigna el resultado pasado como argumento a la variable de instancia self.resultado
 
     def __str__(self):
-
         # Retorna una representación en cadena de la cuádrupla en un formato específico
         return f"Cuadrupla: {self.operador}, {self.operando1}, {self.operando2}, {self.resultado}"
 
@@ -26,33 +17,15 @@ class Cuadrupla:
 class Intermediate():
     
     def __init__(self, arbol):
-
-        # Inicializa una lista vacía para almacenar cuádruplas
-        self.lista_cuadruplas = []
-
-        # Conjunto para almacenar etiquetas ya creadas
-        self.created_labels = set()
-        
-        # Inicializa un diccionario vacío para almacenar cuádruplas
-        self.dic_cuadruplas = {}
-        
-        # Inicializa un conjunto vacío para almacenar nodos procesados
-        self.processed_nodes = set()
-        
-        # Almacena el árbol pasado como argumento en la variable de instancia self.arbol
-        self.arbol = arbol
-        
-        # Inicializa un contador de temporales
-        self.temp_counter = 1
-        
-        # Inicializa un contador de etiquetas
-        self.label_counter = 1
-        
-        # Inicializa un índice a 0
-        self.index = 0
-        
-        # Llama al método recorrer_arbol con la raíz del árbol como argumento
-        self.recorrer_arbol(arbol.root)
+        self.lista_cuadruplas = [] # Inicializa una lista vacía para almacenar cuádruplas
+        self.created_labels = set() # Conjunto para almacenar etiquetas ya creadas
+        self.dic_cuadruplas = {} # Inicializa un diccionario vacío para almacenar cuádruplas
+        self.processed_nodes = set() # Inicializa un conjunto vacío para almacenar nodos procesados
+        self.arbol = arbol # Almacena el árbol pasado como argumento en la variable de instancia self.arbol
+        self.temp_counter = 1 # Inicializa un contador de temporales
+        self.label_counter = 1 # Inicializa un contador de etiquetas
+        self.index = 0  # Inicializa un índice a 0
+        self.recorrer_arbol(arbol.root) # Llama al método recorrer_arbol con la raíz del árbol como argumento
 
 
     def create_new_temp(self):
@@ -551,47 +524,44 @@ class Intermediate():
     def translate(self):
 
         codigo_tres_direcciones = ""
-        indentacion = 0
+        indent_level = 0
 
-        # Iteramos sobre la lista de cuadruplas
         for cuadrupla in self.lista_cuadruplas:
-
-            codigo_tres_direcciones += f"{indentacion*'    '}"
-
-            if cuadrupla.operador == "<-":
-                codigo_tres_direcciones += f"{cuadrupla.resultado} = {cuadrupla.operando1}\n"
-            elif cuadrupla.operador in ["+", "/", "-", "*", "<", ">", "=", "<=", ">="]:
-                codigo_tres_direcciones += f"{cuadrupla.resultado} = {cuadrupla.operando1} {cuadrupla.operador} {cuadrupla.operando2}\n"
-            elif cuadrupla.operador == "PRE_PARAM":
-                codigo_tres_direcciones += f"PRE_PARAM {cuadrupla.operando1}\n"
-            elif cuadrupla.operador == "METHOD_CALL":
-                codigo_tres_direcciones += f"{cuadrupla.resultado} = CALL {cuadrupla.operando1}, {cuadrupla.operando2}\n"
-            elif cuadrupla.operador == "CLASS":
-                codigo_tres_direcciones += f"CLASS {cuadrupla.operando1}:\n"
-                indentacion += 1
+            if cuadrupla.operador == "CLASS":
+                indent_level = 0
+                codigo_tres_direcciones += " " * indent_level + f"CLASS {cuadrupla.operando1}:\n"
+                indent_level += 4
             elif cuadrupla.operador == "METHOD_START":
-                codigo_tres_direcciones += f"METHOD {cuadrupla.operando1}, {cuadrupla.operando2}:\n"
-                indentacion += 1
-            elif cuadrupla.operador == "PARAM": 
-                codigo_tres_direcciones += f"PARAM {cuadrupla.operando1}, {cuadrupla.operando2}\n"
-            elif cuadrupla.operador == "RETURN":
-                codigo_tres_direcciones += f"RETURN {cuadrupla.operando1}\n"
-                indentacion -= 1
+                codigo_tres_direcciones += " " * indent_level + f"METHOD {cuadrupla.operando1}, {cuadrupla.operando2}:\n"
+                indent_level += 4
             elif cuadrupla.operador == "IFS":
-                codigo_tres_direcciones += f"IF:\n"
-                indentacion += 1
+                codigo_tres_direcciones += " " * indent_level + "BEGIN_IF:\n"
+                indent_level += 4
             elif cuadrupla.operador == "WHL":
-                codigo_tres_direcciones += f"WHILE:\n"
-                indentacion += 1
-            elif cuadrupla.operador == "LABEL":
-                codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
+                codigo_tres_direcciones += " " * indent_level + "BEGIN_WHILE:\n"
+                indent_level += 4
             elif cuadrupla.operador == "EXIT_LABEL":
-                codigo_tres_direcciones += f"{cuadrupla.resultado}:\n"
-                indentacion -= 1
+                indent_level -= 4
+                codigo_tres_direcciones += " " * indent_level + f"{cuadrupla.resultado} EXIT\n"
+            elif cuadrupla.operador in ["+", "/", "-", "*", "<", ">", "=", "<=", ">="]:
+                codigo_tres_direcciones += f"{' ' * indent_level}{cuadrupla.resultado} = {cuadrupla.operando1} {cuadrupla.operador} {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "<-":
+                codigo_tres_direcciones += f"{' ' * indent_level}{cuadrupla.resultado} = {cuadrupla.operando1}\n"
+            elif cuadrupla.operador == "PRE_PARAM":
+                codigo_tres_direcciones += f"{' ' * indent_level}PRE_PARAM {cuadrupla.operando1}\n"
+            elif cuadrupla.operador == "METHOD_CALL":
+                codigo_tres_direcciones += f"{' ' * indent_level}{cuadrupla.resultado} = CALL {cuadrupla.operando1}, {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "PARAM":
+                codigo_tres_direcciones += f"{' ' * indent_level}PARAM {cuadrupla.operando1}, {cuadrupla.operando2}\n"
+            elif cuadrupla.operador == "RETURN":
+                codigo_tres_direcciones += f"{' ' * indent_level}RETURN {cuadrupla.operando1}\n"
+                indent_level -= 4
+            elif cuadrupla.operador == "LABEL":
+                codigo_tres_direcciones += f"{' ' * indent_level}{cuadrupla.resultado}:\n"
             elif cuadrupla.operador == "JUMP_IF_FALSE":
-                codigo_tres_direcciones += f"ifFalse {cuadrupla.operando1}, goto {cuadrupla.resultado}\n"
+                codigo_tres_direcciones += f"{' ' * indent_level}ifFalse {cuadrupla.operando1}, goto {cuadrupla.resultado}\n"
             elif cuadrupla.operador == "JUMP":
-                codigo_tres_direcciones += f"ifTrue, goto {cuadrupla.resultado}\n"
+                codigo_tres_direcciones += f"{' ' * indent_level}ifTrue, goto {cuadrupla.resultado}\n"
 
         return codigo_tres_direcciones
 
