@@ -561,7 +561,7 @@ class Intermediate():
             elif cuadrupla.operador == "JUMP_IF_FALSE":
                 codigo_tres_direcciones += f"{' ' * indent_level}ifFalse {cuadrupla.operando1}, goto {cuadrupla.resultado}\n"
             elif cuadrupla.operador == "JUMP":
-                codigo_tres_direcciones += f"{' ' * indent_level}ifTrue, goto {cuadrupla.resultado}\n"
+                codigo_tres_direcciones += f"{' ' * indent_level}goto {cuadrupla.resultado}\n"
 
         return codigo_tres_direcciones
 

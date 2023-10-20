@@ -1,0 +1,13 @@
+class Main {
+    a: Int;
+    b: Int;
+    c: Int;
+
+    main(): SELF_TYPE {
+        {    
+        c <- a * b - b;
+        c <- a / b;
+        c <- b + b;
+        }
+    };
+};

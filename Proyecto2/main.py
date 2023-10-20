@@ -11,7 +11,7 @@ from Cuadrupla import *
 
 def main():
     
-    compilador = Compiler('Proyecto2/Ejemplos/ejemplo2.yapl')
+    compilador = Compiler('Proyecto2/Ejemplos/ejemplo0.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
