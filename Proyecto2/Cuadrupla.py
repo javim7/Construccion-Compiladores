@@ -363,6 +363,10 @@ class Intermediate():
             expr = node.children[2]
             cuadrupla = Cuadrupla("<-", expr.children[0].val, None, formal.children[0].val)
             self.lista_cuadruplas.append(cuadrupla)
+        elif len(node.children) == 1: # es una declaracion
+            formal = node.children[0]
+            cuadrupla = Cuadrupla("<-", 0, None, formal.children[0].val)
+            self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para crear la cuadrupla de returns
     def returnQuad(self, node=None):
