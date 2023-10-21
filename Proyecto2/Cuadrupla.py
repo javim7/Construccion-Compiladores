@@ -25,6 +25,7 @@ class Intermediate():
         self.temp_counter = 1 # Inicializa un contador de temporales
         self.label_counter = 1 # Inicializa un contador de etiquetas
         self.index = 0  # Inicializa un índice a 0
+        self.tres_direcciones = "" # Inicializa una cadena vacía para almacenar el código de tres direcciones
         self.recorrer_arbol(arbol.root) # Llama al método recorrer_arbol con la raíz del árbol como argumento
 
 
@@ -563,6 +564,7 @@ class Intermediate():
             elif cuadrupla.operador == "JUMP":
                 codigo_tres_direcciones += f"{' ' * indent_level}goto {cuadrupla.resultado}\n"
 
+        self.tres_direcciones = codigo_tres_direcciones
         return codigo_tres_direcciones
 
     def __str__(self):
