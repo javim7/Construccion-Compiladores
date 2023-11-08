@@ -1,0 +1,17 @@
+class Main {
+    x : Int <- 1;
+    y : Int <- 5;
+    resultado : Int;
+
+    main() : Int {
+      {
+        resultado <- suma(x,y);
+        out_int(resultado);
+      }
+    };
+
+    suma(a: Int, b: Int): Int {
+        return(a + b)
+    };
+
+};

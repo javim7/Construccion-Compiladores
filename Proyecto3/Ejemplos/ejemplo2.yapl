@@ -1,0 +1,41 @@
+class Main {
+    a : Int <- 1;
+    b : Int <- 2;
+    c : Int;
+    d : Int <- 1;
+    e : Int <- 2;
+
+    main() : Int {
+      { 
+        a <- 2 * 3;
+        b <- (2 * a) + (b - 3);
+        c <- multiplicar(a, b);
+        out_int(c);
+        
+        if a<b
+        then a <- 4
+        else a <- 6
+        fi ;
+
+        out_int(a);
+
+        a <- 0;
+
+        while a < 3
+        loop {
+          a <- a + 1;
+        }
+        pool;
+
+        return(c);
+      }
+    };
+    
+    multiplicar(a:Int, b: Int) : Int{
+     {
+       c <- a * b;
+       return (c);
+     }
+    };
+
+};
