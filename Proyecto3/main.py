@@ -11,7 +11,7 @@ from Assembler import *
 
 def main():
     
-    compilador = Compiler('Proyecto3/Ejemplos/ejemplo1.yapl')
+    compilador = Compiler('Ejemplos/ejemplo0.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()

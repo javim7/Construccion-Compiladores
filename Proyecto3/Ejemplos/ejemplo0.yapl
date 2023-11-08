@@ -1,0 +1,17 @@
+class Main {
+    num1 : Int <- 3;
+    num2 : Int <- 9;
+    resAdd  : Int;
+    resSub  : Int;
+    resMul : Int;
+    resDiv  : Int;
+
+    main(): SELF_TYPE {
+        {    
+            resAdd  <- num1 + num2;
+            resSub  <- num2 - num1;
+            resMul <- num1 * num2;
+            resDiv  <- num2 / num1;
+        }
+    };
+};
