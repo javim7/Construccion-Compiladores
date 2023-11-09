@@ -424,7 +424,6 @@ class Intermediate():
                     child_values.append(child.val)
             
             # Creamos la cuadrupla con la operación de asignación y los operandos
-            print(child_values[2])
             cuadrupla = Cuadrupla("<-", child_values[2], None, child_values[0])
             
             # Agregamos la cuadrupla a la lista de cuadruplas

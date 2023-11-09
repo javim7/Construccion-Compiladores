@@ -48,8 +48,14 @@ class Assembler:
                         self.variables.add(cuadrupla.resultado)
 
                 else: # actualizar variables en las operaciones aritmeticas
-                    self.text_section += f"{'    ' * indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
-                    self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
+                    if len(self.stack) > 0 and self.stack[-1] != 'main':
+                        retorno = self.get_v()
+                        self.text_section += f"\n{'    ' * indentation}sw ${retorno}, {cuadrupla.resultado}\n"
+                        self.variables_cargadas[cuadrupla.resultado] = retorno
+                        
+                    else:
+                        self.text_section += f"{'    ' * indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
+                        self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
 
             # Metodos
             elif cuadrupla.operador == 'METHOD_START':
@@ -111,10 +117,12 @@ class Assembler:
                 a = self.get_a()
                 self.text_section += f"{'    ' * indentation}lw ${a}, {cuadrupla.operando1}\n"
                 self.argumentos[cuadrupla.resultado] = {cuadrupla.operando1 : a}
+                print(self.argumentos)
             
             # Llamadas a metodos
             elif cuadrupla.operador == 'METHOD_CALL':
                 self.text_section += f"\n{'    ' * indentation}jal {cuadrupla.operando1}\n"
+                self.stack.append(cuadrupla.operando1)
 
             # Return 
             elif cuadrupla.operador == 'RETURN':
