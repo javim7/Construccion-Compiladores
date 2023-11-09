@@ -7,11 +7,11 @@ Proyecto3: Generacion de codigo ensamblador
 
 from Compiler import *
 from Cuadrupla import *
-from Assembler import *
+from Assembler2 import *
 
 def main():
     
-    compilador = Compiler('Ejemplos/ejemplo0.yapl')
+    compilador = Compiler('Proyecto3/Ejemplos/ejemplo0.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
@@ -23,6 +23,9 @@ def main():
         intermedio = Intermediate(arbol)
         print(intermedio)
         print(intermedio.translate())
+
+        ensamblador = Assembler2(intermedio.lista_cuadruplas)
+        print(ensamblador.generar_codigo_mips())
 
 if __name__ == '__main__':
     main()
