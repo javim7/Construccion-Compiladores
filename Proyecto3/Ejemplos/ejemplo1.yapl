@@ -5,7 +5,6 @@ class Main {
 
     main() : Int {
       {
-        main();
         resultado <- suma(x,y);
         out_int(resultado);
       }

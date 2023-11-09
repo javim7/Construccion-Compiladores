@@ -192,7 +192,7 @@ class Intermediate():
         contador = 0
         for child in children:
             if child.val == "expr":
-                self.lista_cuadruplas.append(Cuadrupla("PRE_PARAM", child.children[0].val, None, None))
+                self.lista_cuadruplas.append(Cuadrupla("PRE_PARAM", child.children[0].val, None, node.children[0].val))
                 contador += 1
         
         # creamos el temporal
@@ -411,7 +411,6 @@ class Intermediate():
                     # Comprueba si es un método con parámetros
                     
                     elif children_len > 3 and child.children[1].val == "(" and child.children[-1].val == ")":
-                        
                         temp = self.methodCallParamsQuad(child)
 
                         child_values.append(temp)
@@ -425,6 +424,7 @@ class Intermediate():
                     child_values.append(child.val)
             
             # Creamos la cuadrupla con la operación de asignación y los operandos
+            print(child_values[2])
             cuadrupla = Cuadrupla("<-", child_values[2], None, child_values[0])
             
             # Agregamos la cuadrupla a la lista de cuadruplas
@@ -487,7 +487,7 @@ class Intermediate():
 
         for child in children:
             if child.val == "formal":
-                self.paramQuad(child)
+                self.paramQuad(child, node.children[0].val)
     
     # funcion para crear la cuadrupla de clase
     def classQuad(self, node=None):
@@ -509,10 +509,10 @@ class Intermediate():
             self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para crear la cuadrupla de los parametros de un metodo
-    def paramQuad(self, node=None):
+    def paramQuad(self, node=None, method=None):
             
         # creamos la cuadrupla
-        cuadrupla = Cuadrupla("PARAM", node.children[0].val, node.children[2].val, None)
+        cuadrupla = Cuadrupla("PARAM", node.children[0].val, node.children[2].val, method)
         self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para traducir las cuadruplas a codigo de tres direcciones

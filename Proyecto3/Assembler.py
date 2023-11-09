@@ -1,71 +1,129 @@
-class Cuadrupla:
-    def __init__(self, operador, operando1, operando2, resultado):
-        self.operador = operador
-        self.operando1 = operando1
-        self.operando2 = operando2
-        self.resultado = resultado
-
 class Assembler:
     def __init__(self, cuadruplas):
         self.cuadruplas = cuadruplas
         self.data_section = ".data\n"
-        self.text_section = ".text\n.globl main\nmain:\n"
-        self.variables_data = {}
-        self.temp_reg_counter = 0
-        self.variables_iniciales = ['num1', 'num2', 'resAdd', 'resSub', 'resMul', 'resDiv']
+        self.text_section = "\n.text\n.globl main\n"
+        self.variables = set()
+        self.methods = []
+        self.stack = []
+        self.variables_cargadas = {}
+        self.argumentos = {}
+        self.resultados = {}
+        self.temp_counter = 0
+        self.a_counter = 0
+        self.v_counter = 0
 
+    def get_temp(self):
+        temp = f"t{self.temp_counter}"
+        self.temp_counter += 1
+        return temp
+    
+    def get_a(self):
+        a = f"a{self.a_counter}"
+        self.a_counter += 1
+        return a
+    
+    def get_v(self):
+        v = f"v{self.v_counter}"
+        self.v_counter += 1
+        return v
+    
     def generar_codigo_mips(self):
-        for cuad in self.cuadruplas:
-            if cuad.operador == 'CLASS' or cuad.operador == 'METHOD_START':
-                continue  # No se necesita en MIPS
-            elif cuad.operador == '<-' and cuad.resultado in self.variables_iniciales:
-                self.data_section += f"{cuad.resultado}: .word {cuad.operando1}\n"
-                self.variables_data[cuad.resultado] = cuad.operando1
-            elif cuad.operador in ['+', '-', '*', '/']:
-                # Cargar valores iniciales
-                self.text_section += f"    lw $t0, {cuad.operando1}\n"
-                self.text_section += f"    lw $t1, {cuad.operando2}\n"
 
-                # Realizar la operación
-                if cuad.operador == '+':
-                    self.text_section += "    add $t2, $t0, $t1\n    sw $t2, resAdd\n"
-                elif cuad.operador == '-':
-                    self.text_section += "    sub $t2, $t1, $t0\n    sw $t2, resSub\n"
-                elif cuad.operador == '*':
-                    self.text_section += "    mul $t2, $t0, $t1\n    sw $t2, resMul\n"
-                elif cuad.operador == '/':
-                    self.text_section += "    div $t0, $t1\n    mflo $t2\n    sw $t2, resDiv\n"
+        indentation = 0
 
-        # Finalizar el programa
-        self.text_section += "    li $v0, 10    # Código de salida\n    syscall       # Ejecutar syscall para terminar\n"
+        for cuadrupla in self.cuadruplas:
+
+            # Variables
+            if cuadrupla.operador == '<-':
+                if cuadrupla.resultado not in self.variables: # agregar variables a la seccion de datos
+                    if cuadrupla.operando2 == 'String':
+                        self.data_section += f"{cuadrupla.resultado}: .asciiz {cuadrupla.operando1}\n"
+                        self.variables.add(cuadrupla.resultado)
+                    elif cuadrupla.operando2 == 'Int':
+                        self.data_section += f"{cuadrupla.resultado}: .word {cuadrupla.operando1}\n"
+                        self.variables.add(cuadrupla.resultado) 
+                    elif cuadrupla.operando2 == 'Bool':
+                        self.data_section += f"{cuadrupla.resultado}: .word {1 if cuadrupla.operando1 == 'true' else 0}\n"
+                        self.variables.add(cuadrupla.resultado)
+
+                else: # actualizar variables en las operaciones aritmeticas
+                    self.text_section += f"{'    ' * indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
+                    self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
+
+            # Metodos
+            elif cuadrupla.operador == 'METHOD_START':
+                indentation = 0
+                if len(self.methods) >= 1 and cuadrupla.operando1 not in self.methods and self.methods[-1] == 'main':
+                    # Finalizar el programa
+                    self.text_section += f"\n{'    '}li $v0, 10    # Código de salida\n{'    '}syscall       # Ejecutar syscall para terminar\n"
+
+                self.text_section += f"\n{cuadrupla.operando1}:\n"
+                self.methods.append(cuadrupla.operando1)
+                indentation += 1
+
+            # Operaciones aritmeticas
+            elif cuadrupla.operador in ['+', '-', '*', '/']:
+               
+                # verificar si las variables ya estan cargadas en los registros
+                if cuadrupla.operando1 not in self.variables_cargadas:
+                    temp1 = self.get_temp()
+                    self.text_section += f"\n{'    ' * indentation}lw ${temp1}, {cuadrupla.operando1}\n"
+                    self.variables_cargadas[cuadrupla.operando1] = temp1
+                if cuadrupla.operando2 not in self.variables_cargadas:
+                    temp2 = self.get_temp()
+                    self.text_section += f"{'    ' * indentation}lw ${temp2}, {cuadrupla.operando2}\n"
+                    self.variables_cargadas[cuadrupla.operando2] = temp2
+
+                # temporal para guardar el resultado
+                temp3 = self.get_temp()
+
+                if cuadrupla.operador == '+':
+                    self.text_section += f"\n{'    ' * indentation}add ${temp3}, ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                elif cuadrupla.operador == '-':
+                    self.text_section += f"\n{'    ' * indentation}sub ${temp3}, ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                elif cuadrupla.operador == '*':
+                    self.text_section += f"\n{'    ' * indentation}mul ${temp3}, ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                elif cuadrupla.operador == '/':
+                    self.text_section += f"\n{'    ' * indentation}div ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                    self.text_section += f"{'    ' * indentation}mflo ${temp3}\n"
+                    temp4 = self.get_temp()
+                    self.text_section += f"{'    ' * indentation}mfhi ${temp4}\n"
+                    self.temp_counter -= 1
+
+            # Prints
+            elif cuadrupla.operador == 'PROCEDURE':
+                # out_int
+                if cuadrupla.operando1 == 'out_int':
+                    self.text_section += f"\n{'    ' * indentation}li $v0, 1\n"
+                    self.text_section += f"{'    ' * indentation}move $a0, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                    self.text_section += f"{'    ' * indentation}syscall\n"
+                
+                # out_string
+                elif cuadrupla.operando1 == 'out_string':
+                    self.text_section += f"\n{'    ' * indentation}li $v0, 4\n"
+                    self.text_section += f"{'    ' * indentation}move $a0, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                    self.text_section += f"{'    ' * indentation}syscall\n"
+
+        
+            # Argumentos
+            elif cuadrupla.operador == 'PRE_PARAM':
+                a = self.get_a()
+                self.text_section += f"{'    ' * indentation}lw ${a}, {cuadrupla.operando1}\n"
+                self.argumentos[cuadrupla.resultado] = {cuadrupla.operando1 : a}
+            
+            # Llamadas a metodos
+            elif cuadrupla.operador == 'METHOD_CALL':
+                self.text_section += f"\n{'    ' * indentation}jal {cuadrupla.operando1}\n"
+
+            # Return 
+            elif cuadrupla.operador == 'RETURN':
+                self.text_section += f"\n{'    ' * indentation}jr $ra\n"
+
+        
+        # Mensaje final
+        if len(self.methods) == 1:
+            # Finalizar el programa
+            self.text_section += f"\n{'    ' * indentation}li $v0, 10    # Código de salida\n{'    ' * indentation}syscall       # Ejecutar syscall para terminar\n"
 
         return self.data_section + self.text_section
-
-
-# Lista de cuadruplas de ejemplo
-cuadruplas_ejemplo = [
-    Cuadrupla('CLASS', 'Main', None, None),
-    Cuadrupla('<-', 3, None, 'num1'),
-    Cuadrupla('<-', 9, None, 'num2'),
-    Cuadrupla('<-', 0, None, 'resAdd'),
-    Cuadrupla('<-', 0, None, 'resSub'),
-    Cuadrupla('<-', 0, None, 'resMul'),
-    Cuadrupla('<-', 0, None, 'resDiv'),
-    Cuadrupla('METHOD_START', 'main', 'SELF_TYPE', None),
-    Cuadrupla('+', 'num1', 'num2', 't1'),
-    Cuadrupla('<-', 't1', None, 'resAdd'),
-    Cuadrupla('-', 'num2', 'num1', 't2'),
-    Cuadrupla('<-', 't2', None, 'resSub'),
-    Cuadrupla('*', 'num1', 'num2', 't3'),
-    Cuadrupla('<-', 't3', None, 'resMul'),
-    Cuadrupla('/', 'num2', 'num1', 't4'),
-    Cuadrupla('<-', 't4', None, 'resDiv'),
-]
-
-# Crear una instancia de la clase Assembler con las cuadruplas de ejemplo
-ensamblador = Assembler(cuadruplas_ejemplo)
-
-# Generar el código MIPS
-codigo_mips = ensamblador.generar_codigo_mips()
-
-print(codigo_mips)

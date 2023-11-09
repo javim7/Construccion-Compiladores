@@ -7,7 +7,7 @@ Proyecto3: Generacion de codigo ensamblador
 
 from Compiler import *
 from Cuadrupla import *
-from Assembler2 import *
+from Assembler import *
 
 def main():
     
@@ -25,7 +25,7 @@ def main():
         print(intermedio)
         # print(intermedio.translate())
 
-        ensamblador = Assembler2(intermedio.lista_cuadruplas)
+        ensamblador = Assembler(intermedio.lista_cuadruplas)
         print(ensamblador.generar_codigo_mips())
         # print(ensamblador.variables_cargadas)
 
