@@ -244,7 +244,7 @@ class Compiler():
                 elif symbol.data_type == "Int":
                     symbol.update_value(0)
                 elif symbol.data_type == "Bool":
-                    symbol.update_value(False)
+                    symbol.update_value('false')
                 
         print("\nTABLA DE SÍMBOLOS:")
         

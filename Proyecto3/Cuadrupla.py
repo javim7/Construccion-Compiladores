@@ -16,12 +16,13 @@ class Cuadrupla:
 
 class Intermediate():
     
-    def __init__(self, arbol):
+    def __init__(self, arbol, symbolTable):
         self.lista_cuadruplas = [] # Inicializa una lista vacía para almacenar cuádruplas
         self.created_labels = set() # Conjunto para almacenar etiquetas ya creadas
         self.dic_cuadruplas = {} # Inicializa un diccionario vacío para almacenar cuádruplas
         self.processed_nodes = set() # Inicializa un conjunto vacío para almacenar nodos procesados
         self.arbol = arbol # Almacena el árbol pasado como argumento en la variable de instancia self.arbol
+        self.symbolTable = symbolTable # Almacena la tabla de símbolos pasada como argumento en la variable de instancia self.symbolTable
         self.temp_counter = 1 # Inicializa un contador de temporales
         self.label_counter = 1 # Inicializa un contador de etiquetas
         self.index = 0  # Inicializa un índice a 0
@@ -32,14 +33,10 @@ class Intermediate():
     def create_new_temp(self):
 
         # Crea una nueva variable temporal usando el contador de temporales (temp_counter)
-        
         temp = f"t{self.temp_counter}"
         
         # Incrementa el contador de temporales para el próximo uso
-        
         self.temp_counter += 1
-        
-        # Retorna la nueva variable temporal creada
         
         return temp
 
@@ -47,14 +44,10 @@ class Intermediate():
     def create_new_label(self):
 
         # Crea una nueva etiqueta usando el contador de etiquetas (label_counter)
-        
         label = f"L{self.label_counter}"
         
         # Incrementa el contador de etiquetas para el próximo uso
-        
         self.label_counter += 1
-        
-        # Retorna la nueva etiqueta creada
         
         return label
 
@@ -62,58 +55,45 @@ class Intermediate():
     def recorrer_arbol(self, node=None):
 
         # Verifica si el nodo proporcionado no es None
-        
         if node is not None:
             
             # Llama al método generar_codigo_tres_direcciones para el nodo actual
-            
             self.generar_codigo_tres_direcciones(node)
             
             # Itera sobre todos los hijos del nodo actual y llama recursivamente al método recorrer_arbol para cada hijo
-            
             for child in node.children:
-
                 self.recorrer_arbol(child)
 
 
     def generar_codigo_tres_direcciones(self, node=None):
 
         # Asigna el valor del nodo a la variable rule
-        
         rule = node.val
         
         # Obtiene la cantidad de hijos del nodo y la almacena en la variable children_len
-        
         children_len = len(node.children)
         
         if rule == "expr":
             
             # Comprueba si es un método sin parámetros
-            
             if children_len == 3 and node.children[1].val == "(" and node.children[2].val == ")":
-
                 self.methodCallQuad(node)
 
             # Comprueba si es un método con parámetros
-            
             elif children_len > 3 and node.children[1].val == "(" and node.children[-1].val == ")":
 
                 # self.lista_cuadruplas.append(Cuadrupla("STACK_INIT","---","---","---"))
-                
                 self.methodCallParamsQuad(node)
 
                 # self.lista_cuadruplas.append(Cuadrupla("---","---","---","EMPTY_STACK"))
                 
             # Comprueba si es operación aritmética
-            
             elif children_len == 3 and node.children[1].val in ["+", "/", "-", "*"]:
-                
                 self.arithmeticQuad(node)
                 
             # Comprueba si es un if
             
             elif children_len == 7 and node.children[0].val == "if" and node.children[-1].val == "fi":
-                
                 self.lista_cuadruplas.append(Cuadrupla("IFS","---","---","---"))
 
                 self.ifQuadEnhanced(node)
@@ -122,7 +102,6 @@ class Intermediate():
                 self.lista_cuadruplas.append(Cuadrupla("---","---","---","END"))
 
             # Comprueba si es un while
-
             elif children_len == 5 and node.children[0].val == "while" and node.children[-1].val == "pool":
 
                 self.lista_cuadruplas.append(Cuadrupla("WHL","---","---","---"))
@@ -133,7 +112,6 @@ class Intermediate():
                 self.lista_cuadruplas.append(Cuadrupla("---","---","---","END"))
 
             # Comprueba si es un return
-            
             if node.children[0].val == "return":
                 
                 self.returnQuad(node)
@@ -146,19 +124,16 @@ class Intermediate():
         elif rule == "varDeclaration":
             
             # Es una declaración de variable
-            
             self.varDeclarationQuad(node)
             
         elif rule == "method":
             
             # Es un método
-            
             self.methodQuad(node)
             
         elif rule == "classDefine":
             
             # Es una clase
-            
             self.classQuad(node)
 
 
@@ -202,10 +177,13 @@ class Intermediate():
         else:
             self.processed_nodes.add(node)
 
-        
-
         #saltarnos si es un return
         if node.children[0].val == "return":
+            return
+        #vemos si es algun print
+        if node.children[0].val == "out_int" or node.children[0].val == 'out_string':
+            argument = node.children[2].children[0].val
+            self.lista_cuadruplas.append(Cuadrupla("PROCEDURE", node.children[0].val, argument, None))
             return
 
         self.lista_cuadruplas.append(Cuadrupla("STACK_INIT","---","---","---"))
@@ -360,11 +338,24 @@ class Intermediate():
         if len(node.children) > 1: # es una asignacion
             formal = node.children[0]
             expr = node.children[2]
-            cuadrupla = Cuadrupla("<-", expr.children[0].val, None, formal.children[0].val)
+            resultado = formal.children[0].val
+            symbol = self.symbolTable.lookup_all(resultado)
+            type = symbol.data_type
+
+            cuadrupla = Cuadrupla("<-", expr.children[0].val, type, resultado)
             self.lista_cuadruplas.append(cuadrupla)
         elif len(node.children) == 1: # es una declaracion
             formal = node.children[0]
-            cuadrupla = Cuadrupla("<-", 0, None, formal.children[0].val)
+            resultado = formal.children[0].val
+            symbol = self.symbolTable.lookup_all(resultado)
+            type = symbol.data_type
+
+            if type == "Int":
+                cuadrupla = Cuadrupla("<-", 0, type, resultado)
+            elif type == "Bool":
+                cuadrupla = Cuadrupla("<-", 'false', type, resultado)
+            elif type == "String":
+                cuadrupla = Cuadrupla("<-", '""', type, resultado)
             self.lista_cuadruplas.append(cuadrupla)
 
     # funcion para crear la cuadrupla de returns
@@ -572,7 +563,7 @@ class Intermediate():
 
     def __str__(self):
         # Crear una tabla con las columnas adecuadas
-        print("\n------------Cuadruplas------------")
+        print("\n---------------CUADRUPLAS---------------")
         table = PrettyTable()
         table.field_names = ["Indice","Operador", "Operando 1", "Operando 2", "Resultado"]
 

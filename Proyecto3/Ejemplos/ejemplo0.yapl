@@ -9,9 +9,13 @@ class Main {
     main(): SELF_TYPE {
         {    
             resAdd  <- num1 + num2;
+            out_int(resAdd);
             resSub  <- num2 - num1;
+            out_int(resSub);
             resMul <- num1 * num2;
+            out_int(resMul);
             resDiv  <- num2 / num1;
+            out_int(resDiv);
         }
     };
 };
