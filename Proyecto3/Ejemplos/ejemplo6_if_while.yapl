@@ -1,20 +1,23 @@
 class Main {
     num1 : Int <- 3;
-    num2 : Int <- 9;
+    num2 : Int <- 7;
+    num3 : Int <- 1;
+    num4 : Int <- 15;
 
     main(): SELF_TYPE {
         {    
-            while num2 < 3
+            while num2 < num4
             loop {
-                out_string("num2 is less than 3");
+                out_int(num2);
+                num2 <- num2 + num3;
             }
             pool;
-            out_int(333);
+            out_int(num3);
             if num1 < num2
-            then out_int(666)
-            else out_int(777)
+            then out_int(num1)
+            else out_int(num2)
             fi ;
-            out_int(888);
+            out_int(num3);
         }
     };
 };

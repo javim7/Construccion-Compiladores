@@ -19,6 +19,11 @@ class Assembler:
 
         self.recorrer_cuadruplas(self.cuadruplas_iniciales)
 
+        # Escribimos en el text section el final del programa
+        if self.methods[-1] == 'main':
+            self.text_section += f"\n{'    ' * self.indentation}li $v0, 10    # Código de salida\n{'    ' * self.indentation}syscall       # Ejecutar syscall para terminar\n"
+
+
 
 
     def get_temp(self):
@@ -150,7 +155,7 @@ class Assembler:
         else:
 
             # Tambien tenemos que alocar el valor en un registro temporal
-            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando1}\n"
+            self.text_section += f"\n{'    ' * self.indentation}lw $t{self.temp_counter}, {cuadrupla_comparacion.operando1}\n"
             self.variables_cargadas[cuadrupla_comparacion.operando1] = f"t{self.temp_counter}"
             self.temp_counter += 1
             operando1 = self.variables_cargadas[cuadrupla_comparacion.operando1]
@@ -161,7 +166,7 @@ class Assembler:
             operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
         else:
             # Tambien tenemos que alocar el valor en un registro temporal
-            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando2}\n"
+            self.text_section += f"\n{'    ' * self.indentation}lw $t{self.temp_counter}, {cuadrupla_comparacion.operando2}\n"
             self.variables_cargadas[cuadrupla_comparacion.operando2] = f"t{self.temp_counter}"
             self.temp_counter += 1
             operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
@@ -193,7 +198,7 @@ class Assembler:
 
         etiqueta_salto_end_while = "while_end_" + cuadrupla_end_while.resultado # while_end_L1
 
-        self.text_section += f"\n{'    ' * self.indentation}{instruccion_comparacion} ${operando1}, ${operando2}, {etiqueta_salto_end_while}\n"
+        self.text_section += f"\n{'    ' * self.indentation}{instruccion_comparacion} ${operando2}, ${operando1}, {etiqueta_salto_end_while}\n"
 
         # Ahora obtenemos el cuerpo del bucle que es encapsulando todas las cuadruplas entre JUMP_IF_FALSE + 1 y EXIT_LABEL
 
@@ -260,7 +265,7 @@ class Assembler:
         else:
 
             # Tambien tenemos que alocar el valor en un registro temporal
-            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando1}\n"
+            self.text_section += f"\n{'    ' * self.indentation}lw $t{self.temp_counter}, {cuadrupla_siguiente.operando1}\n"
             self.variables_cargadas[cuadrupla_siguiente.operando1] = f"t{self.temp_counter}"
             self.temp_counter += 1
             operando1 = self.variables_cargadas[cuadrupla_siguiente.operando1]
@@ -271,7 +276,7 @@ class Assembler:
             operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
         else:
             # Tambien tenemos que alocar el valor en un registro temporal
-            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando2}\n"
+            self.text_section += f"\n{'    ' * self.indentation}lw $t{self.temp_counter}, {cuadrupla_siguiente.operando2}\n"
             self.variables_cargadas[cuadrupla_siguiente.operando2] = f"t{self.temp_counter}"
             self.temp_counter += 1
             operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
@@ -448,6 +453,12 @@ class Assembler:
 
 
     def mips_aritmetica(self, cuadrupla):
+
+        # Revisamos antes que nada la cuadrupla actual y la siguiente
+
+        cuadrupla_siguiente = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) + 1]
+
+        
         # verificar si las variables ya estan cargadas en los registros
         if cuadrupla.operando1 not in self.variables_cargadas:
             temp1 = self.get_temp()
@@ -457,6 +468,21 @@ class Assembler:
             temp2 = self.get_temp()
             self.text_section += f"{'    ' * self.indentation}lw ${temp2}, {cuadrupla.operando2}\n"
             self.variables_cargadas[cuadrupla.operando2] = temp2
+
+        # Si o el operando 1 o el operando 2 de la cuad_actual son iguales al resultado de la cuad_siguiente
+
+        if cuadrupla.operando1 == cuadrupla_siguiente.resultado or cuadrupla.operando2 == cuadrupla_siguiente.resultado:
+
+            # Miramos el operador de la cuad_actual 
+
+            if cuadrupla.operador == '+':
+                self.text_section += f"\n{'    ' * self.indentation}add ${self.variables_cargadas[cuadrupla_siguiente.resultado]}, ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                self.cuadruplas_procesadas.add(cuadrupla_siguiente)
+                return
+            elif cuadrupla.operador == '-':
+                self.text_section += f"\n{'    ' * self.indentation}sub ${self.variables_cargadas[cuadrupla_siguiente.resultado]}, ${self.variables_cargadas[cuadrupla.operando1]}, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                self.cuadruplas_procesadas.add(cuadrupla_siguiente)
+                return
 
         # temporal para guardar el resultado
         temp3 = self.get_temp()
@@ -498,6 +524,7 @@ class Assembler:
                 self.data_section += f"{cuadrupla.resultado}: .word {1 if cuadrupla.operando1 == 'true' else 0}\n"
                 self.variables.add(cuadrupla.resultado)
         else:
+
             self.text_section += f"{'    ' * self.indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
             self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
     
