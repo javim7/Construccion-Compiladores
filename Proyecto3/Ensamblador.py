@@ -42,10 +42,6 @@ class Assembler:
 
             print("Procesando cuadrupla numero: ", indice, " con valor: ", cuadrupla)
             self.generar_codigo_mips(cuadrupla) 
-        
-        # if cuadrupla_exit_label:
-        #     self.text_section += f"\nSUBRUTINA_{cuadrupla_exit_label.resultado}:\n"
-        #     self.indentation += 1
 
     def generar_codigo_mips(self, cuadrupla_actual):
 
@@ -80,7 +76,14 @@ class Assembler:
 
         if cuadrupla_actual.operador == 'IFS':
             self.mips_ifs(cuadrupla_actual)
+        
+        # Jumps
+
+        if cuadrupla_actual.operador == 'JUMP':
+            self.mips_jump(cuadrupla_actual)
                 
+    def mips_jump(self, cuadrupla):
+        self.text_section += f"\n{'    ' * self.indentation}j {cuadrupla.resultado}\n"
 
     def mips_ifs(self, cuadrupla):
         
@@ -142,14 +145,16 @@ class Assembler:
             self.variables_cargadas[cuadrupla_siguiente.operando2] = f"t{self.temp_counter}"
             self.temp_counter += 1
             operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
-        
+
         # Ahora tenemos que ver a donde tenemos que saltar si la comparacion es falsa
 
         cuadrupla_jump_if_false = self.cuadruplas_iniciales[indice_cuadrupla_actual + 2]
 
+        # |   18   | JUMP_IF_FALSE |     t4     |    None    |     L1    |
+
         # El salto se hace a la etiqueta que esta en el resultado de la cuadrupla cuadrupla_jump_if_false
 
-        etiqueta_salto = "SUBRUTINA_" + cuadrupla_jump_if_false.resultado
+        etiqueta_salto = "if_part_" + cuadrupla_jump_if_false.resultado # if_part_L1
 
         self.text_section += f"\n{'    ' * self.indentation}{instruccion_comparacion} ${operando1}, ${operando2}, {etiqueta_salto}\n"
 
@@ -166,42 +171,141 @@ class Assembler:
 
         # EXIT_LABEL  |    None    |    None    |     L2    |
 
-        # Ahora escribimos todo lo que tendria que suceder si la comparacion es verdadera tomando desde la actual hasta la cuadrupla que contiene la etiqueta de salto
-        
-        cuadrupla_salto_en_caso_de_verdadero = None
+        # Para este punto ya tenemos lo siguiente:
 
-        for cuadrupla in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
-            if cuadrupla.operador == "JUMP":
-                cuadrupla_salto_en_caso_de_verdadero = cuadrupla
+        # .text
+        # main:
+        #       # Cargar los números en los registros
+        #       lw $t0, num1     # Cargar num1 en $t0
+        #       lw $t1, num2     # Cargar num2 en $t1
+
+        #       # Comparar los números
+        #       bgt $t0, $t1, if_part    # Si num1 > num2, salta a if_part
+
+        # Y ahora tenemos que escribir la parte del else:
+
+                # Else Part: num1 <= num2
+                # sub $t2, $t0, $t1  # Restar num1 - num2
+                # sw $t2, result     # Guardar el resultado
+                # j end              # Saltar al final
+
+        # Para eso tenemos que ubicar todas las cuadruplas que se encuentren entre LABEL y EXIT_LABEL
+
+        Cuadrupla_LABEL = None
+        cuadrupla_EXIT_LABEL = None
+
+        etiqueta_salto_final = "else_part_" + cuadrupla_jump_if_false.resultado
+
+        # Recorremos todas las cuadruplas hasta el final desde la cuadrupla actual
+
+        for cuadrupla_iteradora in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
+
+            if cuadrupla_iteradora.operador == "LABEL":
+                Cuadrupla_LABEL = cuadrupla_iteradora
                 break
         
-        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_jump_if_false) + 1: self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero)]
+        for cuadrupla_iteradora in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
 
-        print("Cuadrupla salto en caso de verdadero: ", cuadrupla_salto_en_caso_de_verdadero)
-        print("Lista de cuadruplas en between si se entro al if: ")
-        for cuadrupla in lista_cuadruplas_in_between:
-            print(cuadrupla)
-        
-        # Tenemos que procesar las cuadruplas en between generando su codigo mips
+            if cuadrupla_iteradora.operador == "EXIT_LABEL":
+                cuadrupla_EXIT_LABEL = cuadrupla_iteradora
+                break
 
-        self.recorrer_cuadruplas(lista_cuadruplas_in_between, cuadrupla_exit_label)
+        print()
+        print("Cuadrupla LABEL: ", Cuadrupla_LABEL)
+        print("Cuadrupla EXIT_LABEL: ", cuadrupla_EXIT_LABEL)
+        print()
 
-        self.text_section += f"\n{'    ' * self.indentation}j SUBRUTINA_{cuadrupla_exit_label.resultado}\n"
+        # Ahora obtenemos todas las cuadruplas que estan entre la cuadrupla LABEL y la cuadrupla EXIT_LABEL
 
-        # Creamos la Label de la SUBRUTINA que contiene la etiqueta de salto
-
-        self.text_section += f"\n{etiqueta_salto}:\n"
-
-        # Tenemos que procesar las cuadruplas que estan entre la etiqueta de salto y la etiqueta de salida
-
-        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero) + 1: self.cuadruplas_iniciales.index(cuadrupla_exit_label)]
+        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(Cuadrupla_LABEL) + 1: self.cuadruplas_iniciales.index(cuadrupla_EXIT_LABEL)]
 
         print("Lista de cuadruplas in between si se entro al else: ")
 
         for cuadrupla in lista_cuadruplas_in_between:
             print(cuadrupla)
         
+        print()
+
+        # Tenemos que procesar las cuadruplas en between generando su codigo mips
+
         self.recorrer_cuadruplas(lista_cuadruplas_in_between)
+
+        # Para este punto ya tenemos el siguiente fragmento escrito:
+
+        # Else Part: num1 <= num2
+        # sub $t2, $t0, $t1  # Restar num1 - num2
+        # sw $t2, result     # Guardar el resultado
+        # j end              # Saltar al final
+
+        # Ahora nos toca escribir la parte del if : "if_part_" + cuadrupla_jump_if_false.resultado
+
+        # if_part:
+        #     # If Part: num1 > num2
+        #     add $t2, $t0, $t1  # Sumar num1 + num2
+        #     sw $t2, result     # Guardar el resultado
+
+        self.text_section += f"\n{etiqueta_salto}:\n"
+
+        # Tenemos que procesar todas las cuadruplas que se encuentren entre JUMP_IF_FALSE + 1 y LABEL
+
+        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_jump_if_false) + 1: self.cuadruplas_iniciales.index(Cuadrupla_LABEL)]
+
+        print("Lista de cuadruplas in between si se entro al if: ")
+
+        for cuadrupla in lista_cuadruplas_in_between:
+            print(cuadrupla)
+        
+        print()
+
+        # Tenemos que procesar las cuadruplas en between generando su codigo mips
+
+        self.recorrer_cuadruplas(lista_cuadruplas_in_between)
+
+        # Ahora solo nos queda escribir el final del if que es la etiqueta de salida
+
+        self.text_section += f"\n{cuadrupla_EXIT_LABEL.resultado}:\n"
+
+
+
+
+
+
+        # # Ahora escribimos todo lo que tendria que suceder si la comparacion es verdadera tomando desde la actual hasta la cuadrupla que contiene la etiqueta de salto
+        
+        # cuadrupla_salto_en_caso_de_verdadero = None
+
+        # for cuadrupla in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
+        #     if cuadrupla.operador == "JUMP":
+        #         cuadrupla_salto_en_caso_de_verdadero = cuadrupla
+        #         break
+        
+        # lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_jump_if_false) + 1: self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero)]
+
+        # print("Cuadrupla salto en caso de verdadero: ", cuadrupla_salto_en_caso_de_verdadero)
+        # print("Lista de cuadruplas en between si se entro al if: ")
+        # for cuadrupla in lista_cuadruplas_in_between:
+        #     print(cuadrupla)
+        
+        # # Tenemos que procesar las cuadruplas en between generando su codigo mips
+
+        # self.recorrer_cuadruplas(lista_cuadruplas_in_between, cuadrupla_exit_label)
+
+        # self.text_section += f"\n{'    ' * self.indentation}j SUBRUTINA_{cuadrupla_exit_label.resultado}\n"
+
+        # # Creamos la Label de la SUBRUTINA que contiene la etiqueta de salto
+
+        # self.text_section += f"\n{etiqueta_salto}:\n"
+
+        # # Tenemos que procesar las cuadruplas que estan entre la etiqueta de salto y la etiqueta de salida
+
+        # lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero) + 1: self.cuadruplas_iniciales.index(cuadrupla_exit_label)]
+
+        # print("Lista de cuadruplas in between si se entro al else: ")
+
+        # for cuadrupla in lista_cuadruplas_in_between:
+        #     print(cuadrupla)
+
+        # return cuadrupla_exit_label.resultado
 
 
         

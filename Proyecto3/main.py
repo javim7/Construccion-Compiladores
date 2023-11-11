@@ -11,7 +11,7 @@ from Ensamblador import *
 
 def main():
     
-    compilador = Compiler('Proyecto3/Ejemplos/ejemplo0.yapl')
+    compilador = Compiler('Proyecto3/Ejemplos/ejemplo4_if.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
