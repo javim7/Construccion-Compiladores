@@ -13,6 +13,12 @@ class Main {
             resSub  <- num2 - num1;
             out_int(resSub);
             resMul <- num1 * num2;
+
+            if num1 < 6
+            then out_int(30)
+            else out_int(70)
+            fi ;
+
             out_int(resMul);
             resDiv  <- num2 / num1;
             out_int(resDiv);

@@ -36,12 +36,16 @@ class Assembler:
         self.v_counter += 1
         return v
     
-    def recorrer_cuadruplas(self,cuadruplas_actuales):
+    def recorrer_cuadruplas(self,cuadruplas_actuales, cuadrupla_exit_label = None):
 
         for indice, cuadrupla in enumerate(cuadruplas_actuales):
 
             print("Procesando cuadrupla numero: ", indice, " con valor: ", cuadrupla)
             self.generar_codigo_mips(cuadrupla) 
+        
+        # if cuadrupla_exit_label:
+        #     self.text_section += f"\nSUBRUTINA_{cuadrupla_exit_label.resultado}:\n"
+        #     self.indentation += 1
 
     def generar_codigo_mips(self, cuadrupla_actual):
 
@@ -66,6 +70,148 @@ class Assembler:
 
         if cuadrupla_actual.operador in ['+', '-', '*', '/']:
             self.mips_aritmetica(cuadrupla_actual)
+
+        # Prints
+
+        if cuadrupla_actual.operador == 'PROCEDURE':
+            self.mips_procedure(cuadrupla_actual)
+        
+        # Ifs simples
+
+        if cuadrupla_actual.operador == 'IFS':
+            self.mips_ifs(cuadrupla_actual)
+                
+
+    def mips_ifs(self, cuadrupla):
+        
+        # Actualmente estamos en la cuadrupla 
+        # IFS      |    ---     |    ---     |    ---
+
+        # La cuadrupla que tenemos que procesar es la siguiente i + 1
+        # Para eso obtenemos el indice de la cuadrupla actual en la lista de cuadruplas
+
+        indice_cuadrupla_actual = self.cuadruplas_iniciales.index(cuadrupla)
+
+        # Obtenemos la cuadrupla siguiente
+
+        cuadrupla_siguiente = self.cuadruplas_iniciales[indice_cuadrupla_actual + 1]
+
+        # Con esto ya tenemos la siguiente cuadrupla que contiene la comparacion
+        #    <       |     4      |     6      |     t4    |
+
+        # Tenemos que ver que tipo de comparacion es para utilizar blt, bgt, ble, bge, beq, bne 
+
+        instruccion_comparacion = ""
+
+        match cuadrupla_siguiente.operador:
+
+            case '<':
+                instruccion_comparacion = "blt"
+            case '>':
+                instruccion_comparacion = "bgt"
+            case '<=':
+                instruccion_comparacion = "ble"
+            case '>=':
+                instruccion_comparacion = "bge"
+            case '==':
+                instruccion_comparacion = "beq"
+            case '!=':
+                instruccion_comparacion = "bne"
+        
+        # Ahora tenemos que ver si los operandos son variables o constantes
+
+        operando1 = ""
+
+        if cuadrupla_siguiente.operando1 in self.variables_cargadas:
+            operando1 = self.variables_cargadas[cuadrupla_siguiente.operando1]
+        else:
+
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando1}\n"
+            self.variables_cargadas[cuadrupla_siguiente.operando1] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando1 = self.variables_cargadas[cuadrupla_siguiente.operando1]
+        
+        operando2 = ""
+
+        if cuadrupla_siguiente.operando2 in self.variables_cargadas:
+            operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
+        else:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando2}\n"
+            self.variables_cargadas[cuadrupla_siguiente.operando2] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
+        
+        # Ahora tenemos que ver a donde tenemos que saltar si la comparacion es falsa
+
+        cuadrupla_jump_if_false = self.cuadruplas_iniciales[indice_cuadrupla_actual + 2]
+
+        # El salto se hace a la etiqueta que esta en el resultado de la cuadrupla cuadrupla_jump_if_false
+
+        etiqueta_salto = "SUBRUTINA_" + cuadrupla_jump_if_false.resultado
+
+        self.text_section += f"\n{'    ' * self.indentation}{instruccion_comparacion} ${operando1}, ${operando2}, {etiqueta_salto}\n"
+
+        # Ahora tenemos que obtener la EXIT_LABEL para saber a donde tenemos que saltar luego
+
+        cuadrupla_exit_label = None
+
+        # Iteramos desde la cuadrupla actual hasta el final de la lista de cuadruplas si es necesario para encontrar la cuadrupla que contiene la etiqueta de salida
+
+        for cuadrupla in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
+            if cuadrupla.operador == 'EXIT_LABEL':
+                cuadrupla_exit_label = cuadrupla
+                break
+
+        # EXIT_LABEL  |    None    |    None    |     L2    |
+
+        # Ahora escribimos todo lo que tendria que suceder si la comparacion es verdadera tomando desde la actual hasta la cuadrupla que contiene la etiqueta de salto
+        
+        cuadrupla_salto_en_caso_de_verdadero = None
+
+        for cuadrupla in self.cuadruplas_iniciales[indice_cuadrupla_actual:]:
+            if cuadrupla.operador == "JUMP":
+                cuadrupla_salto_en_caso_de_verdadero = cuadrupla
+                break
+        
+        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_jump_if_false) + 1: self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero)]
+
+        print("Cuadrupla salto en caso de verdadero: ", cuadrupla_salto_en_caso_de_verdadero)
+        print("Lista de cuadruplas en between si se entro al if: ")
+        for cuadrupla in lista_cuadruplas_in_between:
+            print(cuadrupla)
+        
+        # Tenemos que procesar las cuadruplas en between generando su codigo mips
+
+        self.recorrer_cuadruplas(lista_cuadruplas_in_between, cuadrupla_exit_label)
+
+        self.text_section += f"\n{'    ' * self.indentation}j SUBRUTINA_{cuadrupla_exit_label.resultado}\n"
+
+        # Creamos la Label de la SUBRUTINA que contiene la etiqueta de salto
+
+        self.text_section += f"\n{etiqueta_salto}:\n"
+
+        # Tenemos que procesar las cuadruplas que estan entre la etiqueta de salto y la etiqueta de salida
+
+        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_salto_en_caso_de_verdadero) + 1: self.cuadruplas_iniciales.index(cuadrupla_exit_label)]
+
+        print("Lista de cuadruplas in between si se entro al else: ")
+
+        for cuadrupla in lista_cuadruplas_in_between:
+            print(cuadrupla)
+        
+        self.recorrer_cuadruplas(lista_cuadruplas_in_between)
+
+
+        
+
+
+
+
+
+
+
 
     def mips_aritmetica(self, cuadrupla):
         # verificar si las variables ya estan cargadas en los registros
@@ -120,3 +266,28 @@ class Assembler:
         else:
             self.text_section += f"{'    ' * self.indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
             self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
+    
+    def mips_procedure(self, cuadrupla):
+        
+        if cuadrupla.operando2 in self.variables_cargadas:
+            if cuadrupla.operando1 == 'out_int':
+                        self.text_section += f"\n{'    ' * self.indentation}li $v0, 1\n"
+                        self.text_section += f"{'    ' * self.indentation}move $a0, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                        self.text_section += f"{'    ' * self.indentation}syscall\n"
+                    
+            # out_string
+            elif cuadrupla.operando1 == 'out_string':
+                self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
+                self.text_section += f"{'    ' * self.indentation}move $a0, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                self.text_section += f"{'    ' * self.indentation}syscall\n"
+        else:
+            if cuadrupla.operando1 == 'out_int':
+                        self.text_section += f"\n{'    ' * self.indentation}li $v0, 1\n"
+                        self.text_section += f"{'    ' * self.indentation}move $a0, ${cuadrupla.operando2}\n"
+                        self.text_section += f"{'    ' * self.indentation}syscall\n"
+                    
+            # out_string
+            elif cuadrupla.operando1 == 'out_string':
+                self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
+                self.text_section += f"{'    ' * self.indentation}move $a0, ${cuadrupla.operando2}\n"
+                self.text_section += f"{'    ' * self.indentation}syscall\n"

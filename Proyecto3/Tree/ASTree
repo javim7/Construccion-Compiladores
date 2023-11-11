@@ -221,64 +221,112 @@ digraph {
 	node61 -> node109
 	node110 [label=expr]
 	node61 -> node110
-	node111 [label=out_int]
+	node111 [label=if]
 	node110 -> node111
-	node112 [label="("]
+	node112 [label=expr]
 	node110 -> node112
 	node113 [label=expr]
-	node110 -> node113
-	node114 [label=resMul]
+	node112 -> node113
+	node114 [label=num1]
 	node113 -> node114
-	node115 [label=")"]
-	node110 -> node115
-	node116 [label=";"]
-	node61 -> node116
-	node117 [label=expr]
-	node61 -> node117
-	node118 [label=varDeclaration]
-	node117 -> node118
-	node119 [label=resDiv]
-	node118 -> node119
-	node120 [label="<-"]
-	node118 -> node120
-	node121 [label=expr]
-	node118 -> node121
+	node115 [label="<"]
+	node112 -> node115
+	node116 [label=expr]
+	node112 -> node116
+	node117 [label=6]
+	node116 -> node117
+	node118 [label=then]
+	node110 -> node118
+	node119 [label=expr]
+	node110 -> node119
+	node120 [label=out_int]
+	node119 -> node120
+	node121 [label="("]
+	node119 -> node121
 	node122 [label=expr]
-	node121 -> node122
-	node123 [label=num2]
+	node119 -> node122
+	node123 [label=30]
 	node122 -> node123
-	node124 [label="/"]
-	node121 -> node124
-	node125 [label=expr]
-	node121 -> node125
-	node126 [label=num1]
-	node125 -> node126
-	node127 [label=";"]
-	node61 -> node127
-	node128 [label=expr]
-	node61 -> node128
-	node129 [label=out_int]
-	node128 -> node129
-	node130 [label="("]
-	node128 -> node130
-	node131 [label=expr]
-	node128 -> node131
-	node132 [label=resDiv]
-	node131 -> node132
-	node133 [label=")"]
-	node128 -> node133
-	node134 [label=";"]
+	node124 [label=")"]
+	node119 -> node124
+	node125 [label=else]
+	node110 -> node125
+	node126 [label=expr]
+	node110 -> node126
+	node127 [label=out_int]
+	node126 -> node127
+	node128 [label="("]
+	node126 -> node128
+	node129 [label=expr]
+	node126 -> node129
+	node130 [label=70]
+	node129 -> node130
+	node131 [label=")"]
+	node126 -> node131
+	node132 [label=fi]
+	node110 -> node132
+	node133 [label=";"]
+	node61 -> node133
+	node134 [label=expr]
 	node61 -> node134
-	node135 [label="}"]
-	node61 -> node135
-	node136 [label="}"]
-	node54 -> node136
-	node137 [label=";"]
-	node1 -> node137
-	node138 [label="}"]
-	node1 -> node138
-	node139 [label=";"]
-	node0 -> node139
-	node140 [label=<EOF>]
-	node0 -> node140
+	node135 [label=out_int]
+	node134 -> node135
+	node136 [label="("]
+	node134 -> node136
+	node137 [label=expr]
+	node134 -> node137
+	node138 [label=resMul]
+	node137 -> node138
+	node139 [label=")"]
+	node134 -> node139
+	node140 [label=";"]
+	node61 -> node140
+	node141 [label=expr]
+	node61 -> node141
+	node142 [label=varDeclaration]
+	node141 -> node142
+	node143 [label=resDiv]
+	node142 -> node143
+	node144 [label="<-"]
+	node142 -> node144
+	node145 [label=expr]
+	node142 -> node145
+	node146 [label=expr]
+	node145 -> node146
+	node147 [label=num2]
+	node146 -> node147
+	node148 [label="/"]
+	node145 -> node148
+	node149 [label=expr]
+	node145 -> node149
+	node150 [label=num1]
+	node149 -> node150
+	node151 [label=";"]
+	node61 -> node151
+	node152 [label=expr]
+	node61 -> node152
+	node153 [label=out_int]
+	node152 -> node153
+	node154 [label="("]
+	node152 -> node154
+	node155 [label=expr]
+	node152 -> node155
+	node156 [label=resDiv]
+	node155 -> node156
+	node157 [label=")"]
+	node152 -> node157
+	node158 [label=";"]
+	node61 -> node158
+	node159 [label="}"]
+	node61 -> node159
+	node160 [label="}"]
+	node54 -> node160
+	node161 [label=";"]
+	node1 -> node161
+	node162 [label="}"]
+	node1 -> node162
+	node163 [label=";"]
+	node0 -> node163
+	node164 [label=<EOF>]
+	node0 -> node164
 }
