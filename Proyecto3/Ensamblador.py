@@ -2,7 +2,7 @@ class Assembler:
     def __init__(self, cuadruplas):
 
         self.cuadruplas_iniciales = cuadruplas
-        self.data_section = ".data\n"
+        self.data_section = ".data\nnewline: .asciiz \"\\n\"\n"
         self.text_section = "\n.text\n.globl main\n"
         self.variables = set()
         self.methods = []
@@ -150,7 +150,15 @@ class Assembler:
 
         operando1 = ""
 
-        if cuadrupla_comparacion.operando1 in self.variables_cargadas:
+
+        if cuadrupla_comparacion.operando1 not in self.variables:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando1}\n"
+            self.variables_cargadas[cuadrupla_comparacion.operando1] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando1 = self.variables_cargadas[cuadrupla_comparacion.operando1]
+
+        elif cuadrupla_comparacion.operando1 in self.variables_cargadas:
             operando1 = self.variables_cargadas[cuadrupla_comparacion.operando1]
         else:
 
@@ -162,7 +170,13 @@ class Assembler:
         
         operando2 = ""
 
-        if cuadrupla_comparacion.operando2 in self.variables_cargadas:
+        if cuadrupla_comparacion.operando2 not in self.variables:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando2}\n"
+            self.variables_cargadas[cuadrupla_comparacion.operando2] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
+        elif cuadrupla_comparacion.operando2 in self.variables_cargadas:
             operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
         else:
             # Tambien tenemos que alocar el valor en un registro temporal
@@ -260,7 +274,14 @@ class Assembler:
 
         operando1 = ""
 
-        if cuadrupla_siguiente.operando1 in self.variables_cargadas:
+        if cuadrupla_siguiente.operando1 not in self.variables:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando1}\n"
+            self.variables_cargadas[cuadrupla_siguiente.operando1] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando1 = self.variables_cargadas[cuadrupla_siguiente.operando1]
+        
+        elif cuadrupla_siguiente.operando1 in self.variables_cargadas:
             operando1 = self.variables_cargadas[cuadrupla_siguiente.operando1]
         else:
 
@@ -272,7 +293,14 @@ class Assembler:
         
         operando2 = ""
 
-        if cuadrupla_siguiente.operando2 in self.variables_cargadas:
+        if cuadrupla_siguiente.operando2 not in self.variables:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_siguiente.operando2}\n"
+            self.variables_cargadas[cuadrupla_siguiente.operando2] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
+        
+        elif cuadrupla_siguiente.operando2 in self.variables_cargadas:
             operando2 = self.variables_cargadas[cuadrupla_siguiente.operando2]
         else:
             # Tambien tenemos que alocar el valor en un registro temporal
@@ -458,7 +486,17 @@ class Assembler:
 
         cuadrupla_siguiente = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) + 1]
 
-        
+        if cuadrupla.operando1 not in self.variables:
+            temp1 = self.get_temp()
+            self.text_section += f"\n{'    ' * self.indentation}li ${temp1}, {cuadrupla.operando1}\n"
+            self.variables_cargadas[cuadrupla.operando1] = temp1
+
+        if cuadrupla.operando2 not in self.variables:
+            temp2 = self.get_temp()
+            self.text_section += f"{'    ' * self.indentation}li ${temp2}, {cuadrupla.operando2}\n"
+            self.variables_cargadas[cuadrupla.operando2] = temp2
+
+            
         # verificar si las variables ya estan cargadas en los registros
         if cuadrupla.operando1 not in self.variables_cargadas:
             temp1 = self.get_temp()
@@ -552,3 +590,8 @@ class Assembler:
                 self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
                 self.text_section += f"{'    ' * self.indentation}move $a0, ${cuadrupla.operando2}\n"
                 self.text_section += f"{'    ' * self.indentation}syscall\n"
+        
+        # Nueva linea
+        self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
+        self.text_section += f"{'    ' * self.indentation}la $a0, newline\n"
+        self.text_section += f"{'    ' * self.indentation}syscall\n"

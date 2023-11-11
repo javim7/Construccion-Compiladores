@@ -11,9 +11,10 @@ from Ensamblador import *
 
 def main():
     
+    compilador = Compiler('Proyecto3/Ejemplos/ejemplo0.yapl')
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo4_if.yapl')
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo5_while.yapl')
-    compilador = Compiler('Proyecto3/Ejemplos/ejemplo6_if_while.yapl')
+    # compilador = Compiler('Proyecto3/Ejemplos/ejemplo6_if_while.yapl')
 
 
 
