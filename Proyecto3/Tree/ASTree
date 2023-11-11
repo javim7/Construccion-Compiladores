@@ -71,76 +71,132 @@ digraph {
 	node33 -> node34
 	node35 [label=expr]
 	node33 -> node35
-	node36 [label=if]
+	node36 [label=while]
 	node35 -> node36
 	node37 [label=expr]
 	node35 -> node37
 	node38 [label=expr]
 	node37 -> node38
-	node39 [label=num1]
+	node39 [label=num2]
 	node38 -> node39
 	node40 [label="<"]
 	node37 -> node40
 	node41 [label=expr]
 	node37 -> node41
-	node42 [label=num2]
+	node42 [label=3]
 	node41 -> node42
-	node43 [label=then]
+	node43 [label=loop]
 	node35 -> node43
 	node44 [label=expr]
 	node35 -> node44
-	node45 [label=out_int]
+	node45 [label="{"]
 	node44 -> node45
-	node46 [label="("]
+	node46 [label=expr]
 	node44 -> node46
-	node47 [label=expr]
-	node44 -> node47
-	node48 [label=555]
-	node47 -> node48
-	node49 [label=")"]
-	node44 -> node49
-	node50 [label=else]
-	node35 -> node50
-	node51 [label=expr]
-	node35 -> node51
-	node52 [label=out_int]
-	node51 -> node52
-	node53 [label="("]
-	node51 -> node53
-	node54 [label=expr]
-	node51 -> node54
-	node55 [label=111]
-	node54 -> node55
-	node56 [label=")"]
-	node51 -> node56
-	node57 [label=fi]
-	node35 -> node57
-	node58 [label=";"]
-	node33 -> node58
+	node47 [label=out_string]
+	node46 -> node47
+	node48 [label="("]
+	node46 -> node48
+	node49 [label=expr]
+	node46 -> node49
+	node50 [label="\"num2 is less than 3\""]
+	node49 -> node50
+	node51 [label=")"]
+	node46 -> node51
+	node52 [label=";"]
+	node44 -> node52
+	node53 [label="}"]
+	node44 -> node53
+	node54 [label=pool]
+	node35 -> node54
+	node55 [label=";"]
+	node33 -> node55
+	node56 [label=expr]
+	node33 -> node56
+	node57 [label=out_int]
+	node56 -> node57
+	node58 [label="("]
+	node56 -> node58
 	node59 [label=expr]
-	node33 -> node59
-	node60 [label=out_int]
+	node56 -> node59
+	node60 [label=333]
 	node59 -> node60
-	node61 [label="("]
-	node59 -> node61
-	node62 [label=expr]
-	node59 -> node62
-	node63 [label=333]
-	node62 -> node63
-	node64 [label=")"]
-	node59 -> node64
-	node65 [label=";"]
-	node33 -> node65
-	node66 [label="}"]
-	node33 -> node66
-	node67 [label="}"]
-	node26 -> node67
-	node68 [label=";"]
-	node1 -> node68
-	node69 [label="}"]
-	node1 -> node69
-	node70 [label=";"]
-	node0 -> node70
-	node71 [label=<EOF>]
-	node0 -> node71
+	node61 [label=")"]
+	node56 -> node61
+	node62 [label=";"]
+	node33 -> node62
+	node63 [label=expr]
+	node33 -> node63
+	node64 [label=if]
+	node63 -> node64
+	node65 [label=expr]
+	node63 -> node65
+	node66 [label=expr]
+	node65 -> node66
+	node67 [label=num1]
+	node66 -> node67
+	node68 [label="<"]
+	node65 -> node68
+	node69 [label=expr]
+	node65 -> node69
+	node70 [label=num2]
+	node69 -> node70
+	node71 [label=then]
+	node63 -> node71
+	node72 [label=expr]
+	node63 -> node72
+	node73 [label=out_int]
+	node72 -> node73
+	node74 [label="("]
+	node72 -> node74
+	node75 [label=expr]
+	node72 -> node75
+	node76 [label=666]
+	node75 -> node76
+	node77 [label=")"]
+	node72 -> node77
+	node78 [label=else]
+	node63 -> node78
+	node79 [label=expr]
+	node63 -> node79
+	node80 [label=out_int]
+	node79 -> node80
+	node81 [label="("]
+	node79 -> node81
+	node82 [label=expr]
+	node79 -> node82
+	node83 [label=777]
+	node82 -> node83
+	node84 [label=")"]
+	node79 -> node84
+	node85 [label=fi]
+	node63 -> node85
+	node86 [label=";"]
+	node33 -> node86
+	node87 [label=expr]
+	node33 -> node87
+	node88 [label=out_int]
+	node87 -> node88
+	node89 [label="("]
+	node87 -> node89
+	node90 [label=expr]
+	node87 -> node90
+	node91 [label=888]
+	node90 -> node91
+	node92 [label=")"]
+	node87 -> node92
+	node93 [label=";"]
+	node33 -> node93
+	node94 [label="}"]
+	node33 -> node94
+	node95 [label="}"]
+	node26 -> node95
+	node96 [label=";"]
+	node1 -> node96
+	node97 [label="}"]
+	node1 -> node97
+	node98 [label=";"]
+	node0 -> node98
+	node99 [label=<EOF>]
+	node0 -> node99
 }

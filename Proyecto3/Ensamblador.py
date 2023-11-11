@@ -81,9 +81,139 @@ class Assembler:
 
         if cuadrupla_actual.operador == 'JUMP':
             self.mips_jump(cuadrupla_actual)
+
+        # Whiles simples
+
+        if cuadrupla_actual.operador == 'WHL':
+            self.mips_while(cuadrupla_actual)
                 
     def mips_jump(self, cuadrupla):
         self.text_section += f"\n{'    ' * self.indentation}j {cuadrupla.resultado}\n"
+
+    def mips_while(self, cuadrupla):
+        
+        # La cuadrupla actual luce de la siguiente manera:
+
+        # WHL      |    ---     |    ---     |    ---
+
+        # La siguiente cuadrupla es la que contiene la label de inicio del while
+
+        # LABEL    |    None    |    None    |     L1    |
+
+        # Obtenemos la cuadrupla siguiente
+
+        cuadrupla_siguiente = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) + 1]
+
+        print()
+        print("Cuadrupla siguiente: ", cuadrupla_siguiente)
+        print()
+
+        # Obtenemos la cuadrupla de comparacion que se encuentra despues de la cuadrupla de la etiqueta de inicio del while
+
+        cuadrupla_comparacion = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_siguiente) + 1]
+
+        print()
+        print("Cuadrupla comparacion: ", cuadrupla_comparacion)
+        print()
+
+        instruccion_comparacion = ""
+
+        # Obtenemos la cuadrupla JUMP_IF_FALSE que se encuentra despues de la cuadrupla de comparacion
+
+        cuadrupla_jump_if_false = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_comparacion) + 1]
+
+        print()
+        print("Cuadrupla jump if false: ", cuadrupla_jump_if_false)
+        print()
+
+        match cuadrupla_comparacion.operador:
+
+            case '<':
+                instruccion_comparacion = "blt"
+            case '>':
+                instruccion_comparacion = "bgt"
+            case '<=':
+                instruccion_comparacion = "ble"
+            case '>=':
+                instruccion_comparacion = "bge"
+            case '==':
+                instruccion_comparacion = "beq"
+            case '!=':
+                instruccion_comparacion = "bne"
+        
+        # Ahora tenemos que ver si los operandos son variables o constantes
+
+        operando1 = ""
+
+        if cuadrupla_comparacion.operando1 in self.variables_cargadas:
+            operando1 = self.variables_cargadas[cuadrupla_comparacion.operando1]
+        else:
+
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando1}\n"
+            self.variables_cargadas[cuadrupla_comparacion.operando1] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando1 = self.variables_cargadas[cuadrupla_comparacion.operando1]
+        
+        operando2 = ""
+
+        if cuadrupla_comparacion.operando2 in self.variables_cargadas:
+            operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
+        else:
+            # Tambien tenemos que alocar el valor en un registro temporal
+            self.text_section += f"\n{'    ' * self.indentation}li $t{self.temp_counter}, {cuadrupla_comparacion.operando2}\n"
+            self.variables_cargadas[cuadrupla_comparacion.operando2] = f"t{self.temp_counter}"
+            self.temp_counter += 1
+            operando2 = self.variables_cargadas[cuadrupla_comparacion.operando2]
+        
+        print()
+        print("Operando 1: ", cuadrupla_comparacion.operando1 + " | " + operando1 )
+        print("Operando 2: ", cuadrupla_comparacion.operando2 + " | " + operando2)
+        print("Comparacion: ", instruccion_comparacion)
+        print()
+
+        # Creamos la subrutina que contiene la etiqueta de inicio del while
+
+        self.text_section += f"\n{cuadrupla_siguiente.resultado}:\n"
+
+        # Ahora tenemos que ver a donde tenemos que saltar si la comparacion es falsa
+
+        cuadrupla_end_while = None
+
+        for cuadrupla in self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_comparacion):]:
+            if cuadrupla.operador == 'EXIT_LABEL':
+                cuadrupla_end_while = cuadrupla
+                break
+        
+        print()
+        print("Cuadrupla end while: ", cuadrupla_end_while)
+        print()
+
+        # El salto se hace a la etiqueta que esta en el resultado de la cuadrupla cuadrupla_end_while
+
+        etiqueta_salto_end_while = "while_end_" + cuadrupla_end_while.resultado # while_end_L1
+
+        self.text_section += f"\n{'    ' * self.indentation}{instruccion_comparacion} ${operando1}, ${operando2}, {etiqueta_salto_end_while}\n"
+
+        # Ahora obtenemos el cuerpo del bucle que es encapsulando todas las cuadruplas entre JUMP_IF_FALSE + 1 y EXIT_LABEL
+
+        lista_cuadruplas_in_between = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla_jump_if_false) + 1: self.cuadruplas_iniciales.index(cuadrupla_end_while)]
+
+        print("Lista de cuadruplas in between: ")
+
+        for cuadrupla in lista_cuadruplas_in_between:
+            print(cuadrupla)
+        
+        print()
+
+        # Tenemos que procesar las cuadruplas en between generando su codigo mips
+
+        self.recorrer_cuadruplas(lista_cuadruplas_in_between)
+
+        # Ahora solo nos queda escribir el final del while que es la etiqueta de salida
+
+        self.text_section += f"\nwhile_end_{cuadrupla_end_while.resultado}:\n"
+
 
     def mips_ifs(self, cuadrupla):
         

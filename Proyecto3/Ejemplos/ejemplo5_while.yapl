@@ -1,0 +1,15 @@
+class Main {
+    num1 : Int <- 3;
+    num2 : Int <- 9;
+
+    main(): SELF_TYPE {
+        {    
+            while num2 < 3
+            loop {
+                out_string("num2 is less than 3");
+            }
+            pool;
+            out_int(333);
+        }
+    };
+};
