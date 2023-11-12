@@ -7,6 +7,7 @@ from tkinter import Text, ttk, Frame
 
 from Compiler import *
 from Cuadrupla import *
+from Ensamblador import *
 
 keywords = {
     # Palabras clave
@@ -35,6 +36,19 @@ keywords = {
     "<": ("lavender", None),
     "=": ("lavender", None)
 }
+
+# Ejemplo de código ensamblador MIPS
+mips_code_example = """
+.data
+hello:     .asciiz "Hola mundo!\n"
+    .text
+main:      li $v0, 4           # syscall para print_string
+    la $a0, hello        # carga la dirección de hello en $a0
+    syscall             # llama al sistema operativo
+    li $v0, 10          # syscall para exit
+    syscall             # llama al sistema operativo
+"""
+
 
 def highlight_keywords(text_widget):
     for keyword, (fg, bg) in keywords.items():
@@ -163,7 +177,7 @@ def compile_code():
 
         arbol = compilador.treeStruct
 
-        intermedio = Intermediate(arbol)
+        intermedio = Intermediate(arbol, compilador.symbolTable)
 
         print(intermedio)
 
@@ -172,6 +186,11 @@ def compile_code():
         text_area.insert(tk.END, intermedio)
 
         highlight_keywords(text_area)
+
+        # Actualizar la nueva área de texto con el código ensamblador MIPS
+        mips_code_area.delete(1.0, tk.END)  # Borrar el contenido actual
+        ensamblador = Assembler(intermedio.lista_cuadruplas)
+        mips_code_area.insert(tk.END, str(ensamblador.data_section + ensamblador.text_section))  # Insertar el ejemplo MIPS
 
     
     
@@ -281,7 +300,9 @@ if not os.path.exists(ejemplos_path):
 # Crear un Frame para el área de archivos y el área nueva de texto
 files_and_text_frame = Frame(upper_frame)
 files_and_text_frame.pack(pady=20, padx=20, side="right", fill="both", expand=True)
-
+# Nueva área de texto para el código ensamblador MIPS
+mips_code_area = Text(root, height=6, wrap="none")
+mips_code_area.pack(pady=(0, 20), padx=20, fill="x")
 # Crear el Treeview para los archivos dentro del nuevo frame
 file_tree = ttk.Treeview(files_and_text_frame, columns=("fullpath",), displaycolumns=(), height=12)  # ajustar el height según sea necesario
 file_tree.pack(side="top", fill="both", expand=True)
@@ -308,6 +329,8 @@ file_tree.bind("<Double-1>", load_file_into_editor)
 # Área de la "terminal"
 terminal_area = Text(root, height=6, wrap="none", state=tk.DISABLED)
 terminal_area.pack(pady=(0, 20), padx=20, fill="x")
+
+
 
 # Detectar el sistema operativo
 os_name = platform.system()
