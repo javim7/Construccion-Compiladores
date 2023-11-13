@@ -19,17 +19,17 @@ def main():
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo6_if_while.yapl')
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo7_metodos.yapl')
 
-    compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_0.yapl')
+    # compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_0.yapl')
 
     # compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_1.yapl')
 
-    # compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_2.yapl')
+    compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_2.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()
     compilador.semanticAnalysis()
     
-    if not compilador.semanticAnalyzer.errors:
+    if not compilador.semanticAnalyzer.errors and not compilador.lexicalErrors and not compilador.error_listener.errors:
 
         arbol = compilador.treeStruct
         symbolTable = compilador.symbolTable

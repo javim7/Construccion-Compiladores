@@ -182,6 +182,9 @@ def compile_code():
         print("\n\n\n\n\n\n\n\n\n")
         print(intermedio)
         print("\n\n\n\n\n\n\n\n\n")
+        print(intermedio.translate())
+        print("\n\n\n\n\n\n\n\n\n")
+
 
 
         text_area.delete(1.0, tk.END)
