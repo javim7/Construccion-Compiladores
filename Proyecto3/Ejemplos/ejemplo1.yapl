@@ -1,17 +1,18 @@
 class Main {
-    x : Int <- 1;
-    y : Int <- 5;
+    num1 : Int <- 2;
+    num2 : Int <- 3;
     resultado : Int;
+    negativo_msg : String <- "es negativo";
+    positivo_msg : String <- "es positivo";
 
     main() : Int {
-      {
-        resultado <- suma(x,y);
-        out_int(resultado);
+      { 
+       if num1 < 0
+       then out_string(negativo_msg)
+       else
+       then out_string(positivo_msg)
+       fi;
       }
-    };
-
-    suma(a: Int, b: Int): Int {
-        return(a + b)
     };
 
 };
