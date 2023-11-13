@@ -565,7 +565,7 @@ class Assembler:
 
         if lista_parametros:
 
-            valor_retorno = self.get_v()
+            valor_retorno = "v0"
 
             self.estructura_return[nombre_metodo] = valor_retorno
 
@@ -690,8 +690,9 @@ class Assembler:
 
                 print("[mips_asignacion] Cuadrupla iteradora: ", cuadrupla_iteradora)
                 print("[mips_asignacion] Operador temporal: ", operador_temporal)
+                print("[mips_asignacion] metodos: ", self.methods)
 
-                if cuadrupla_iteradora.resultado == operador_temporal:
+                if cuadrupla_iteradora.resultado == operador_temporal and cuadrupla_iteradora.operador == 'METHOD_CALL':
 
                     print("[mips_asignacion] Se encontro una cuadrupla que tiene como resultado el operador temporal")
 

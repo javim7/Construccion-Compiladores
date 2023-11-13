@@ -11,27 +11,8 @@ class Main {
         b <- (2 * a) + (b - 3 * 4);
         c <- multiplicar(a, b);
         out_int(c);
-        
-        if a<b
-        then if a=b
-        then c <- 3
-        else c <-4
-        fi
-        else if a = b
-        then a <- 5
-        else a <- 6
-        fi fi;
 
         out_int(a);
-
-        while a < 3
-        loop {
-          if d < e
-          then multiplicar(d, e)
-          else dividir(d, e)
-          fi;
-        }
-        pool;
 
         return(c);
       }

@@ -7,10 +7,16 @@ class Main {
 
     main() : Int {
       {
-        resultado1 <- suma(x,y);
-        out_int(resultado1);
-        resultado2 <- resta(x,y);
-        out_int(resultado2);
+        if y < x
+        then {
+            resultado1 <- suma(x,y);
+            out_int(resultado1);
+            }
+        else {
+            resultado2 <- resta(x,y);
+            out_int(resultado2);
+            }
+        fi ;
       }
     };
 
