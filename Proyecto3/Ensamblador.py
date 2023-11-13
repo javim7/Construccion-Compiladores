@@ -17,7 +17,12 @@ class Assembler:
 
         self.cuadruplas_procesadas = set()
 
+        self.parametros_metodos = {}
+
+        self.estructura_return = {}
+
         self.recorrer_cuadruplas(self.cuadruplas_iniciales)
+
 
         # Escribimos en el text section el final del programa
         if self.methods[-1] == 'main':
@@ -91,9 +96,52 @@ class Assembler:
 
         if cuadrupla_actual.operador == 'WHL':
             self.mips_while(cuadrupla_actual)
+
+        # PRE PARAMS
+
+        if cuadrupla_actual.operador == 'PRE_PARAM':
+            self.mips_pre_param(cuadrupla_actual)  
+
+        # METHOD_CALL
+
+        if cuadrupla_actual.operador == 'METHOD_CALL':
+            self.mips_method_call(cuadrupla_actual) 
+
+        # RETURN
+
+        if cuadrupla_actual.operador == 'RETURN':
+            self.mips_return(cuadrupla_actual)
+               
                 
     def mips_jump(self, cuadrupla):
         self.text_section += f"\n{'    ' * self.indentation}j {cuadrupla.resultado}\n"
+
+    def mips_pre_param(self, cuadrupla):
+
+        address_temporal = self.get_a()
+
+        self.text_section += f"\n{'    ' * self.indentation}lw ${address_temporal}, {cuadrupla.operando1}\n"
+
+        self.variables_cargadas[cuadrupla.operando1] = address_temporal
+
+        if cuadrupla.resultado not in self.parametros_metodos:
+
+            self.parametros_metodos[cuadrupla.resultado] = [(cuadrupla.operando1, address_temporal)]
+
+        else:
+
+            self.parametros_metodos[cuadrupla.resultado].append((cuadrupla.operando1, address_temporal))
+        
+        print("mips_pre_param: ", self.parametros_metodos)
+
+    def mips_method_call(self, cuadrupla):
+
+        self.text_section += f"\n{'    ' * self.indentation}jal {cuadrupla.operando1}\n"
+
+    def mips_return(self, cuadrupla):
+
+        self.text_section += f"\n{'    ' * self.indentation}jr $ra\n"
+
 
     def mips_while(self, cuadrupla):
         
@@ -482,6 +530,73 @@ class Assembler:
 
     def mips_aritmetica(self, cuadrupla):
 
+        lista_parametros = []
+
+        nombre_metodo = ""
+
+        # Recorremos desde la cuadrupla actual para atras en la lista de cuadruplas hasta encontrar un METHOD_START:
+
+        for cuadrupla_iteradora in reversed(self.cuadruplas_iniciales[:self.cuadruplas_iniciales.index(cuadrupla)]):
+
+            print("Cuadrupla iteradora: ", cuadrupla_iteradora)
+
+            if cuadrupla_iteradora.operador == 'PARAM':
+
+                if cuadrupla_iteradora.operando1 == cuadrupla.operando1 or cuadrupla_iteradora.operando1 == cuadrupla.operando2:
+
+                    print("Se encontro un parametro que es igual a uno de los operandos de la cuadrupla actual en", cuadrupla_iteradora)
+
+                    # Revisamos si existen preparams para la operacion:
+
+                    if cuadrupla_iteradora.resultado in self.parametros_metodos:
+
+                        nombre_metodo = cuadrupla_iteradora.resultado
+
+                        lista_parametros.append(self.parametros_metodos[cuadrupla_iteradora.resultado].pop(0))
+
+            if cuadrupla_iteradora.operador == 'METHOD_START':
+
+                break
+
+        print("Lista de parametros: ", lista_parametros)
+        print("Dicc preparams: ", self.parametros_metodos)
+
+        # Si la lista no esta vacia:
+
+        if lista_parametros:
+
+            valor_retorno = self.get_v()
+
+            self.estructura_return[nombre_metodo] = valor_retorno
+
+            if cuadrupla.operador == "+":
+
+                self.text_section += f"\n{'    ' * self.indentation}add ${valor_retorno}, ${lista_parametros[0][1]}, ${lista_parametros[1][1]}\n"
+
+                return 
+        
+            elif cuadrupla.operador == "-":
+
+                self.text_section += f"\n{'    ' * self.indentation}sub ${valor_retorno}, ${lista_parametros[0][1]}, ${lista_parametros[1][1]}\n"
+
+                return
+            
+            elif cuadrupla.operador == "*":
+
+                self.text_section += f"\n{'    ' * self.indentation}mul ${valor_retorno}, ${lista_parametros[0][1]}, ${lista_parametros[1][1]}\n"
+
+                return
+            
+            elif cuadrupla.operador == "/":
+
+                self.text_section += f"\n{'    ' * self.indentation}div ${lista_parametros[0][1]}, ${lista_parametros[1][1]}\n"
+                self.text_section += f"{'    ' * self.indentation}mflo ${valor_retorno}\n"
+                temp4 = self.get_temp()
+                self.text_section += f"{'    ' * self.indentation}mfhi ${temp4}\n"
+                self.temp_counter -= 1
+
+                return
+
         # Revisamos antes que nada la cuadrupla actual y la siguiente
 
         cuadrupla_siguiente = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) + 1]
@@ -562,6 +677,34 @@ class Assembler:
                 self.data_section += f"{cuadrupla.resultado}: .word {1 if cuadrupla.operando1 == 'true' else 0}\n"
                 self.variables.add(cuadrupla.resultado)
         else:
+
+            # Recorremos todas las cuadruplas para atras hasta encontrar un METHOD_START
+
+            operador_temporal = cuadrupla.operando1
+
+            for cuadrupla_iteradora in reversed(self.cuadruplas_iniciales[:self.cuadruplas_iniciales.index(cuadrupla)]):
+
+                if cuadrupla_iteradora.operador == 'METHOD_START':
+
+                    break
+
+                print("[mips_asignacion] Cuadrupla iteradora: ", cuadrupla_iteradora)
+                print("[mips_asignacion] Operador temporal: ", operador_temporal)
+
+                if cuadrupla_iteradora.resultado == operador_temporal:
+
+                    print("[mips_asignacion] Se encontro una cuadrupla que tiene como resultado el operador temporal")
+
+                    # self.text_section += f"\n{'    ' * self.indentation}sw $v0, {cuadrupla.resultado}\n"
+
+                    nuevo_temporal = self.get_temp()
+
+                    self.text_section += f"{'    ' * self.indentation}move ${nuevo_temporal}, $v0\n"
+
+                    self.variables_cargadas[cuadrupla.resultado] = nuevo_temporal
+
+                    return
+
 
             self.text_section += f"{'    ' * self.indentation}sw $t{self.temp_counter-1}, {cuadrupla.resultado}\n"
             self.variables_cargadas[cuadrupla.resultado] = f"t{self.temp_counter-1}"
