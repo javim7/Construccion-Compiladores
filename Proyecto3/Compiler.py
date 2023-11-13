@@ -284,6 +284,10 @@ class Compiler():
 
     def semanticAnalysis(self):
         # if not self.error_listener.errors:
+        if self.error_listener.errors:
+            print("\nERRORES SINTÁCTICOS IDENTIFICADOS:")
+            for error in self.error_listener.errors:
+                print(error)
         print("\n------ANÁLISIS SEMÁNTICO------")
         self.semanticAnalyzer = SemanticAnalyzer(self.treeStruct, self.symbolTable, self.tokens)
         self.semanticAnalyzer.analyze()
@@ -359,6 +363,7 @@ class Compiler():
             # Set the errorNode Variable to True if the node represents an error
             if isinstance(node, ErrorNode):
                 tree_node.errorNode = True
+                self.error_listener.errors.append(f"ERROR SINTÁCTICO: Nodo '{node}' incorrecto : Línea {node.symbol.line}")
 
             if parent is not None:
                 tree_node.parent = parent

@@ -11,7 +11,7 @@ from Ensamblador import *
 
 def main():
     
-    # compilador = Compiler('Proyecto3/Ejemplos/ejemplo1.yapl')
+    compilador = Compiler('Proyecto3/Ejemplos/ejemplo1.yapl')
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo4_if.yapl')
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo3.yapl')
     
@@ -23,7 +23,7 @@ def main():
 
     # compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_1.yapl')
 
-    compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_2.yapl')
+    # compilador = Compiler('Proyecto3/EjemplosPresentacion/ejemplo_2.yapl')
 
     compilador.lexicalAnalysis()
     compilador.syntacticAnalysis()

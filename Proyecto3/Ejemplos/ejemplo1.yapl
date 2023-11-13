@@ -10,10 +10,10 @@ class Main {
     aritmeticos(): Int {
       {
        if num1 < 0
-       then out_string("es negativo")
+       then out_string("es negativo");
        else
        out_string("es positivo")
        fi;
       }
-    }
+    };
 };
