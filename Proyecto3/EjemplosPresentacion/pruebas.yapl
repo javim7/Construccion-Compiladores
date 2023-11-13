@@ -1,0 +1,34 @@
+class Main {
+    x : Int <- 5;
+    y : Int <- 1;
+    resultado1 : Int;
+    resultado2: Int;
+    temp : Int;
+
+    main() : Int {
+      {
+        if y < x
+        then {
+            resultado1 <- suma(x,y);
+            out_int(resultado1);
+            }
+        else {
+            resultado2 <- resta(x,y);
+            out_int(resultado2);
+            }
+        fi ;
+      }
+    };
+
+    suma(a: Int, b: Int): Int {
+        return(a + b)
+    };
+
+    resta(a: Int, b: Int): Int {
+        {
+            temp <- a - b;
+            return (temp);
+        }
+    };
+
+};

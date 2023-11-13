@@ -678,6 +678,21 @@ class Assembler:
                 self.variables.add(cuadrupla.resultado)
         else:
 
+            if cuadrupla.operando1 not in self.variables_cargadas:
+
+                temporal_temporal = self.get_temp()
+
+                if cuadrupla.operando1 in self.variables:
+
+                    self.text_section += f"\n{'    ' * self.indentation}lw ${temporal_temporal}, {cuadrupla.operando1}\n"
+                    self.variables_cargadas[cuadrupla.operando1] = temporal_temporal
+
+                else:
+
+                    self.text_section += f"\n{'    ' * self.indentation}li ${temporal_temporal}, {cuadrupla.operando1}\n"
+                    self.variables_cargadas[cuadrupla.operando1] = temporal_temporal
+
+
             # Recorremos todas las cuadruplas para atras hasta encontrar un METHOD_START
 
             operador_temporal = cuadrupla.operando1

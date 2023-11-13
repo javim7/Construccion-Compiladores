@@ -265,16 +265,13 @@ def configure_tags():
 
 root = tk.Tk()
 root.title("IDE Compiladores")
-root.geometry("1400x1000")
-
-# Hacer la ventana no redimensionable
-# root.resizable(False, False)
+root.geometry("1400x1400")
 
 # Frame superior que contendrá el editor y el árbol de archivos
 upper_frame = tk.Frame(root)
 upper_frame.pack(side="top", fill="both", expand=True)
 
-# Frame para el editor de código
+# Frame para el editor de código y el código MIPS
 editor_frame = tk.Frame(upper_frame)
 editor_frame.pack(side="left", fill="both", expand=True)
 
@@ -282,13 +279,13 @@ editor_frame.pack(side="left", fill="both", expand=True)
 line_numbers_canvas = tk.Canvas(editor_frame, width=30)
 line_numbers_canvas.pack(side="left", fill="y", padx=(5, 0))
 
-# Área de código con espacio entre líneas
+# Área de código principal
 code_area = Text(editor_frame, wrap="none", undo=True, spacing1=5)
-code_area.pack(pady=20, padx=20, expand=True, fill="both")
+code_area.pack(side="top", pady=20, padx=20, expand=True, fill="both")
 
-
-
-
+# Área de código MIPS
+mips_code_area = Text(editor_frame, height=30, wrap="none")
+mips_code_area.pack(side="bottom", pady=(0, 20), padx=20, fill="both", expand=False)
 
 # Obtener el directorio de trabajo actual
 current_directory = os.getcwd()
@@ -297,30 +294,16 @@ current_directory = os.getcwd()
 ejemplos_path = os.path.join(current_directory, "Proyecto3")
 # ejemplos_path = os.path.join(current_directory, "Proyecto1/Ejemplos")
 
-
-# Verificar si el directorio 'Ejemplos/' existe
-if not os.path.exists(ejemplos_path):
-    print(f"El directorio 'Proyecto1' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
-    # print(f"El directorio 'Proyecto1/Ejemplos/' no existe en {current_directory}. Asegúrate de que la carpeta esté presente.")
-
-# Crear un Frame para el área de archivos y el área nueva de texto
+# Frame para el árbol de archivos y el área de las cuádruplas
 files_and_text_frame = Frame(upper_frame)
 files_and_text_frame.pack(pady=20, padx=20, side="right", fill="both", expand=True)
-# Nueva área de texto para el código ensamblador MIPS
-mips_code_area = Text(root, height=6, wrap="none")
-mips_code_area.pack(pady=(0, 20), padx=20, fill="x")
-# Crear el Treeview para los archivos dentro del nuevo frame
-file_tree = ttk.Treeview(files_and_text_frame, columns=("fullpath",), displaycolumns=(), height=12)  # ajustar el height según sea necesario
+
+# Árbol de directorios
+file_tree = ttk.Treeview(files_and_text_frame, columns=("fullpath",), displaycolumns=(), height=12)
 file_tree.pack(side="top", fill="both", expand=True)
 
-# Agregar el directorio base al Treeview
 root_node = file_tree.insert("", "end", text=ejemplos_path, values=(ejemplos_path,))
 populate_tree(file_tree, root_node)
-
-# Nueva sección: agregar una ventana de texto DEBAJO del área de selección de archivos dentro del mismo frame
-text_area = Text(files_and_text_frame, height=12, wrap="none")  # Configurar la altura según lo necesario
-text_area.pack(side="top", fill="both", expand=True)
-
 
 # Agregar un "+" para indicar que se puede expandir
 file_tree.insert(root_node, "end")
@@ -331,34 +314,29 @@ file_tree.bind("<<TreeviewOpen>>", lambda event: populate_tree(file_tree, file_t
 # Configurar el evento para cargar archivos al hacer doble clic
 file_tree.bind("<Double-1>", load_file_into_editor)
 
+# Área de texto para las cuádruplas
+text_area = Text(files_and_text_frame, height=12, wrap="none")
+text_area.pack(side="top", fill="both", expand=True)
 
 # Área de la "terminal"
 terminal_area = Text(root, height=6, wrap="none", state=tk.DISABLED)
 terminal_area.pack(pady=(0, 20), padx=20, fill="x")
 
-
-
-# Detectar el sistema operativo
-os_name = platform.system()
-
-# Si es Windows, usar un botón verde. Si es macOS, usar el estilo predeterminado.
-if os_name == "Windows":
+# Botón para compilar
+if platform.system() == "Windows":
     compile_button = tk.Button(root, text="▶ Compilar", bg="green", fg="white", command=compile_code)
 else:
-    # Estilo para el botón
+    # Estilo para el botón en otros sistemas operativos
     style = ttk.Style()
     style.configure('TButton', foreground='white')
     compile_button = ttk.Button(root, text="▶ Compilar", style='TButton', command=compile_code)
 
 compile_button.pack(pady=20)
 
-# Configurar el evento para el área de texto
+# Configuración de eventos y estilos
 code_area.bind("<<Modified>>", on_content_change)
-
-# Configurar estilos de resaltado
 configure_tags()
-
-# Llamada inicial para mostrar números de línea
 redraw()
 
 root.mainloop()
+
