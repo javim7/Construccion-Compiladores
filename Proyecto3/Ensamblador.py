@@ -721,7 +721,7 @@ class Assembler:
             # out_string
             elif cuadrupla.operando1 == 'out_string':
                 self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
-                self.text_section += f"{'    ' * self.indentation}move $a0, ${self.variables_cargadas[cuadrupla.operando2]}\n"
+                self.text_section += f"{'    ' * self.indentation}la $a0, {self.variables_cargadas[cuadrupla.operando2]}\n"
                 self.text_section += f"{'    ' * self.indentation}syscall\n"
         else:
             if cuadrupla.operando1 == 'out_int':
@@ -731,9 +731,19 @@ class Assembler:
                     
             # out_string
             elif cuadrupla.operando1 == 'out_string':
-                self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
-                self.text_section += f"{'    ' * self.indentation}move $a0, ${cuadrupla.operando2}\n"
-                self.text_section += f"{'    ' * self.indentation}syscall\n"
+                
+                if cuadrupla.operando2 not in self.variables:
+                    variable = cuadrupla.operando2.replace('"', '').replace(" ", "_") + "_msg"
+                    self.data_section += f'{variable}: .asciiz {cuadrupla.operando2}\n'
+                    self.variables.add(variable)
+
+                    self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
+                    self.text_section += f"{'    ' * self.indentation}la $a0, {variable}\n"
+                    self.text_section += f"{'    ' * self.indentation}syscall\n"
+                else:
+                    self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"
+                    self.text_section += f"{'    ' * self.indentation}la $a0, {cuadrupla.operando2}\n"
+                    self.text_section += f"{'    ' * self.indentation}syscall\n"
         
         # Nueva linea
         self.text_section += f"\n{'    ' * self.indentation}li $v0, 4\n"

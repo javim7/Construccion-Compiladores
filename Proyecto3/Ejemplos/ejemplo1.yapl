@@ -2,17 +2,18 @@ class Main {
     num1 : Int <- 2;
     num2 : Int <- 3;
     resultado : Int;
-    negativo_msg : String <- "es negativo";
-    positivo_msg : String <- "es positivo";
 
     main() : Int {
-      { 
-       if num1 < 0
-       then out_string(negativo_msg)
-       else
-       then out_string(positivo_msg)
-       fi;
-      }
+      aritmeticos()
     };
 
+    aritmeticos(): Int {
+      {
+       if num1 < 0
+       then out_string("es negativo")
+       else
+       out_string("es positivo")
+       fi;
+      }
+    }
 };
