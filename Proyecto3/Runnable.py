@@ -179,7 +179,10 @@ def compile_code():
 
         intermedio = Intermediate(arbol, compilador.symbolTable)
 
+        print("\n\n\n\n\n\n\n\n\n")
         print(intermedio)
+        print("\n\n\n\n\n\n\n\n\n")
+
 
         text_area.delete(1.0, tk.END)
 
