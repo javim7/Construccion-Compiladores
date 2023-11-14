@@ -7,6 +7,7 @@ class Assembler:
         self.variables = set()
         self.methods = []
         self.stack = []
+        #HEap
         self.variables_cargadas = {}
         self.argumentos = {}
         self.resultados = {}
@@ -16,16 +17,22 @@ class Assembler:
         self.indentation = 0
 
         self.cuadruplas_procesadas = set()
-
+        #STack
         self.parametros_metodos = {}
 
         self.estructura_return = {}
 
+        self.administrador_memoria = {}
+
         self.recorrer_cuadruplas(self.cuadruplas_iniciales)
+
+        
 
 
         # Escribimos en el text section el final del programa
         if self.methods[-1] == 'main':
+            #Liberacion de memoria
+            self.variables_cargadas = {}
             self.text_section += f"\n{'    ' * self.indentation}li $v0, 10    # Código de salida\n{'    ' * self.indentation}syscall       # Ejecutar syscall para terminar\n"
 
 
@@ -37,6 +44,9 @@ class Assembler:
         return temp
     
     def get_a(self):
+        # if self.a_counter == 4:
+        #     self.a_counter = 0
+        
         a = f"a{self.a_counter}"
         self.a_counter += 1
         return a
@@ -120,6 +130,19 @@ class Assembler:
 
         address_temporal = self.get_a()
 
+        # # verificar si las variables ya estan cargadas en los registros
+        # if cuadrupla.operando1 not in self.variables_cargadas:
+            
+        #     print("------------No esta cargada la variable: ", cuadrupla.operando1)
+
+        #     address_temporal = self.get_a()
+
+        # else:
+
+        #     print("-----------Esta cargada la variable: ", cuadrupla.operando1)
+
+        #     address_temporal = self.variables_cargadas[cuadrupla.operando1]
+
         self.text_section += f"\n{'    ' * self.indentation}lw ${address_temporal}, {cuadrupla.operando1}\n"
 
         self.variables_cargadas[cuadrupla.operando1] = address_temporal
@@ -137,9 +160,21 @@ class Assembler:
     def mips_method_call(self, cuadrupla):
 
         self.text_section += f"\n{'    ' * self.indentation}jal {cuadrupla.operando1}\n"
+        self.a_counter = 0
 
     def mips_return(self, cuadrupla):
 
+        metodo = cuadrupla.resultado
+
+        for k,v in self.administrador_memoria.items():
+
+            if v == metodo:
+
+                # Quitamos el registro del administrador de memoria
+
+                self.administrador_memoria.pop(k)
+
+        # self.a_counter = 0
         self.text_section += f"\n{'    ' * self.indentation}jr $ra\n"
 
 
@@ -552,6 +587,8 @@ class Assembler:
 
                         nombre_metodo = cuadrupla_iteradora.resultado
 
+                        # Hacemos pop al stack
+
                         lista_parametros.append(self.parametros_metodos[cuadrupla_iteradora.resultado].pop(0))
 
             if cuadrupla_iteradora.operador == 'METHOD_START':
@@ -682,15 +719,37 @@ class Assembler:
 
                 temporal_temporal = self.get_temp()
 
+                print("ENTRO AL PRIMERO")
+
                 if cuadrupla.operando1 in self.variables:
+
+                    print("ENTRO AL SEGUNDO")
 
                     self.text_section += f"\n{'    ' * self.indentation}lw ${temporal_temporal}, {cuadrupla.operando1}\n"
                     self.variables_cargadas[cuadrupla.operando1] = temporal_temporal
 
                 else:
 
-                    self.text_section += f"\n{'    ' * self.indentation}li ${temporal_temporal}, {cuadrupla.operando1}\n"
-                    self.variables_cargadas[cuadrupla.operando1] = temporal_temporal
+                    # Obtenemos la cuadrupla anterior
+
+                    cuadrupla_anterior = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) - 1]
+
+                    # Obtenemos la cuadrupla 2 posiciones antes
+
+                    cuadrupla_2_posiciones_antes = self.cuadruplas_iniciales[self.cuadruplas_iniciales.index(cuadrupla) - 2]
+
+                    # Ahora revisamos si el operando 1 de la cuadrupla actual es el resultado de la cuadrupla anterior
+
+                    if cuadrupla.operando1 == cuadrupla_anterior.resultado or cuadrupla.operando1 == cuadrupla_2_posiciones_antes.resultado:
+
+                        self.temp_counter -= 1
+
+                    else:
+
+                        self.text_section += f"\n{'    ' * self.indentation}li ${temporal_temporal}, {cuadrupla.operando1}\n"
+                        self.variables_cargadas[cuadrupla.operando1] = temporal_temporal
+
+                    
 
 
             # Recorremos todas las cuadruplas para atras hasta encontrar un METHOD_START

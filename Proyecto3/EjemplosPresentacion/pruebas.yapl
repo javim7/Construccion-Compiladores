@@ -17,6 +17,8 @@ class Main {
             out_int(resultado2);
             }
         fi ;
+        out_string("Que tal como estas");
+        resultado2 <- mult(x,y);
       }
     };
 
@@ -27,6 +29,13 @@ class Main {
     resta(a: Int, b: Int): Int {
         {
             temp <- a - b;
+            return (temp);
+        }
+    };
+
+    mult(a: Int, b: Int): Int {
+        {
+            temp <- a * b;
             return (temp);
         }
     };

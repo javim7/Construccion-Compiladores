@@ -5,6 +5,8 @@ import tkinter as tk
 from datetime import datetime
 from tkinter import Text, ttk, Frame
 
+import pyperclip
+
 from Compiler import *
 from Cuadrupla import *
 from Ensamblador import *
@@ -173,7 +175,7 @@ def compile_code():
     terminal_area.config(state=tk.DISABLED)
 
 
-    if not compilador.semanticAnalyzer.errors:
+    if not compilador.semanticAnalyzer.errors and not compilador.lexicalErrors and not compilador.error_listener.errors:
 
         arbol = compilador.treeStruct
 
@@ -197,6 +199,8 @@ def compile_code():
         mips_code_area.delete(1.0, tk.END)  # Borrar el contenido actual
         ensamblador = Assembler(intermedio.lista_cuadruplas)
         mips_code_area.insert(tk.END, str(ensamblador.data_section + ensamblador.text_section))  # Insertar el ejemplo MIPS
+
+        pyperclip.copy(str(ensamblador.data_section + ensamblador.text_section))  # Copiar el código MIPS al portapapeles
 
     
     

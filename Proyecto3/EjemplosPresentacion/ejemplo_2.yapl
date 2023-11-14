@@ -17,6 +17,7 @@ class Main {
             out_int(resultado2);
             }
         fi ;
+        out_string("Que tal como estas");
       }
     };
 

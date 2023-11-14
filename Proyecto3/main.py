@@ -9,6 +9,8 @@ from Compiler import *
 from Cuadrupla import *
 from Ensamblador import *
 
+import pyperclip
+
 def main():
     
     # compilador = Compiler('Proyecto3/Ejemplos/ejemplo1.yapl')
@@ -41,6 +43,8 @@ def main():
 
         ensamblador = Assembler(intermedio.lista_cuadruplas)
         print(ensamblador.data_section + ensamblador.text_section)
+
+        pyperclip.copy(ensamblador.data_section + ensamblador.text_section)
         # print(ensamblador.variables_cargadas)
 
 if __name__ == '__main__':
